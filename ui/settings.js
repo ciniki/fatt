@@ -30,9 +30,14 @@ function ciniki_fatt_settings() {
 			'ciniki_fatt_settings', 'courses',
 			'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.courses');
 		this.courses.sections = {
-			'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1},
+			'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1,
+				'addTxt':'Add Category',
+				'addFn':'M.ciniki_fatt_settings.categoryEdit(\'M.ciniki_fatt_settings.courseList();\',0);',
+				},
 			'courses':{'label':'Courses', 'type':'simplegrid', 'num_cols':3,
 				'headerValues':['Name', 'Price', 'Status'],
+				'addTxt':'Add Course',
+				'addFn':'M.ciniki_fatt_settings.courseEdit(\'M.ciniki_fatt_settings.courseList();\',0);',
 				},
 		};
 		this.courses.cellValue = function(s, i, j, d) {
@@ -99,6 +104,7 @@ function ciniki_fatt_settings() {
 				'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_settings.courseDelete(M.ciniki_fatt_settings.course.course_id);'},
 				}},
 		};
+		this.course.sectionData = function(s) { return this.data[s]; }
 		this.course.fieldValue = function(s, i, d) {
 			if( this.data[i] == null ) { return ''; }
 			return this.data[i];
@@ -107,9 +113,9 @@ function ciniki_fatt_settings() {
 			return {'method':'ciniki.fatt.courseHistory', 'args':{'business_id':M.curBusinessID, 'course_id':this.course_id, 'field':i}};
 		}
 		this.course.messageEdit = function(mid) {
-			if( this.course.course_id == 0 ) {
+			if( this.course_id == 0 ) {
 				// Save course first 
-				var c = this.course.serializeForm('yes');
+				var c = this.serializeForm('yes');
 				M.api.postJSONCb('ciniki.fatt.courseAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
@@ -124,16 +130,32 @@ function ciniki_fatt_settings() {
 		}
 		this.course.messagesUpdate = function() {
 			M.api.getJSONCb('ciniki.fatt.courseGet', {'business_id':M.curBusinessID, 
-				'course_id':this.course.course_id, 'messages':'yes'}, function(rsp) {
+				'course_id':this.course_id, 'messages':'yes'}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
 					}
 					var p = M.ciniki_fatt_settings.course;
-					p.data.messages = rsp.messages;
-					p.refresh('messages');
-					p.show(cb);
+					p.data.messages = rsp.course.messages;
+					p.refreshSection('messages');
+					p.show();
 			});
+		}
+		this.course.cellValue = function(s, i, j, d) {
+			if( j == 0 ) {
+				if( d.message.days < 0 ) {
+					return Math.abs(d.message.days) + ' days before expiry';
+				} else if( d.message.days == 0 ) {
+					return 'on expiry day';
+				} else if( d.message.days > 0 ) {
+					return Math.abs(d.message.days) + ' days after expiry';
+				}
+			} else if( j == 1 ) {
+				return d.message.subject;
+			}
+		}
+		this.course.rowFn = function(s, i, d) {
+			return 'M.ciniki_fatt_settings.messageEdit(\'M.ciniki_fatt_settings.course.messagesUpdate();\',\'ciniki.fatt.course\',M.ciniki_fatt_settings.course.course_id,\'' + d.message.id + '\');';
 		}
 		this.course.addDropImage = function(iid) {
 			M.ciniki_fatt_settings.course.setFieldValue('primary_image_id', iid, null, null);
@@ -202,6 +224,8 @@ function ciniki_fatt_settings() {
 			'instructors':{'label':'', 'type':'simplegrid', 'num_cols':3,
 				'headerValues':['Name', 'Status'],
 				'cellClasses':['multiline', ''],
+				'addTxt':'Add Instructor',
+				'addFn':'M.ciniki_fatt_settings.instructorEdit(\'M.ciniki_fatt_settings.instructorList();\',0);',
 				},
 		};
 		this.instructors.sectionData = function(s) { return this.data[s]; }
@@ -277,6 +301,8 @@ function ciniki_fatt_settings() {
 			'locations':{'label':'', 'type':'simplegrid', 'num_cols':3,
 				'headerValues':['Name', 'Status'],
 				'cellClasses':['', ''],
+				'addTxt':'Add Location',
+				'addFn':'M.ciniki_fatt_settings.locationEdit(\'M.ciniki_fatt_settings.locationList();\',0);',
 				},
 		};
 		this.locations.sectionData = function(s) { return this.data[s]; }
@@ -375,6 +401,8 @@ function ciniki_fatt_settings() {
 			'certs':{'label':'', 'type':'simplegrid', 'num_cols':3,
 				'headerValues':['Name', 'Status'],
 				'cellClasses':['', ''],
+				'addTxt':'Add Certification',
+				'addFn':'M.ciniki_fatt_settings.certEdit(\'M.ciniki_fatt_settings.certList();\',0);',
 				},
 		};
 		this.certs.sectionData = function(s) { return this.data[s]; }
