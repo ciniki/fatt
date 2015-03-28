@@ -46,6 +46,12 @@ function ciniki_fatt_certCustomerHistory($ciniki) {
 		return $rc;
 	}
 
+	if( $args['field'] == 'date_received' || $args['field'] == 'date_expiry' ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
+		return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.fatt', 'ciniki_fatt_history',
+			$args['business_id'], 'ciniki_fatt_cert_customers', $args['certcustomer_id'], $args['field'], 'date');
+	}
+
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
 	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['business_id'], 'ciniki_fatt_cert_customers', $args['certcustomer_id'], $args['field']);
 }

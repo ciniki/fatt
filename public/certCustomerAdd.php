@@ -98,7 +98,7 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
 	// Add the cert to the database
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.cert_customer', $args, 0x04);
+	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.certcustomer', $args, 0x04);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 		return $rc;

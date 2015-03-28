@@ -14,6 +14,8 @@ function ciniki_fatt_objects($ciniki) {
 	$objects = array();
 	$objects['course'] = array(
 		'name'=>'Course',
+		'o_name'=>'course',
+		'o_container'=>'courses',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_courses',
 		'fields'=>array(
@@ -33,6 +35,8 @@ function ciniki_fatt_objects($ciniki) {
 		);
 	$objects['category'] = array(
 		'name'=>'Category',
+		'o_name'=>'category',
+		'o_container'=>'categories',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_categories',
 		'fields'=>array(
@@ -47,6 +51,8 @@ function ciniki_fatt_objects($ciniki) {
 		);
 	$objects['course_category'] = array(
 		'name'=>'Course Category',
+		'o_name'=>'course_category',
+		'o_container'=>'course_categories',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_course_categories',
 		'fields'=>array(
@@ -57,6 +63,8 @@ function ciniki_fatt_objects($ciniki) {
 		);
 	$objects['course_cert'] = array(
 		'name'=>'Course Certification',
+		'o_name'=>'course_cert',
+		'o_container'=>'course_certs',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_course_certs',
 		'fields'=>array(
@@ -67,6 +75,8 @@ function ciniki_fatt_objects($ciniki) {
 		);
 	$objects['instructor'] = array(
 		'name'=>'Instructor',
+		'o_name'=>'instructor',
+		'o_container'=>'instructors',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_instructors',
 		'fields'=>array(
@@ -86,6 +96,8 @@ function ciniki_fatt_objects($ciniki) {
 		);
 	$objects['location'] = array(
 		'name'=>'Location',
+		'o_name'=>'location',
+		'o_container'=>'locations',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_locations',
 		'fields'=>array(
@@ -107,6 +119,8 @@ function ciniki_fatt_objects($ciniki) {
 		);
 	$objects['cert'] = array(
 		'name'=>'Certification',
+		'o_name'=>'cert',
+		'o_container'=>'certs',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_certs',
 		'fields'=>array(
@@ -116,8 +130,10 @@ function ciniki_fatt_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_fatt_history',
 		);
-	$objects['cert_customer'] = array(
+	$objects['certcustomer'] = array(
 		'name'=>'Certification Customer',
+		'o_name'=>'certcustomer',
+		'o_container'=>'certcustomers',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_cert_customers',
 		'fields'=>array(
@@ -131,6 +147,8 @@ function ciniki_fatt_objects($ciniki) {
 		);
 	$objects['message'] = array(
 		'name'=>'Message',
+		'o_name'=>'message',
+		'o_container'=>'messages',
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_messages',
 		'fields'=>array(

@@ -60,6 +60,6 @@ function ciniki_fatt_certCustomerDelete(&$ciniki) {
 	// Remove the cert
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-	return ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.cert_customer', $args['certcustomer_id'], $cert_uuid, 0x07);
+	return ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.certcustomer', $args['certcustomer_id'], $cert_uuid, 0x07);
 }
 ?>

@@ -46,7 +46,7 @@ function ciniki_fatt_certs() {
 			return this.data[i];
 		};
 		this.certcustomer.fieldHistoryArgs = function(s, i) {
-			return {'method':'ciniki.fatt.courseHistory', 'args':{'business_id':M.curBusinessID, 'course_id':this.course_id, 'field':i}};
+			return {'method':'ciniki.fatt.certCustomerHistory', 'args':{'business_id':M.curBusinessID, 'certcustomer_id':this.certcustomer_id, 'field':i}};
 		}
 		this.certcustomer.cellValue = function(s, i, j, d) {
 			if( s == 'customer_details' ) {
@@ -137,6 +137,7 @@ function ciniki_fatt_certs() {
 		if( this.certcustomer.certcustomer_id > 0 ) {
 			var c = this.certcustomer.serializeForm('no');
 			if( c != '' ) {
+				console.log(c);
 				M.api.postJSONCb('ciniki.fatt.certCustomerUpdate', {'business_id':M.curBusinessID,
 					'certcustomer_id':this.certcustomer.certcustomer_id}, c, function(rsp) {
 						if( rsp.stat != 'ok' ) {
