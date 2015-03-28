@@ -25,6 +25,7 @@ function ciniki_fatt_certUpdate(&$ciniki) {
 		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
 		'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'), 
 		'years_valid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Valid For'), 
+		'courses'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Courses'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -61,6 +62,18 @@ function ciniki_fatt_certUpdate(&$ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 		return $rc;
+	}
+
+	//
+	// Update the courses
+	//
+	if( isset($args['courses']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'certUpdateCourses');
+		$rc = ciniki_fatt_certUpdateCourses($ciniki, $args['business_id'], $args['cert_id'], $args['courses']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+			return $rc;
+		}
 	}
 
 	//

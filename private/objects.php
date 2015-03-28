@@ -116,6 +116,19 @@ function ciniki_fatt_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_fatt_history',
 		);
+	$objects['cert_customer'] = array(
+		'name'=>'Certification Customer',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_cert_customers',
+		'fields'=>array(
+			'cert_id'=>array('ref'=>'ciniki.fatt.cert'),
+			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'date_received'=>array(),
+			'date_expiry'=>array(),
+			'flags'=>array('default'=>'1'),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
 	$objects['message'] = array(
 		'name'=>'Message',
 		'sync'=>'yes',

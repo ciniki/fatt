@@ -40,37 +40,75 @@ function ciniki_fatt_certGet($ciniki) {
     }   
 	$modules = $rc['modules'];
 
-	if( $args['cert_id'] == 0 ) {
-		return array('stat'=>'ok', 'cert'=>array(
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+
+	if( $args['cert_id'] == 0 ) {	
+		//
+		// Return the default settings for a new cert
+		//
+		$rsp = array('stat'=>'ok', 'cert'=>array(
 			'name'=>'',
 			'status'=>'10',
 			'years_valid'=>'',
 			));
+	} else {
+		//
+		// Get the cert details
+		//
+		$strsql = "SELECT ciniki_fatt_certs.id, "
+			. "ciniki_fatt_certs.name, "
+			. "ciniki_fatt_certs.status, "
+			. "ciniki_fatt_certs.years_valid "
+			. "FROM ciniki_fatt_certs "
+			. "WHERE ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_fatt_certs.id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.certs', array(
+			array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
+				'fields'=>array('id', 'name', 'status', 'years_valid')),
+		));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( !isset($rc['certs']) || !isset($rc['certs'][0]) ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2307', 'msg'=>'Unable to find cert'));
+		}
+		$rsp = array('stat'=>'ok', 'cert'=>$rc['certs'][0]['cert']);
 	}
 
 	//
-	// Get the cert details
+	// Get the courses for the certs and the business
 	//
-	$strsql = "SELECT ciniki_fatt_certs.id, "
-		. "ciniki_fatt_certs.name, "
-		. "ciniki_fatt_certs.status, "
-		. "ciniki_fatt_certs.years_valid "
-		. "FROM ciniki_fatt_certs "
-		. "WHERE ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_fatt_certs.id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
+	$rsp['cert']['courses'] = '';
+	$strsql = "SELECT ciniki_fatt_courses.id, "
+		. "ciniki_fatt_courses.name, "
+		. "IFNULL(ciniki_fatt_course_certs.id, 0) AS link_id "
+		. "FROM ciniki_fatt_courses "
+		. "LEFT JOIN ciniki_fatt_course_certs ON ("
+			. "ciniki_fatt_courses.id = ciniki_fatt_course_certs.course_id "
+			. "AND ciniki_fatt_course_certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
+			. "AND ciniki_fatt_course_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. ") "
+		. "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "ORDER BY ciniki_fatt_courses.name "
 		. "";
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.certs', array(
-		array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
-			'fields'=>array('id', 'name', 'status', 'years_valid')),
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+		array('container'=>'courses', 'fname'=>'id', 'name'=>'item',
+			'fields'=>array('id', 'name', 'link_id')),
 	));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( !isset($rc['certs']) || !isset($rc['certs'][0]) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2307', 'msg'=>'Unable to find cert'));
+	$rsp['courses'] = array();
+	if( isset($rc['courses']) ) {
+		$rsp['courses'] = $rc['courses'];
+		foreach($rsp['courses'] as $cid => $item) {
+			if( $item['item']['link_id'] > 0 ) {
+				$rsp['cert']['courses'] .= ($rsp['cert']['courses']!=''?',':'') . $item['item']['id'];
+			}
+			unset($rsp['courses'][$cid]['item']['link_id']);
+		}
 	}
-	$cert = $rc['certs'][0]['cert'];
 
 	//
 	// Get any messages about the cert
@@ -93,12 +131,12 @@ function ciniki_fatt_certGet($ciniki) {
 			return $rc;
 		}
 		if( isset($rc['messages']) ) {
-			$cert['messages'] = $rc['messages'];
+			$rsp['cert']['messages'] = $rc['messages'];
 		} else {
-			$cert['messages'] = array();
+			$rsp['cert']['messages'] = array();
 		}
 	}
 
-	return array('stat'=>'ok', 'cert'=>$cert);
+	return $rsp;
 }
 ?>

@@ -100,7 +100,7 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
 	//
 	// Update the categories
 	//
-	if( isset($args['categories']) && count($args['categories']) > 0 ) {
+	if( isset($args['categories']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'courseUpdateCategories');
 		$rc = ciniki_fatt_courseUpdateCategories($ciniki, $args['business_id'], $args['course_id'], $args['categories']);
 		if( $rc['stat'] != 'ok' ) {
@@ -112,8 +112,7 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
 	//
 	// Update the certs
 	//
-	if( isset($args['certs']) && count($args['certs']) > 0 ) {
-		error_log(print_r($args['certs'], true));
+	if( isset($args['certs']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'courseUpdateCerts');
 		$rc = ciniki_fatt_courseUpdateCerts($ciniki, $args['business_id'], $args['course_id'], $args['certs']);
 		if( $rc['stat'] != 'ok' ) {

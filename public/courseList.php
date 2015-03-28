@@ -37,6 +37,17 @@ function ciniki_fatt_courseList($ciniki) {
     }   
 
 	//
+	// Get the time information for business and user
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
+	$intl_currency = $rc['settings']['intl-default-currency'];
+
+	//
 	// Load fatt maps
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'maps');
@@ -51,7 +62,8 @@ function ciniki_fatt_courseList($ciniki) {
 	//
 	$strsql = "SELECT ciniki_fatt_courses.id, "
 		. "ciniki_fatt_courses.name, "
-		. "ciniki_fatt_courses.status "
+		. "ciniki_fatt_courses.price, "
+		. "ciniki_fatt_courses.status AS status_text "
 		. "FROM ciniki_fatt_courses "
 		. "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "ORDER BY name "
@@ -59,7 +71,8 @@ function ciniki_fatt_courseList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-			'fields'=>array('id', 'name', 'status')),
+			'fields'=>array('id', 'name', 'price', 'status_text'),
+			'maps'=>array('status_text'=>$maps['course']['status'])),
 		));
 	if( $rc['stat'] != 'ok' ) {	
 		return $rc;
@@ -67,6 +80,9 @@ function ciniki_fatt_courseList($ciniki) {
 	$rsp = array('stat'=>'ok', 'courses'=>array());
 	if( isset($rc['courses']) ) {
 		$rsp['courses'] = $rc['courses'];
+		foreach($rsp['courses'] as $cid => $course) {
+			$rsp['courses'][$cid]['course']['price'] = numfmt_format_currency($intl_currency_fmt, $course['course']['price'], $intl_currency);
+		}
 	}
 
 	//

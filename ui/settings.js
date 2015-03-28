@@ -46,7 +46,7 @@ function ciniki_fatt_settings() {
 			} else {
 				switch(j) {
 					case 0: return d.course.name;
-					case 1: return d.course.price_display;
+					case 1: return d.course.price;
 					case 2: return d.course.status_text;
 				}
 			}
@@ -432,6 +432,9 @@ function ciniki_fatt_settings() {
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
 				'years_valid':{'label':'Valid For', 'type':'text', 'size':'small'},
 				}},
+			'_courses':{'label':'Courses', 'aside':'yes', 'active':'yes', 'fields':{
+				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'idlist':{}},
+				}},
 			'messages':{'label':'Messages', 'active':'no', 'type':'simplegrid', 'num_cols':2,
 				'addTxt':'New Reminder',
 				'addFn':'M.ciniki_fatt_settings.cert.messageEdit(0)',
@@ -648,7 +651,6 @@ function ciniki_fatt_settings() {
 		if( this.course.course_id > 0 ) {
 			var c = this.course.serializeForm('no');
 			if( c != '' ) {
-				console.log(c);
 				M.api.postJSONCb('ciniki.fatt.courseUpdate', {'business_id':M.curBusinessID,
 					'course_id':this.course.course_id}, c, function(rsp) {
 						if( rsp.stat != 'ok' ) {
@@ -914,6 +916,7 @@ function ciniki_fatt_settings() {
 				}
 				var p = M.ciniki_fatt_settings.cert;
 				p.data = rsp.cert;
+				p.sections._courses.fields.courses.list = (rsp.courses!=null?rsp.courses:{});
 				p.refresh();
 				p.show(cb);
 		});
