@@ -2,9 +2,6 @@
 // This file contains the UI panels to manage course information, instructors, certs, locations and messages
 //
 function ciniki_fatt_certs() {
-	this.certcustomerOptions = {
-		'1':{'name':'Expiry Reminders'}
-		};
 	this.init = function() {
 		//
 		// The menu panel
@@ -33,7 +30,7 @@ function ciniki_fatt_certs() {
 			'cert':{'label':'', 'fields':{
 				'cert_id':{'label':'Certification', 'type':'select'},
 				'date_received':{'label':'Date', 'type':'date'},
-				'flags':{'label':'Options', 'active':'no', 'type':'flags', 'default':'1', 'flags':{}},
+				'flags':{'label':'Options', 'type':'flags', 'default':'1', 'flags':{}},
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_fatt_certs.certcustomerSave();'},
@@ -85,17 +82,29 @@ function ciniki_fatt_certs() {
 		// Setup certcustomer cert listing
 		//
 		this.certcustomer.sections.cert.fields.cert_id.options = {};
-		if( M.curBusiness.fatt != null
-			&& M.curBusiness.fatt.settings != null 
-			&& M.curBusiness.fatt.settings.certs != null 
+		if( M.curBusiness.modules['ciniki.fatt'] != null
+			&& M.curBusiness.modules['ciniki.fatt'].settings != null
+			&& M.curBusiness.modules['ciniki.fatt'].settings.certs != null
 			) {
 			var certs = {};
-			for(i in M.curBusiness.fatt.settings.certs) {
-				certs[M.curBusiness.fatt.settings.certs[i].cert.id] = M.curBusiness.fatt.settings.certs[i].cert.name;
+			for(i in M.curBusiness.modules['ciniki.fatt'].settings.certs) {
+				certs[M.curBusiness.modules['ciniki.fatt'].settings.certs[i].cert.id] = M.curBusiness.modules['ciniki.fatt'].settings.certs[i].cert.name;
 			}
 			this.certcustomer.sections.cert.fields.cert_id.options = certs;
 		}
 
+		//
+		// Setup certcustomer flags
+		//
+		var flags = {};
+		if( (M.curBusiness.modules['ciniki.fatt'].flags&0x20) > 0 ) { 
+			flags['1'] = {'name':'Expiry Reminders'};
+		}
+		this.certcustomer.sections.cert.fields.flags.flags = flags;
+
+		//
+		// Decide what to show
+		//
 		if( args.certcustomer_id != null ) {
 			this.certcustomerEdit(cb, args.certcustomer_id, args.cert_id, args.customer_id);
 		} else {
