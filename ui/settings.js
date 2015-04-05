@@ -34,8 +34,8 @@ function ciniki_fatt_settings() {
 				'addTxt':'Add Category',
 				'addFn':'M.ciniki_fatt_settings.categoryEdit(\'M.ciniki_fatt_settings.courseList();\',0);',
 				},
-			'courses':{'label':'Courses', 'type':'simplegrid', 'num_cols':3,
-				'headerValues':['Name', 'Price', 'Status'],
+			'courses':{'label':'Courses', 'type':'simplegrid', 'num_cols':4,
+				'headerValues':['Code', 'Name', 'Price', 'Status'],
 				'addTxt':'Add Course',
 				'addFn':'M.ciniki_fatt_settings.courseEdit(\'M.ciniki_fatt_settings.courseList();\',0);',
 				},
@@ -45,9 +45,10 @@ function ciniki_fatt_settings() {
 				return d.category.name;
 			} else {
 				switch(j) {
-					case 0: return d.course.name;
-					case 1: return d.course.price;
-					case 2: return d.course.status_text;
+					case 0: return d.course.code;
+					case 1: return d.course.name;
+					case 2: return d.course.price;
+					case 3: return d.course.status_text;
 				}
 			}
 		};
@@ -76,6 +77,7 @@ function ciniki_fatt_settings() {
 				}},
 			'details':{'label':'', 'aside':'yes', 'fields':{
 				'name':{'label':'Name', 'type':'text'},
+				'code':{'label':'Code', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
 				'price':{'label':'Price', 'type':'text', 'size':'small'},
 				'num_days':{'label':'Days', 'type':'toggle', 'default':'1', 'toggles':{'1':'1', '2':'2'}},

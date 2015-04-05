@@ -62,6 +62,7 @@ function ciniki_fatt_courseList($ciniki) {
 	//
 	$strsql = "SELECT ciniki_fatt_courses.id, "
 		. "ciniki_fatt_courses.name, "
+		. "ciniki_fatt_courses.code, "
 		. "ciniki_fatt_courses.price, "
 		. "ciniki_fatt_courses.status AS status_text "
 		. "FROM ciniki_fatt_courses "
@@ -71,7 +72,7 @@ function ciniki_fatt_courseList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-			'fields'=>array('id', 'name', 'price', 'status_text'),
+			'fields'=>array('id', 'name', 'code', 'price', 'status_text'),
 			'maps'=>array('status_text'=>$maps['course']['status'])),
 		));
 	if( $rc['stat'] != 'ok' ) {	

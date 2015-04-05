@@ -65,6 +65,7 @@ function ciniki_fatt_courseGet($ciniki) {
 		//
 		$strsql = "SELECT ciniki_fatt_courses.id, "
 			. "ciniki_fatt_courses.name, "
+			. "ciniki_fatt_courses.code, "
 			. "ciniki_fatt_courses.permalink, "
 			. "ciniki_fatt_courses.status, "
 			. "ciniki_fatt_courses.primary_image_id, "
@@ -81,7 +82,7 @@ function ciniki_fatt_courseGet($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 			array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-				'fields'=>array('id', 'name', 'status', 'primary_image_id', 'synopsis', 'description', 
+				'fields'=>array('id', 'name', 'code', 'status', 'primary_image_id', 'synopsis', 'description', 
 					'price', 'num_days', 'num_seats_per_instructor', 'flags', 'cert_form')),
 		));
 		if( $rc['stat'] != 'ok' ) {

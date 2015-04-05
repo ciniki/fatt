@@ -22,6 +22,7 @@ function ciniki_fatt_courseAdd(&$ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
+		'code'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Code'), 
 		'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'), 
 		'status'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Status'), 
 		'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
