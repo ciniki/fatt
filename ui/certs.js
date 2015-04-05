@@ -25,7 +25,7 @@ function ciniki_fatt_certs() {
 			'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2,
 				'cellClasses':['label', ''],
 				'addTxt':'Edit',
-				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_certs.certcustomerShow();\',\'mc\',{\'next\':\'M.ciniki_sapos_invoice.updateInvoiceCustomer\',\'customer_id\':M.ciniki_sapos_invoice.invoice.data.customer_id});',
+				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_certs.certcustomerShow();\',\'mc\',{\'next\':\'M.ciniki_fatt_certs.certcustomer.updateCustomer\',\'customer_id\':M.ciniki_fatt_certs.certcustomer.data.customer_id});',
 				},
 			'cert':{'label':'', 'fields':{
 				'cert_id':{'label':'Certification', 'type':'select'},
@@ -55,6 +55,22 @@ function ciniki_fatt_certs() {
 		}
 		this.certcustomer.rowFn = function(s, i, d) {
 			return '';
+		}
+		this.certcustomer.updateCustomer = function(cid) {
+			if( cid != this.customer_id ) { this.customer_id = cid; }
+			M.api.getJSONCb('ciniki.fatt.certCustomerGet', {'business_id':M.curBusinessID, 
+				'certcustomer_id':this.certcustomer_id, 
+				'cert_id':this.cert_id, 
+				'customer_id':this.customer_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					var p = M.ciniki_fatt_certs.certcustomer;
+					p.data.customer_details = rsp.certcustomer.customer_details;
+					p.refreshSection('customer_details');
+					p.show();
+			});
 		}
 		this.certcustomer.addButton('save', 'Save', 'M.ciniki_fatt_certs.certcustomerSave();');
 		this.certcustomer.addClose('Cancel');
@@ -145,8 +161,10 @@ function ciniki_fatt_certs() {
 	this.certcustomerSave = function() {
 		if( this.certcustomer.certcustomer_id > 0 ) {
 			var c = this.certcustomer.serializeForm('no');
+			if( this.certcustomer.customer_id != this.certcustomer.data.customer_id ) {
+				c += '&customer_id=' + this.certcustomer.customer_id;
+			}
 			if( c != '' ) {
-				console.log(c);
 				M.api.postJSONCb('ciniki.fatt.certCustomerUpdate', {'business_id':M.curBusinessID,
 					'certcustomer_id':this.certcustomer.certcustomer_id}, c, function(rsp) {
 						if( rsp.stat != 'ok' ) {

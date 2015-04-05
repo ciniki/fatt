@@ -99,7 +99,7 @@ function ciniki_fatt_certCustomerGet($ciniki) {
 	if( $rsp['certcustomer']['customer_id'] > 0 ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
 		$rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'],
-		array('customer_id'=>$args['customer_id'], 'addresses'=>'yes'));
+		array('customer_id'=>$args['customer_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}

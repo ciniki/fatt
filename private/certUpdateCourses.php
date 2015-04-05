@@ -47,10 +47,8 @@ function ciniki_fatt_certUpdateCourses($ciniki, $business_id, $cert_id, $ncourse
 	//
 	// Check of old certs need to be removed
 	//
-	error_log(print_r($ncourses, true));
 	foreach($ocourses as $cid => $object_id) {
 		if( !in_array($cid, $ncourses) ) {
-			error_log('removing: ' . $cid);
 			$rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.course_cert', $object_id, null, 0x04);
 			if( $rc['stat'] != 'ok' ) {
 				return $rc;

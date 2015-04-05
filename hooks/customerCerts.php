@@ -79,6 +79,7 @@ function ciniki_fatt_hooks_customerCerts($ciniki, $business_id, $args) {
 	foreach($rc['rows'] as $row) {
 		$cert = array('cert'=>array(
 			'id'=>$row['id'],
+			'cert_id'=>$row['cert_id'],
 			'name'=>$row['name'],
 			'date_received'=>$row['date_received'],
 			'date_expiry'=>'No Expiration',
