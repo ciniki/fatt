@@ -75,7 +75,7 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
 		//
 		if( $cert['years_valid'] > 0 ) {
 			$dt = new DateTime($args['date_received'], new DateTimeZone($intl_timezone));
-			$dt->add(new DateInterval('P1Y'));
+			$dt->add(new DateInterval('P' . $cert['years_valid'] . 'Y'));
 			$args['date_expiry'] = $dt->format('Y-m-d');
 		} else {
 			$args['date_expiry'] = '';

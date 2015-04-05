@@ -13,6 +13,8 @@ function ciniki_fatt_offerings() {
 		this.offerings = new M.panel('Settings',
 			'ciniki_fatt_offerings', 'offerings',
 			'mc', 'medium mediumflex', 'sectioned', 'ciniki.fatt.offerings.offerings');
+		this.offerings.year = 0;
+		this.offerings.month = 0;
 		this.offerings.sections = {	
 			'years':{'label':'', 'type':'paneltabs', 'selected':'', 'tabs':{}},
 			'months':{'label':'', 'visible':'no', 'type':'paneltabs', 'selected':'0', 'tabs':{
@@ -32,7 +34,7 @@ function ciniki_fatt_offerings() {
 				}},
 			'offerings':{'label':'Courses', 'type':'simplegrid', 'num_cols':2,
 				'sortables':'yes',
-				'headerValues':['Course', 'Dates', 'Status'],
+				'headerValues':['Date', 'Course', 'Location', '#', 'Status'],
 				'sortTypes':['text', 'date', 'text'],
 				'cellClasses':['multiline', 'multiline', 'multiline'],
 				'noData':'No offerings',
@@ -40,9 +42,11 @@ function ciniki_fatt_offerings() {
 		};
 		this.offerings.cellValue = function(s, i, j, d) {
 			switch(j) {
-				case 0: return d.offering.course_name;
-				case 1: return d.offering.start_date;
-				case 2: return d.offering.status_text;
+				case 0: return d.offering.start_date;
+				case 1: return d.offering.course_name;
+				case 2: return d.offering.location_name;
+				case 3: return d.offering.seats_remaining + '/' + d.offering.num_registrations;
+				case 4: return d.offering.status_text;
 			}
 		};
 		this.offerings.rowFn = function(s, i, d) {
@@ -82,11 +86,37 @@ function ciniki_fatt_offerings() {
 		if( args.offering_id != null ) {
 			this.offeringShow(cb, args.offering_id);
 		} else {
-			this.showOfferings(cb);
+			var dt = new Date();
+			this.showOfferings(cb, dt.getFullYear(), 0);
 		}
 	};
 
 	this.showOfferings(cb, year, month) {
+		if( year != null ) {
+			this.offerings.year = year;
+			this.offerings.sections.years.selected = year;
+		}
+		if( month != null ) {
+			this.offerings.month = month;
+			this.offerings.sections.months.selected = month;
+		}
+		M.api.getJSONCb('ciniki.fatt.offeringList', {'business_id':M.curBusinessID,
+			'year':this.offerings.year, 'month':this.offerings.month, 'years':'yes'}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				var p = M.ciniki_fatt_offerings.offerings;
+				p.data.offerings = rsp.offerings;
+				p.sections.years.tabs = {};
+				if( rsp.years != null ) {
+					for(var i in rsp.years) {
+						p.sections.years.tabs[i] = {'label':rsp.years[i].year.year, 'fn':'M.ciniki_fatt_offerings.showOfferings(null,\'' + rsp.years[i].year.year + '\');'};
+					}
+				}
+				p.refresh();
+				p.show(cb);
+			});
 	};
 
 }
