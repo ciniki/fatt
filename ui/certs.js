@@ -1,5 +1,5 @@
 //
-// This file contains the UI panels to manage course information, instructors, certs, locations and messages
+// This file contains the UI panels to manage customer certs and their expirations
 //
 function ciniki_fatt_certs() {
 	this.init = function() {
@@ -12,6 +12,44 @@ function ciniki_fatt_certs() {
 		this.main.sections = {	
 		};
 		this.main.addClose('Back');
+
+		//
+		// The cert expirations panel
+		//
+		this.expirations = new M.panel('Certication Expirations',
+			'ciniki_fatt_certs', 'expirations',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.expirations');
+		this.expirations.data = {};
+		this.expirations.sections = {
+			'certs':{'label':'Expirations', 'type':'simplegrid', 'num_cols':3,
+				'headerValues':['Certification', 'Customer', 'Expiration'],
+				'sortable':'yes',
+				'sortTypes':['text', 'text', 'altnumber'],
+				'cellClasses':['multiline', 'multiline', 'multiline'],
+				'noData':'No certifications',
+				},
+			};
+		this.expirations.sectionData = function(s) { console.log('test'); return this.data[s]; }
+		this.expirations.noData = function(s) { return this.sections[s].noData; }
+		this.expirations.cellValue = function(s, i, j, d) {
+			console.log('cellvalue');
+			switch (j) {
+				case 0: return '<span class="maintext">' + d.cert.name + '</span><span class="subtext">' + d.cert.date_received + '</span>';
+				case 1: return d.cert.display_name;
+				case 2: return '<span class="maintext">' + d.cert.expiry_text + '</span><span class="subtext">' + d.cert.date_expiry + '</span>';
+			}
+		}
+		this.expirations.cellSortValue = function(s, i, j, d) {
+			switch(j) {
+				case 0: return d.cert.name;
+				case 1: return d.cert.display_name;
+				case 2: return d.cert.days_till_expiry;
+			}
+		};
+		this.expirations.rowFn = function(s, i, d) {
+			return '';
+		}
+		this.expirations.addClose('Back');
 
 		//
 		// The cert customer edit panel
@@ -124,7 +162,10 @@ function ciniki_fatt_certs() {
 		if( args.certcustomer_id != null ) {
 			this.certcustomerEdit(cb, args.certcustomer_id, args.cert_id, args.customer_id);
 		} else {
-			this.showMain(cb);
+			var edt = new Date();
+			var sdt = new Date();
+			edt.setDate(edt.getDate()+90);
+			this.expirationsShow(cb, sdt.toDateString(), edt.toDateString());
 		}
 	}
 
@@ -135,6 +176,21 @@ function ciniki_fatt_certs() {
 		this.main.refresh();
 		this.main.show(cb);
 	}
+
+	this.expirationsShow = function(cb, sd, ed) {
+		M.api.getJSONCb('ciniki.fatt.certCustomerExpirations', {'business_id':M.curBusinessID, 
+			'start_date':sd, 'end_date':ed}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				var p = M.ciniki_fatt_certs.expirations;
+				p.data = rsp;
+				p.refresh();
+				console.log('show');
+				p.show(cb);
+		});
+	};
 
 	this.certcustomerEdit = function(cb, ccid, cert_id, customer_id) {
 		if( ccid != null ) { this.certcustomer.certcustomer_id = ccid; }
