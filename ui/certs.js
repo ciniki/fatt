@@ -21,7 +21,12 @@ function ciniki_fatt_certs() {
 			'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.expirations');
 		this.expirations.data = {};
 		this.expirations.sections = {
-			'certs':{'label':'Expirations', 'type':'simplegrid', 'num_cols':3,
+			'stats':{'label':'', 'type':'simplegrid', 'num_cols':7,
+				'headerValues':['', '30', '60', '90', '120', '150', '180'],
+				'cellClasses':['', 'alignright', 'alignright', 'alignright', 'alignright', 'alignright', 'alignright'],
+				'headerClasses':['', 'alignright', 'alignright', 'alignright', 'alignright', 'alignright', 'alignright'],
+				},
+			'certs':{'label':'Expirations', 'visible':'no', 'type':'simplegrid', 'num_cols':3,
 				'headerValues':['Certification', 'Customer', 'Expiration'],
 				'sortable':'yes',
 				'sortTypes':['text', 'text', 'altnumber'],
@@ -32,11 +37,37 @@ function ciniki_fatt_certs() {
 		this.expirations.sectionData = function(s) { return this.data[s]; }
 		this.expirations.noData = function(s) { return this.sections[s].noData; }
 		this.expirations.cellValue = function(s, i, j, d) {
-			switch (j) {
-				case 0: return '<span class="maintext">' + d.cert.name + '</span><span class="subtext">' + d.cert.date_received + '</span>';
-				case 1: return d.cert.display_name;
-				case 2: return '<span class="maintext">' + d.cert.expiry_text + '</span><span class="subtext">' + d.cert.date_expiry + '</span>';
+			if( s == 'stats' ) {
+				switch (j) {
+					case 0: return d.group.name;
+					case 1: return d.group.ag0;
+					case 2: return d.group.ag1;
+					case 3: return d.group.ag2;
+					case 4: return d.group.ag3;
+					case 5: return d.group.ag4;
+					case 6: return d.group.ag5;
+				}
+			} else if( s == 'certs' ) {
+				switch (j) {
+					case 0: return '<span class="maintext">' + d.cert.name + '</span><span class="subtext">' + d.cert.date_received + '</span>';
+					case 1: return d.cert.display_name;
+					case 2: return '<span class="maintext">' + d.cert.expiry_text + '</span><span class="subtext">' + d.cert.date_expiry + '</span>';
+				}
 			}
+		}
+		this.expirations.cellFn = function(s, i, j, d) {
+			if( s == 'stats' ) {
+				switch (j) {
+					case 0: return 'M.ciniki_fatt_certs.expirationsShow(null,\'' + escape(d.group.name) + '\',\'\');';
+					case 1: return 'M.ciniki_fatt_certs.expirationsShow(null,\'' + escape(d.group.name) + '\',0);';
+					case 2: return 'M.ciniki_fatt_certs.expirationsShow(null,\'' + escape(d.group.name) + '\',1);';
+					case 3: return 'M.ciniki_fatt_certs.expirationsShow(null,\'' + escape(d.group.name) + '\',2);';
+					case 4: return 'M.ciniki_fatt_certs.expirationsShow(null,\'' + escape(d.group.name) + '\',3);';
+					case 5: return 'M.ciniki_fatt_certs.expirationsShow(null,\'' + escape(d.group.name) + '\',4);';
+					case 6: return 'M.ciniki_fatt_certs.expirationsShow(null,\'' + escape(d.group.name) + '\',5);';
+				}
+			} 
+			return '';
 		}
 		this.expirations.cellSortValue = function(s, i, j, d) {
 			switch(j) {
@@ -46,7 +77,11 @@ function ciniki_fatt_certs() {
 			}
 		};
 		this.expirations.rowFn = function(s, i, d) {
-			return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_certs.expirationsShow();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
+			if( s == 'stats' ) {
+				return '';
+			} else if( s == 'certs' ) {
+				return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_certs.expirationsShow();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
+			}
 		}
 		this.expirations.addClose('Back');
 
@@ -161,10 +196,11 @@ function ciniki_fatt_certs() {
 		if( args.certcustomer_id != null ) {
 			this.certcustomerEdit(cb, args.certcustomer_id, args.cert_id, args.customer_id);
 		} else {
-			var edt = new Date();
-			var sdt = new Date();
-			edt.setDate(edt.getDate()+90);
-			this.expirationsShow(cb, sdt.toDateString(), edt.toDateString());
+//			var edt = new Date();
+//			var sdt = new Date();
+//			edt.setDate(edt.getDate()+90);
+//			this.expirationsShow(cb, sdt.toDateString(), edt.toDateString());
+			this.expirationsShow(cb, '', '');
 		}
 	}
 
@@ -176,21 +212,46 @@ function ciniki_fatt_certs() {
 		this.main.show(cb);
 	}
 
-	this.expirationsShow = function(cb, sd, ed) {
-		if( sd != null ) { this.expirations.start_date = sd; }
-		if( ed != null ) { this.expirations.end_date = ed; }
-		M.api.getJSONCb('ciniki.fatt.certCustomerExpirations', {'business_id':M.curBusinessID, 
-			'start_date':this.expirations.start_date, 'end_date':this.expirations.end_date}, function(rsp) {
+	this.expirationsShow = function(cb, grouping, timespan) {
+		if( grouping != null ) { this.expirations.grouping = unescape(grouping); }
+		if( timespan != null ) { this.expirations.timespan = timespan; }
+		this.expirations.sections.certs.label = this.expirations.grouping;
+		if( this.expirations.timespan == 0 || this.expirations.timespan != '' ) {
+			if( this.expirations.timespan == 0 ) {
+				this.expirations.sections.certs.label += ' in the next 0-30 days';
+			} else {
+				this.expirations.sections.certs.label += ' in the next ' + ((this.expirations.timespan*30)+1) + '-' + ((this.expirations.timespan+1)*30) + ' days';
+			}
+		}
+		M.api.getJSONCb('ciniki.fatt.certCustomerExpirations', {'business_id':M.curBusinessID, 'stats':'yes',
+			'grouping':this.expirations.grouping, 'timespan':this.expirations.timespan}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
 				}
 				var p = M.ciniki_fatt_certs.expirations;
 				p.data = rsp;
+				p.sections.certs.visible = (rsp.certs!=null?'yes':'no');
 				p.refresh();
 				p.show(cb);
 		});
 	};
+
+//	this.expirationsShow = function(cb, sd, ed) {
+//		if( sd != null ) { this.expirations.start_date = sd; }
+//		if( ed != null ) { this.expirations.end_date = ed; }
+//		M.api.getJSONCb('ciniki.fatt.certCustomerExpirations', {'business_id':M.curBusinessID, 
+//			'start_date':this.expirations.start_date, 'end_date':this.expirations.end_date}, function(rsp) {
+//				if( rsp.stat != 'ok' ) {
+//					M.api.err(rsp);
+//					return false;
+//				}
+//				var p = M.ciniki_fatt_certs.expirations;
+//				p.data = rsp;
+//				p.refresh();
+//				p.show(cb);
+//		});
+//	};
 
 	this.certcustomerEdit = function(cb, ccid, cert_id, customer_id) {
 		if( ccid != null ) { this.certcustomer.certcustomer_id = ccid; }

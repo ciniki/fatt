@@ -22,6 +22,7 @@ function ciniki_fatt_certAdd(&$ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
+		'grouping'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Grouping'), 
 		'status'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Status'), 
 		'years_valid'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Valid For'), 
 		'courses'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Courses'), 

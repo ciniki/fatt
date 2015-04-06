@@ -48,6 +48,7 @@ function ciniki_fatt_certGet($ciniki) {
 		//
 		$rsp = array('stat'=>'ok', 'cert'=>array(
 			'name'=>'',
+			'grouping'=>'',
 			'status'=>'10',
 			'years_valid'=>'',
 			));
@@ -57,6 +58,7 @@ function ciniki_fatt_certGet($ciniki) {
 		//
 		$strsql = "SELECT ciniki_fatt_certs.id, "
 			. "ciniki_fatt_certs.name, "
+			. "ciniki_fatt_certs.grouping, "
 			. "ciniki_fatt_certs.status, "
 			. "ciniki_fatt_certs.years_valid "
 			. "FROM ciniki_fatt_certs "
@@ -65,7 +67,7 @@ function ciniki_fatt_certGet($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.certs', array(
 			array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
-				'fields'=>array('id', 'name', 'status', 'years_valid')),
+				'fields'=>array('id', 'name', 'grouping', 'status', 'years_valid')),
 		));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

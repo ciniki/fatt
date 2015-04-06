@@ -23,6 +23,7 @@ function ciniki_fatt_certUpdate(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'cert_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Certification'), 
 		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
+		'grouping'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Grouping'), 
 		'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'), 
 		'years_valid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Valid For'), 
 		'courses'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Courses'), 

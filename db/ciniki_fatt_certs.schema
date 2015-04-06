@@ -11,6 +11,8 @@
 #
 # name:				The name of the certification.
 #
+# grouping:			The group for reporting purposes.
+#
 # status:			The current status of the certification.
 #
 #					10 - Active
@@ -26,6 +28,7 @@ create table ciniki_fatt_certs (
 	uuid char(36) not null,
 	business_id int not null,
 	name varchar(150) not null,
+	grouping varchar(50) not null,
 	status tinyint not null,
 	years_valid tinyint not null,
 	date_added datetime not null,

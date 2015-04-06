@@ -401,7 +401,7 @@ function ciniki_fatt_settings() {
 			'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.certs');
 		this.certs.sections = {
 			'certs':{'label':'', 'type':'simplegrid', 'num_cols':3,
-				'headerValues':['Name', 'Status'],
+				'headerValues':['Grouping', 'Name', 'Status'],
 				'cellClasses':['', ''],
 				'addTxt':'Add Certification',
 				'addFn':'M.ciniki_fatt_settings.certEdit(\'M.ciniki_fatt_settings.certList();\',0);',
@@ -410,8 +410,9 @@ function ciniki_fatt_settings() {
 		this.certs.sectionData = function(s) { return this.data[s]; }
 		this.certs.cellValue = function(s, i, j, d) {
 			switch(j) {
-				case 0: return d.cert.name;
-				case 1: return d.cert.status_text;
+				case 0: return d.cert.grouping;
+				case 1: return d.cert.name;
+				case 2: return d.cert.status_text;
 			}
 		};
 		this.certs.rowFn = function(s, i, d) {
@@ -431,6 +432,7 @@ function ciniki_fatt_settings() {
 		this.cert.sections = {
 			'details':{'label':'', 'fields':{
 				'name':{'label':'Name', 'type':'text'},
+				'grouping':{'label':'Grouping', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
 				'years_valid':{'label':'Valid For', 'type':'text', 'size':'small'},
 				}},

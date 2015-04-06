@@ -126,6 +126,7 @@ function ciniki_fatt_objects($ciniki) {
 		'table'=>'ciniki_fatt_certs',
 		'fields'=>array(
 			'name'=>array(),
+			'grouping'=>array('default'=>''),
 			'status'=>array('default'=>'10'),
 			'years_valid'=>array('default'=>'1'),
 			),
