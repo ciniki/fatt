@@ -46,7 +46,7 @@ function ciniki_fatt_certs() {
 			}
 		};
 		this.expirations.rowFn = function(s, i, d) {
-			return '';
+			return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_certs.expirationsShow();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
 		}
 		this.expirations.addClose('Back');
 
@@ -177,8 +177,10 @@ function ciniki_fatt_certs() {
 	}
 
 	this.expirationsShow = function(cb, sd, ed) {
+		if( sd != null ) { this.expirations.start_date = sd; }
+		if( ed != null ) { this.expirations.end_date = ed; }
 		M.api.getJSONCb('ciniki.fatt.certCustomerExpirations', {'business_id':M.curBusinessID, 
-			'start_date':sd, 'end_date':ed}, function(rsp) {
+			'start_date':this.expirations.start_date, 'end_date':this.expirations.end_date}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
