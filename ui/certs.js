@@ -29,10 +29,9 @@ function ciniki_fatt_certs() {
 				'noData':'No certifications',
 				},
 			};
-		this.expirations.sectionData = function(s) { console.log('test'); return this.data[s]; }
+		this.expirations.sectionData = function(s) { return this.data[s]; }
 		this.expirations.noData = function(s) { return this.sections[s].noData; }
 		this.expirations.cellValue = function(s, i, j, d) {
-			console.log('cellvalue');
 			switch (j) {
 				case 0: return '<span class="maintext">' + d.cert.name + '</span><span class="subtext">' + d.cert.date_received + '</span>';
 				case 1: return d.cert.display_name;
@@ -187,7 +186,6 @@ function ciniki_fatt_certs() {
 				var p = M.ciniki_fatt_certs.expirations;
 				p.data = rsp;
 				p.refresh();
-				console.log('show');
 				p.show(cb);
 		});
 	};
