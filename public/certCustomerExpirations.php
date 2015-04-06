@@ -95,6 +95,7 @@ function ciniki_fatt_certCustomerExpirations($ciniki) {
 				. "AND ciniki_fatt_cert_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. ") "
 			. "WHERE ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_fatt_certs.grouping <> '' "
 			. "GROUP BY ciniki_fatt_certs.grouping, timespan "
 			. "ORDER BY ciniki_fatt_certs.grouping "
 			. "";
