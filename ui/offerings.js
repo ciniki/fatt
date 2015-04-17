@@ -165,7 +165,6 @@ function ciniki_fatt_offerings() {
 			if( i == 'instructors' ) {
 				var str = ''
 				for(var j in this.data.instructors) { str += (str!=''?',':'') + this.data.instructors[j].instructor.id; }
-				console.log(str);
 				return str;
 			}
 			if( this.data[i] == null ) { return ''; }
