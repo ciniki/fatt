@@ -42,6 +42,13 @@ function ciniki_fatt_maps($ciniki) {
 			'50'=>'Archive',
 			),
 		);
+	$maps['offering'] = array(
+		'flags'=>array(
+			0=>'',
+			0x01=>'Public',
+			0x10=>'Online Registrations',
+			),
+		);
 
 	return array('stat'=>'ok', 'maps'=>$maps);
 }

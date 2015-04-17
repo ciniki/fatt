@@ -162,6 +162,68 @@ function ciniki_fatt_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_fatt_history',
 		);
+	$objects['offering'] = array(
+		'name'=>'Course Offering',
+		'o_name'=>'offering',
+		'o_container'=>'offerings',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_offerings',
+		'fields'=>array(
+			'course_id'=>array('ref'=>'ciniki.fatt.course'),
+			'permalink'=>array('default'=>''),
+			'price'=>array('default'=>'0'),
+			'flags'=>array('default'=>'0'),
+			'date_string'=>array('default'=>''),
+			'location'=>array('default'=>''),
+			'max_seats'=>array('default'=>'0'),
+			'seats_remaining'=>array('default'=>'0'),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
+	$objects['offeringdate'] = array(
+		'name'=>'Course Offering Date',
+		'o_name'=>'offeringdate',
+		'o_container'=>'offeringdates',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_offering_dates',
+		'fields'=>array(
+			'offering_id'=>array('ref'=>'ciniki.fatt.offering'),
+			'day_number'=>array('default'=>'1'),
+			'start_date'=>array(),
+			'num_hours'=>array(),
+			'location_id'=>array('ref'=>'ciniki.fatt.location'),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
+	$objects['offeringinstructor'] = array(
+		'name'=>'Course Offering Instructor',
+		'o_name'=>'offeringinstructor',
+		'o_container'=>'offeringinstructors',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_offering_instructors',
+		'fields'=>array(
+			'offering_id'=>array('ref'=>'ciniki.fatt.offering'),
+			'instructor_id'=>array('ref'=>'ciniki.fatt.instructor'),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
+	$objects['offeringregistration'] = array(
+		'name'=>'Course Offering registration',
+		'o_name'=>'offeringregistration',
+		'o_container'=>'offeringregistrations',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_offering_registrations',
+		'fields'=>array(
+			'offering_id'=>array('ref'=>'ciniki.fatt.offering'),
+			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'student_id'=>array('ref'=>'ciniki.customers.customer'),
+			'invoice_id'=>array('ref'=>'ciniki.sapos.invoice'),
+			'customer_notes'=>array('default'=>''),
+			'notes'=>array('default'=>''),
+			'test_results'=>array('default'=>'0'),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
 	
 	return array('stat'=>'ok', 'objects'=>$objects);
 }

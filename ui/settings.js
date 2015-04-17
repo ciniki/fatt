@@ -61,7 +61,7 @@ function ciniki_fatt_settings() {
 			}
 		};
 		this.courses.addButton('add', 'Course', 'M.ciniki_fatt_settings.courseEdit(\'M.ciniki_fatt_settings.courseList();\',0);');
-		this.courses.addClose('Cancel');
+		this.courses.addClose('Back');
 
 		//
 		// The course edit panel
@@ -86,10 +86,10 @@ function ciniki_fatt_settings() {
 				'cert_form':{'label':'Form', 'type':'select', 'options':this.courseForms},
 				}},
 			'_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
-				'categories':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'idlist':{}},
+				'categories':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
 				}},
 			'_certs':{'label':'Certifications', 'aside':'yes', 'active':'no', 'fields':{
-				'certs':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'idlist':{}},
+				'certs':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
 				}},
 			'_synopsis':{'label':'Synopsis', 'fields':{
 				'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
@@ -241,7 +241,7 @@ function ciniki_fatt_settings() {
 			return 'M.ciniki_fatt_settings.instructorEdit(\'M.ciniki_fatt_settings.instructorList();\',\'' + d.instructor.id + '\');';
 		};
 		this.instructors.addButton('add', 'Add', 'M.ciniki_fatt_settings.instructorEdit(\'M.ciniki_fatt_settings.instructorList();\',0);');
-		this.instructors.addClose('Cancel');
+		this.instructors.addClose('Back');
 
 		//
 		// The instructor edit panel
@@ -318,7 +318,7 @@ function ciniki_fatt_settings() {
 			return 'M.ciniki_fatt_settings.locationEdit(\'M.ciniki_fatt_settings.locationList();\',\'' + d.location.id + '\');';
 		};
 		this.locations.addButton('add', 'Add', 'M.ciniki_fatt_settings.locationEdit(\'M.ciniki_fatt_settings.locationList();\',0);');
-		this.locations.addClose('Cancel');
+		this.locations.addClose('Back');
 
 		//
 		// The location edit panel 
@@ -419,7 +419,7 @@ function ciniki_fatt_settings() {
 			return 'M.ciniki_fatt_settings.certEdit(\'M.ciniki_fatt_settings.certList();\',\'' + d.cert.id + '\');';
 		};
 		this.certs.addButton('add', 'Add', 'M.ciniki_fatt_settings.certEdit(\'M.ciniki_fatt_settings.certList();\',0);');
-		this.certs.addClose('Cancel');
+		this.certs.addClose('Back');
 
 		//
 		// The cert edit panel
@@ -437,7 +437,7 @@ function ciniki_fatt_settings() {
 				'years_valid':{'label':'Valid For', 'type':'text', 'size':'small'},
 				}},
 			'_courses':{'label':'Courses', 'aside':'yes', 'active':'yes', 'fields':{
-				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'idlist':{}},
+				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
 				}},
 			'messages':{'label':'Messages', 'active':'no', 'type':'simplegrid', 'num_cols':2,
 				'addTxt':'New Reminder',

@@ -57,10 +57,10 @@ function ciniki_fatt_courseDelete(&$ciniki) {
 	$course_uuid = $rc['course']['uuid'];
 
 	//
-	// Check if there is any customers still attached to the course
+	// Check if there is any offerings still attached to the course
 	//
 	$strsql = "SELECT 'items', COUNT(*) "
-		. "FROM ciniki_fatt_course_registrations "
+		. "FROM ciniki_fatt_offerings "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
 		. "";
@@ -71,7 +71,7 @@ function ciniki_fatt_courseDelete(&$ciniki) {
 	}
 	if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
 		$count = $rc['num']['items'];
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2319', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' registration' . ($count==1?'':'s') . ' assigned to that course.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2337', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' offering' . ($count==1?'':'s') . ' assigned to that course.'));
 	}
 
 	//
