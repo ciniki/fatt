@@ -11,7 +11,8 @@
 # uuid:				The Universal Unique ID.
 # business_id:		The business the course offering is attached to.
 # offering_id:		The ID of the course offering the registration is for.
-# customer_id:		The ID of the customer who is paying for the course.
+# customer_id:		The ID of the customer who is paying for the course. This should be the same
+#					as the customer_id on the invoice for the registration.
 #
 # student_id:		The ID of the customer who is taking the course. This allows to keep track
 #					of employers paying for courses.  The customer_id is the employer and 

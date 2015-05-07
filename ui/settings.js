@@ -80,7 +80,9 @@ function ciniki_fatt_settings() {
 				'code':{'label':'Code', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
 				'price':{'label':'Price', 'type':'text', 'size':'small'},
+				'taxtype_id':{'label':'Tax', 'active':'no', 'type':'select', 'options':{}},
 				'num_days':{'label':'Days', 'type':'toggle', 'default':'1', 'toggles':{'1':'1', '2':'2'}},
+				'num_hours':{'label':'Hours', 'type':'toggle', 'default':'1', 'toggles':{'3':'3', '4':'4', '7':'7', '8':'8', '16':'16'}},
 				'num_seats_per_instructor':{'label':'Seats/Instructor', 'type':'text', 'size':'tiny'},
 				'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}}},
 				'cert_form':{'label':'Form', 'type':'select', 'options':this.courseForms},
@@ -516,6 +518,7 @@ function ciniki_fatt_settings() {
 		this.message.data = {};
 		this.message.sections = {
 			'details':{'label':'', 'fields':{
+				'status':{'label':'Status', 'type':'toggle', 'toggles':{'0':'Inactive', '10':'Active'}},
 				'days':{'label':'Days', 'type':'text', 'size':'small'},
 				'subject':{'label':'Subject', 'type':'text'},
 				}},
@@ -585,6 +588,24 @@ function ciniki_fatt_settings() {
 		this.course.sections._categories.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x02) > 0?'yes':'no');
 		this.course.sections._certs.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x10) > 0?'yes':'no');
 		this.course.sections.messages.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x08) > 0?'yes':'no');
+
+		//
+		// Setup the tax types
+		//
+		if( M.curBusiness.modules['ciniki.taxes'] != null ) {
+			this.course.sections.details.fields.taxtype_id.active = 'yes';
+			this.course.sections.details.fields.taxtype_id.options = {'0':'No Taxes'};
+			if( M.curBusiness.taxes != null && M.curBusiness.taxes.settings.types != null ) {
+				for(i in M.curBusiness.taxes.settings.types) {
+					this.course.sections.details.fields.taxtype_id.options[M.curBusiness.taxes.settings.types[i].type.id] = M.curBusiness.taxes.settings.types[i].type.name;
+				}
+			}
+		} else {
+			this.course.sections.details.fields.taxtype_id.active = 'no';
+			this.course.sections.details.fields.taxtype_id.options = {'0':'No Taxes'};
+		}
+		
+
 
 		if( args.manage != null ) {
 			switch(args.manage) {

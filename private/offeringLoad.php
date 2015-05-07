@@ -48,6 +48,8 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 		. "ciniki_fatt_offerings.price, "
 		. "ciniki_fatt_offerings.flags, "
 		. "ciniki_fatt_offerings.flags AS flags_display, "
+		. "ciniki_fatt_offerings.date_string, "
+		. "ciniki_fatt_offerings.location, "
 		. "ciniki_fatt_offerings.max_seats, "
 		. "ciniki_fatt_offerings.seats_remaining "
 		. "FROM ciniki_fatt_offerings "
@@ -62,8 +64,8 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
 		array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
 			'fields'=>array('id', 'course_id', 'course_name', 'permalink', 'price', 'flags', 'flags_display',
-				'max_seats', 'seats_remaining'),
-			'maps'=>array('flags_display'=>$maps['offering']['flags']),
+				'date_string', 'location', 'max_seats', 'seats_remaining'),
+			'flags'=>array('flags_display'=>$maps['offering']['flags']),
 			),
 	));
 	if( $rc['stat'] != 'ok' ) {
@@ -137,6 +139,26 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 	}
 	if( isset($rc['registrations']) ) {
 		$rsp['offering']['registrations'] = $rc['registrations'];
+		//
+		// Get the invoice status for each registration
+		//
+		$invoice_ids = array();
+		foreach($rc['registrations'] as $rid => $reg) {
+			$invoice_ids[$reg['registration']['invoice_id']] = $rid;
+		}
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceStatus');
+		$rc = ciniki_sapos_hooks_invoiceStatus($ciniki, $business_id, array('invoice_ids'=>array_keys($invoice_ids)));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['invoices']) ) {
+			foreach($rsp['offering']['registrations'] as $rid => $registration) {
+				if( isset($rc['invoices'][$registration['registration']['invoice_id']]) ) {
+					$rsp['offering']['registrations'][$rid]['registration']['invoice_status'] = $rc['invoices'][$registration['registration']['invoice_id']]['status_text'];
+				}
+			}
+		}
+
 	} else {
 		$rsp['offering']['registrations'] = array();
 	}
@@ -149,7 +171,7 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 		. "ciniki_fatt_offering_dates.start_date, "
 		. "ciniki_fatt_offering_dates.num_hours, "
 		. "ciniki_fatt_offering_dates.location_id, "
-		. "ciniki_fatt_locations.name AS location_name "
+		. "IFNULL(ciniki_fatt_locations.name, 'Unknown') AS location_name "
 		. "FROM ciniki_fatt_offering_dates "
 		. "LEFT JOIN ciniki_fatt_locations ON ("
 			. "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
@@ -170,24 +192,9 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	$rsp['offering']['date_display'] = '';
-	$rsp['offering']['location'] = '';
 	if( isset($rc['dates']) ) {
 		$rsp['offering']['dates'] = $rc['dates'];
-		$separator = (count($rsp['offering']['dates'])==1?' - ':', ');
-		foreach($rsp['offering']['dates'] as $did => $odate) {
-			if( !preg_match('/' . $odate['date']['location'] . '/', $rsp['offering']['location']) ) {
-				$rsp['offering']['location'] .= ($rsp['offering']['location']!=''?', ':'') . $odate['date']['location'];
-			}
-			$rsp['offering']['date_display'] .= ($rsp['offering']['date_display']!=''?$sep:'') . $odate['date']['start_date'];
-		}
-	} else {
-		$rsp['offering']['dates'] = array();
 	}
-
-	//
-	// Get the number of remaining seats
-	//
 
 	return $rsp;
 }

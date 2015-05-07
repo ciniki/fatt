@@ -113,8 +113,8 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
 	//
 	// Update the seats
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateSeats');
-	$rc = ciniki_fatt_offeringUpdateSeats($ciniki, $args['business_id'], $offering_id, 'yes');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
+	$rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $args['business_id'], $offering_id, 'yes');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 		return $rc;

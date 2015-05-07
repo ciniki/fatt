@@ -68,7 +68,7 @@ function ciniki_fatt_locationGet($ciniki) {
 		. "AND ciniki_fatt_locations.id = '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.locations', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'locations', 'fname'=>'id', 'name'=>'location',
 			'fields'=>array('id', 'name', 'permalink', 'status', 
 				'address1', 'address2', 'city', 'province', 'postal', 

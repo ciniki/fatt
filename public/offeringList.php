@@ -67,9 +67,10 @@ function ciniki_fatt_offeringList(&$ciniki) {
 	//
 	$rsp = array('stat'=>'ok');
 	if( isset($args['years']) && $args['years'] == 'yes' ) {
-		$strsql = "SELECT DISTINCT 'list' AS id, DATE_FORMAT(start_date, 'Y') AS years "
-			. "FROM ciniki_fatt_offering_dates "
+		$strsql = "SELECT DISTINCT 'list' AS id, DATE_FORMAT(start_date, '%Y') AS years "
+			. "FROM ciniki_fatt_offerings "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND start_date <> '0000-00-00 00:00:00' "
 			. "ORDER BY years DESC ";
 		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
 			array('container'=>'years', 'fname'=>'id', 
@@ -88,7 +89,6 @@ function ciniki_fatt_offeringList(&$ciniki) {
 			. "FROM ciniki_fatt_offerings "
 			. "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_fatt_offerings.date_string = '' "
-			. "GROUP BY id "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'nodate');
 		if( $rc['stat'] != 'ok') {
@@ -131,8 +131,8 @@ function ciniki_fatt_offeringList(&$ciniki) {
 		. "ciniki_fatt_courses.code AS course_code, "
 		. "ciniki_fatt_courses.name AS course_name, "
 		. "ciniki_fatt_courses.num_seats_per_instructor AS instructor_seats, "
-		. "ciniki_fatt_locations.name AS location_name, "
-		. "ciniki_fatt_locations.num_seats AS location_seats, "
+//		. "ciniki_fatt_locations.name AS location_name, "
+//		. "ciniki_fatt_locations.num_seats AS location_seats, "
 		. "UNIX_TIMESTAMP(ciniki_fatt_offerings.start_date) AS start_date_ts, "
 		. "ciniki_fatt_offerings.date_string, "
 		. "ciniki_fatt_offerings.location, "
@@ -145,25 +145,25 @@ function ciniki_fatt_offeringList(&$ciniki) {
 			. "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
 			. "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
-		. "LEFT JOIN ciniki_fatt_offering_instructors ON ("
-			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_instructors.offering_id "
-			. "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "LEFT JOIN ciniki_fatt_instructors ON ("
-			. "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
-			. "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "LEFT JOIN ciniki_fatt_offering_dates ON ("
-			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_dates.offering_id "
-			. "AND ciniki_fatt_offering_dates.day_number = 1 "
-			. "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "LEFT JOIN ciniki_fatt_locations ON ("
-			. "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
-			. "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
+//		. "LEFT JOIN ciniki_fatt_offering_instructors ON ("
+//			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_instructors.offering_id "
+//			. "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//			. ") "
+//		. "LEFT JOIN ciniki_fatt_instructors ON ("
+//			. "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
+//			. "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//			. ") "
+//		. "LEFT JOIN ciniki_fatt_offering_dates ON ("
+//			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_dates.offering_id "
+//			. "AND ciniki_fatt_offering_dates.day_number = 1 "
+//			. "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//			. ") "
+//		. "LEFT JOIN ciniki_fatt_locations ON ("
+//			. "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
+//			. "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//			. ") "
 		. "LEFT JOIN ciniki_fatt_offering_registrations ON ("
-			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.id "
+			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
 			. "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
 		. "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -172,19 +172,18 @@ function ciniki_fatt_offeringList(&$ciniki) {
 		if( $args['year'] == '????' ) {
 			$strsql .= "AND ciniki_fatt_offerings.date_string = '' ";
 		} else {
-			$strsql .= "AND ciniki_fatt_offering_dates.start_date >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-				. "AND ciniki_fatt_offering_dates.start_date < '" . $end_date->format('Y-m-d H:i:s') . "' "
+			$strsql .= "AND ciniki_fatt_offerings.start_date >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+				. "AND ciniki_fatt_offerings.start_date < '" . $end_date->format('Y-m-d H:i:s') . "' "
 				. "";
 		}
 	}
 	$strsql .= "GROUP BY ciniki_fatt_offerings.id "
-		. "ORDER BY ciniki_fatt_offering_dates.start_date "
+		. "ORDER BY ciniki_fatt_offerings.start_date "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
 			'fields'=>array('id', 'course_id', 'course_code', 'course_name', 
-				'instructor_seats', 'location_name', 'location_seats', 
-				'start_date_ts', 'date_string', 'location', 'num_registrations',
+				'instructor_seats', 'start_date_ts', 'date_string', 'location', 'num_registrations',
 				'max_seats', 'seats_remaining', 
 				),
 //			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)),

@@ -17,10 +17,21 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 	$settings = array();
 
 	//
+	// Get the time information for business and user
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
+	$intl_currency = $rc['settings']['intl-default-currency'];
+
+	//
 	// Load the courses and instructors for the business
 	//
 	if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x01) > 0 ) {
-		$strsql = "SELECT id, name "
+		$strsql = "SELECT id, name, price, num_days "
 			. "FROM ciniki_fatt_courses "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND status = 10 "
@@ -29,13 +40,17 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 			array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-				'fields'=>array('id', 'name')),
+				'fields'=>array('id', 'name', 'price', 'num_days')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
 		if( isset($rc['courses']) ) {
 			$settings['courses'] = $rc['courses'];
+			foreach($settings['courses'] as $cid => $course) {
+				$settings['courses'][$cid]['course']['price'] = numfmt_format_currency($intl_currency_fmt, 
+					$settings['courses'][$cid]['course']['price'], $intl_currency);
+			}
 		}
 
 		$strsql = "SELECT id, name "

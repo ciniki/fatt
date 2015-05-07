@@ -11,25 +11,25 @@
 // api_key:
 // auth_token:
 // business_id:			The ID of the business to get the details for.
-// offering_id:		The ID of the offering to get the history for.
+// registation_id:		The ID of the offering registration to get the history for.
 // field:				The field to get the history for. This can be any of the elements 
 //						returned by the ciniki.fatt.get method.
 //
 // Returns
 // -------
 // <history>
-// <action user_id="2" date="May 12, 2012 10:54 PM" value="Offering Name" age="2 months" user_display_name="Andrew" />
+// <action user_id="2" date="May 12, 2012 10:54 PM" value="Registration Name" age="2 months" user_display_name="Andrew" />
 // ...
 // </history>
 //
-function ciniki_fatt_offeringHistory($ciniki) {
+function ciniki_fatt_offeringRegistrationHistory($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
+		'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'), 
 		'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'field'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
@@ -41,12 +41,12 @@ function ciniki_fatt_offeringHistory($ciniki) {
 	// Check access to business_id as owner, or sys admin
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-	$rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.offeringHistory');
+	$rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.offeringRegistrationHistory');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['business_id'], 'ciniki_fatt_offerings', $args['offering_id'], $args['field']);
+	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['business_id'], 'ciniki_fatt_offering_registrations', $args['registration_id'], $args['field']);
 }
 ?>
