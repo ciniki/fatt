@@ -230,6 +230,11 @@ function ciniki_fatt_sapos() {
 				if( rsp.registration.item_id != null ) {
 					p.item_id = rsp.registration.item_id;
 				}
+				if( rsp.registration.invoice_status < 50 ) {
+					p.sections._buttons.buttons.delete.visible = 'yes';
+				} else { 
+					p.sections._buttons.buttons.delete.visible = 'no';
+				}
 				p.student_id = rsp.registration.student_id;
 				p.updateCustomers();
 				p.refresh();
@@ -257,6 +262,15 @@ function ciniki_fatt_sapos() {
 	};
 
 	this.registrationDelete = function() {
+		if( confirm('Are you sure you want to remove this registration? It will remove it from the invoice as well.') ) {
+			M.api.getJSONCb('ciniki.fatt.offeringRegistrationDelete', {'business_id':M.curBusinessID, 'registration_id':this.registration.registration_id}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				M.ciniki_fatt_sapos.registration.close();
+			});
+		}
 
 	};
 

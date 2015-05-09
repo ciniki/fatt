@@ -126,6 +126,7 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 			. ") "
 		. "WHERE ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_fatt_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
+		. "ORDER BY student_display_name, customer_display_name "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
 		array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',

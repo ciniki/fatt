@@ -132,6 +132,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 		if( isset($rc['invoice']) ) {
 			$rsp['registration']['invoice_details'][] = array('detail'=>array('label'=>'Invoice', 'value'=>'#' . $rc['invoice']['invoice_number'] . ' - ' . $rc['invoice']['status_text']));
 			$rsp['registration']['invoice_details'][] = array('detail'=>array('label'=>'Date', 'value'=>$rc['invoice']['invoice_date']));
+			$rsp['registration']['invoice_status'] = $rc['invoice']['status'];
 		}
 		if( isset($rc['item']) ) {
 			$rsp['registration']['item_id'] = $rc['item']['id'];
