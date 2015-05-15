@@ -23,6 +23,7 @@ function ciniki_fatt_instructorUpdate(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'), 
 		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
+		'initials'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Initials'), 
 		'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'), 
 		'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'), 
 		'id_number'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'ID Number'), 

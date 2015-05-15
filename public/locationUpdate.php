@@ -22,6 +22,7 @@ function ciniki_fatt_locationUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'location_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Location'), 
+		'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'), 
 		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
 		'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'), 
 		'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'), 

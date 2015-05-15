@@ -235,7 +235,7 @@ function ciniki_fatt_settings() {
 		this.instructors.sectionData = function(s) { return this.data[s]; }
 		this.instructors.cellValue = function(s, i, j, d) {
 			switch(j) {
-				case 0: return '<span class="maintext">' + d.instructor.name + (d.instructor.id_number!=''?' <span class="subdue">'+d.instructor.id_number+'</span>':'') + '</span><span class="subtext">' + d.instructor.email + (d.instructor.email!=''&&d.instructor.phone!=''?' - ':'') + d.instructor.phone + '</span>';
+				case 0: return '<span class="maintext">' + d.instructor.name + (d.instructor.initials!=''?' ['+d.instructor.initials+']':'') + (d.instructor.id_number!=''?' <span class="subdue">'+d.instructor.id_number+'</span>':'') + '</span><span class="subtext">' + d.instructor.email + (d.instructor.email!=''&&d.instructor.phone!=''?' - ':'') + d.instructor.phone + '</span>';
 				case 1: return d.instructor.status_text;
 			}
 		};
@@ -259,6 +259,7 @@ function ciniki_fatt_settings() {
 				}},
 			'details':{'label':'', 'aside':'yes', 'fields':{
 				'name':{'label':'Name', 'type':'text'},
+				'initials':{'label':'Initials', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
 				'id_number':{'label':'ID #', 'type':'text'},
 				'email':{'label':'Email', 'type':'text'},
@@ -312,7 +313,7 @@ function ciniki_fatt_settings() {
 		this.locations.sectionData = function(s) { return this.data[s]; }
 		this.locations.cellValue = function(s, i, j, d) {
 			switch(j) {
-				case 0: return d.location.name;
+				case 0: return (d.location.code!=''?d.location.code+' - ':'') + d.location.name;
 				case 1: return d.location.status_text;
 			}
 		};
@@ -332,6 +333,7 @@ function ciniki_fatt_settings() {
 		this.location.data = {};
 		this.location.sections = {
 			'details':{'label':'', 'aside':'yes', 'fields':{
+				'code':{'label':'Code', 'type':'text', 'size':'small'},
 				'name':{'label':'Name', 'type':'text'},
 				'url':{'label':'Website', 'type':'text'},
 				'num_seats':{'label':'Seats', 'type':'text', 'size':'small'},

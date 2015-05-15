@@ -10,6 +10,7 @@
 # uuid:				The Universal Unique ID for the file.
 # business_id:		The business the file is for.
 #
+# code:				The code of the location/business and includes room number, etc.
 # name:				The name of the location/business and includes room number, etc.
 # permalink:		The permalink for the location on the website.
 #
@@ -38,6 +39,7 @@ create table ciniki_fatt_locations (
 	id int not null auto_increment,
 	uuid char(36) not null,
 	business_id int not null,
+	code varchar(25) not null,
 	name varchar(250) not null,
 	permalink varchar(250) not null,
 	status tinyint unsigned not null,

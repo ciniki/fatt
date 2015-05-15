@@ -21,6 +21,7 @@ function ciniki_fatt_locationAdd(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'), 
 		'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
 		'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'), 
 		'status'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Status'), 

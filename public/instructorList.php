@@ -50,6 +50,7 @@ function ciniki_fatt_instructorList($ciniki) {
 	//
 	$strsql = "SELECT ciniki_fatt_instructors.id, "
 		. "ciniki_fatt_instructors.name, "
+		. "ciniki_fatt_instructors.initials, "
 		. "ciniki_fatt_instructors.status, "
 		. "ciniki_fatt_instructors.status AS status_text, "
 		. "ciniki_fatt_instructors.id_number, "
@@ -63,7 +64,7 @@ function ciniki_fatt_instructorList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'instructors', 'fname'=>'id', 'name'=>'instructor',
-			'fields'=>array('id', 'name', 'status', 'status_text',
+			'fields'=>array('id', 'name', 'initials', 'status', 'status_text',
 				'id_number', 'phone', 'email'),
 			'maps'=>array('status_text'=>$maps['instructor']['status'])),
 		));

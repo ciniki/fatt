@@ -8,8 +8,9 @@
 # uuid:				The Universal Unique ID.
 # business_id:		The ID of the business the instructor image is attached to.
 #
-# first:			The first name of the instructor.
-# last:				The last name of the instructor.
+# name:				The name of the instructor.
+# initials:			The initials for the instructor.
+#
 # permalink:		The permalink for the instructor webpage.
 #
 # status:			The current status of the instructor.
@@ -40,6 +41,7 @@ CREATE TABLE ciniki_fatt_instructors (
 	uuid char(36) not null,
 	business_id int not null,
 	name varchar(150) not null,
+	initials varchar(25) not null,
 	permalink varchar(150) not null,
 	status tinyint unsigned not null,
 	id_number varchar(50) not null,

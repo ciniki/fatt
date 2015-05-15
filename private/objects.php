@@ -84,6 +84,7 @@ function ciniki_fatt_objects($ciniki) {
 		'table'=>'ciniki_fatt_instructors',
 		'fields'=>array(
 			'name'=>array(),
+			'initials'=>array(),
 			'permalink'=>array(),
 			'status'=>array('default'=>'10'),
 			'id_number'=>array('default'=>''),
@@ -104,6 +105,7 @@ function ciniki_fatt_objects($ciniki) {
 		'sync'=>'yes',
 		'table'=>'ciniki_fatt_locations',
 		'fields'=>array(
+			'code'=>array(),
 			'name'=>array(),
 			'permalink'=>array(),
 			'status'=>array('default'=>'10'),
