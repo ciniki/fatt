@@ -195,6 +195,9 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 	}
 	if( isset($rc['dates']) ) {
 		$rsp['offering']['dates'] = $rc['dates'];
+		foreach($rsp['offering']['dates'] as $did => $date) {
+			$rsp['offering']['dates'][$did]['date']['num_hours'] = (float)$date['date']['num_hours'];
+		}
 	}
 
 	return $rsp;
