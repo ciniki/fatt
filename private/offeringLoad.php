@@ -72,7 +72,7 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 		return $rc;
 	}
 	if( !isset($rc['offerings']) || !isset($rc['offerings'][0]) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2332', 'msg'=>'Unable to find offering'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2406', 'msg'=>'Unable to find offering'));
 	}
 	$rsp['offering'] = $rc['offerings'][0]['offering'];
 	$rsp['offering']['price'] = numfmt_format_currency($intl_currency_fmt, $rsp['offering']['price'], $intl_currency);

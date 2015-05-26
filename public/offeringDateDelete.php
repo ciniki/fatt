@@ -52,7 +52,7 @@ function ciniki_fatt_offeringDateDelete(&$ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['date']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2311', 'msg'=>'The date does not exist'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2407', 'msg'=>'The date does not exist'));
 	}
 	$date_uuid = $rc['date']['uuid'];
 	$offering_id = $rc['date']['offering_id'];
