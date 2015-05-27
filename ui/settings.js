@@ -47,7 +47,7 @@ function ciniki_fatt_settings() {
 			} else {
 				switch(j) {
 					case 0: return '<span class="maintext">' + d.course.code + '</span><span class="subtext">' + (d.course.num_seats_per_instructor>0?d.course.num_seats_per_instructor + ' seats':'unlimited') + '</span>';
-					case 1: return '<span class="maintext">' + d.course.name + '</span><span class="subtext">' + d.course.num_days + ' days ' + d.course.num_hours + ' hours' + '</span>';
+					case 1: return '<span class="maintext">' + d.course.name + '</span><span class="subtext">' + d.course.num_hours + ' hour' + (d.course.num_hours!=1?'s':'') + ' over ' + d.course.num_days + ' day' + (d.course.num_days!=1?'s':'') + '</span>';
 					case 2: return '<span class="maintext">' + d.course.price + '</span><span class="subtext">' + d.course.taxtype_name + '</span>';
 					case 3: return '<span class="maintext">' + d.course.status_text + '</span><span class="subtext">' + d.course.visible + '</span>';
 				}
