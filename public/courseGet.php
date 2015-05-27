@@ -95,6 +95,7 @@ function ciniki_fatt_courseGet($ciniki) {
 		}
 		$rsp = array('stat'=>'ok', 'course'=>$rc['courses'][0]['course']);
 		$rsp['course']['price'] = numfmt_format_currency($intl_currency_fmt, $rsp['course']['price'], $intl_currency);
+		$rsp['course']['num_hours'] = (float)$rsp['course']['num_hours'];
 	}
 
 	//
