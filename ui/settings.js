@@ -36,6 +36,7 @@ function ciniki_fatt_settings() {
 				},
 			'courses':{'label':'Courses', 'type':'simplegrid', 'num_cols':4,
 				'headerValues':['Code', 'Name', 'Price', 'Status'],
+				'cellClasses':['multiline', 'multiline', 'multiline', 'multiline'],
 				'addTxt':'Add Course',
 				'addFn':'M.ciniki_fatt_settings.courseEdit(\'M.ciniki_fatt_settings.courseList();\',0);',
 				},
@@ -45,10 +46,10 @@ function ciniki_fatt_settings() {
 				return d.category.name;
 			} else {
 				switch(j) {
-					case 0: return d.course.code;
-					case 1: return d.course.name;
-					case 2: return d.course.price;
-					case 3: return d.course.status_text;
+					case 0: return '<span class="maintext">' + d.course.code + '</span><span class="subtext">' + (d.course.num_seats_per_instructor>0?d.course.num_seats_per_instructor + ' seats':'unlimited') + '</span>';
+					case 1: return '<span class="maintext">' + d.course.name + '</span><span class="subtext">' + d.course.num_days + ' days ' + d.course.num_hours + ' hours' + '</span>';
+					case 2: return '<span class="maintext">' + d.course.price + '</span><span class="subtext">' + d.course.taxtype_name + '</span>';
+					case 3: return '<span class="maintext">' + d.course.status_text + '</span><span class="subtext">' + d.course.visible + '</span>';
 				}
 			}
 		};
@@ -82,7 +83,7 @@ function ciniki_fatt_settings() {
 				'price':{'label':'Price', 'type':'text', 'size':'small'},
 				'taxtype_id':{'label':'Tax', 'active':'no', 'type':'select', 'options':{}},
 				'num_days':{'label':'Days', 'type':'toggle', 'default':'1', 'toggles':{'1':'1', '2':'2'}},
-				'num_hours':{'label':'Hours', 'type':'toggle', 'default':'1', 'toggles':{'3':'3', '4':'4', '7':'7', '8':'8', '16':'16'}},
+				'num_hours':{'label':'Hours', 'type':'text', 'size':'small'},
 				'num_seats_per_instructor':{'label':'Seats/Instructor', 'type':'text', 'size':'tiny'},
 				'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}}},
 				'cert_form':{'label':'Form', 'type':'select', 'options':this.courseForms},

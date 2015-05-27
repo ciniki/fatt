@@ -64,15 +64,24 @@ function ciniki_fatt_courseList($ciniki) {
 		. "ciniki_fatt_courses.name, "
 		. "ciniki_fatt_courses.code, "
 		. "ciniki_fatt_courses.price, "
-		. "ciniki_fatt_courses.status AS status_text "
+		. "ciniki_fatt_courses.num_days, "
+		. "ciniki_fatt_courses.num_hours, "
+		. "ciniki_fatt_courses.num_seats_per_instructor, "
+		. "ciniki_fatt_courses.status AS status_text, "
+		. "IF((ciniki_fatt_courses.flags&0x01)=1,'Visible','Hidden') AS visible, "
+		. "ciniki_tax_types.name AS taxtype_name "
 		. "FROM ciniki_fatt_courses "
+		. "LEFT JOIN ciniki_tax_types ON ("
+			. "ciniki_fatt_courses.taxtype_id = ciniki_tax_types.id "
+			. "AND ciniki_tax_types.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. ") "
 		. "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "ORDER BY name "
+		. "ORDER BY ciniki_fatt_courses.name "
 		. "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-			'fields'=>array('id', 'name', 'code', 'price', 'status_text'),
+			'fields'=>array('id', 'name', 'code', 'price', 'num_days', 'num_hours', 'num_seats_per_instructor', 'status_text', 'taxtype_name', 'visible'),
 			'maps'=>array('status_text'=>$maps['course']['status'])),
 		));
 	if( $rc['stat'] != 'ok' ) {	
@@ -83,6 +92,7 @@ function ciniki_fatt_courseList($ciniki) {
 		$rsp['courses'] = $rc['courses'];
 		foreach($rsp['courses'] as $cid => $course) {
 			$rsp['courses'][$cid]['course']['price'] = numfmt_format_currency($intl_currency_fmt, $course['course']['price'], $intl_currency);
+			$rsp['courses'][$cid]['course']['num_hours'] = (float)$course['course']['num_hours'];
 		}
 	}
 
