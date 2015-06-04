@@ -458,8 +458,6 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $business_id, $class
 		$image_ratio = $width/$height;
 		$img_width = 60;
 		$available_ratio = $img_width/40;
-		error_log($image_ratio);
-		error_log($available_ratio);
 		// Check if the ratio of the image will make it too large for the height,
 		// and scaled based on either height or width.
 		if( $available_ratio < $image_ratio ) {
