@@ -6,6 +6,25 @@ function ciniki_fatt_offerings() {
 		'':'None',
 		};
 
+	this.courseReg = function(o,f) {
+		var mt = '';
+		var mt = o.seats_remaining + ' left';
+		if( o.seats_remaining < 0 ) {
+			mt = Math.abs(o.seats_remaining) + ' oversold';
+		} else if( o.seats_remaining == 0 ) {
+			mt = 'Sold Out';
+		}
+		if( o.max_seats > 0 ) {
+			var st = o.num_registrations + ' of ' + o.max_seats;
+		} else {
+			var st = o.num_registrations + ' registered';
+		}
+		if( f != null && f == 'comma' ) {	
+			return mt + ', ' + st;
+		}
+		return '<span class="maintext">' + mt + '</span><span class="subtext">' + st + '</span>';
+	}
+
 	this.init = function() {
 		//
 		// The offerings panel
@@ -46,20 +65,7 @@ function ciniki_fatt_offerings() {
 				case 0: return d.offering.date_string;
 				case 1: return d.offering.course_name;
 				case 2: return d.offering.location;
-				case 3: 
-					var mt = '';
-					var mt = d.offering.seats_remaining + ' left';
-					if( d.offering.seats_remaining < 0 ) {
-						mt = Math.abs(d.offering.seats_remaining) + ' oversold';
-					} else if( d.offering.seats_remaining == 0 ) {
-						mt = 'Sold Out';
-					}
-					if( d.offering.max_seats > 0 ) {
-						var st = d.offering.num_registrations + ' of ' + d.offering.max_seats;
-					} else {
-						var st = d.offering.num_registrations + ' registered';
-					}
-					return '<span class="maintext">' + mt + '</span><span class="subtext">' + st + '</span>';
+				case 3: return M.ciniki_fatt_offerings.courseReg(d.offering);
 				case 4: return d.offering.status_text;
 			}
 		};
@@ -264,6 +270,80 @@ function ciniki_fatt_offerings() {
 		};
 		this.odate.addButton('save', 'Save', 'M.ciniki_fatt_offerings.dateSave();');
 		this.odate.addClose('Cancel');
+
+		//
+		// Show the consolidated appointment/courses at same time/location
+		//
+		this.class = new M.panel('Class',
+			'ciniki_fatt_offerings', 'class',
+			'mc', 'medium mediumaside', 'sectioned', 'ciniki.fatt.offerings.class');
+		this.class.class_id = '';
+		this.class.data = {};
+		this.class.sections = {
+			'details':{'label':'Class', 'aside':'yes', 'list':{
+				'course_codes':{'label':'Courses'},
+				'start_date':{'label':'When'},
+				'location_name':{'label':'Location'},
+				'seats_remaining':{'label':'Available'},
+				}},
+			'instructors':{'label':'Instructors', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
+				'cellClasses':['multiline'],
+				},
+			'offerings':{'label':'Courses', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+				'cellClasses':['multiline', 'textbuttons'],
+				},
+			'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3,
+//				'addTxt':'Add Registration',
+//				'addFn':'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.classShow();\',\'mc\',{\'offering_id\':M.ciniki_fatt_offerings.offering.offering_id,\'source\':\'offering\'});',
+				},
+			'_buttons':{'label':'', 'buttons':{
+				'printlist':{'label':'Print Class List', 'fn':'M.ciniki_fatt_offerings.classPrintList(M.ciniki_fatt_offerings.class.class_id);'},
+				}},
+			};
+		this.class.sectionData = function(s) { 
+			if( s == 'details' ) { return this.sections[s].list; }
+			return this.data[s]; 
+		};
+		this.class.listLabel = function(s, i, d) { return d.label; }
+		this.class.listValue = function(s, i, d) { 
+			if( i == 'seats_remaining' ) {
+				if( this.data[i] < 0 ) { return Math.abs(this.data[i]) + ' oversold'; }
+				if( this.data[i] == 0 ) { return 'Sold Out'; }	
+				if( this.data[i] > 0 ) { return this.data[i]; }	
+			}
+			return this.data[i]; 
+		};
+		this.class.cellValue = function(s, i, j, d) {
+			if( s == 'instructors' ) {
+				return '<span class="maintext">' + d.instructor.name + '</span><span class="subtext">' + d.instructor.email + (d.instructor.email!=''?' - ':'') + d.instructor.phone + '</span>';
+			} else if( s == 'registrations' ) {
+				if( j == 0 ) {	
+					return d.registration.course_code;
+				} else if( j == 1 ) {
+					if( d.registration.customer_id != d.registration.student_id ) {
+						return (d.registration.student_display_name!=''?d.registration.student_display_name:'???') + ' <span class="subdue">[' + d.registration.customer_display_name + ']</span>';
+					} 
+					return d.registration.customer_display_name;
+				} else if( j == 2 ) {
+					return (d.registration.invoice_status!=null?d.registration.invoice_status:'');
+				}
+			} else if( s == 'offerings' ) {
+				if( j == 0 ) {
+					return '<span class="maintext">' + d.offering.course_name + '</span><span class="subtext">' + M.ciniki_fatt_offerings.courseReg(d.offering, 'comma') + '</span>';
+				} else if( j == 1 ) {
+					return '<button onclick="event.stopPropagation();M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.classShow();\',\'mc\',{\'offering_id\':\'' + d.offering.id + '\',\'source\':\'class\'});">Add Registration</button>';
+				}
+			}
+		};
+		this.class.rowFn = function(s, i, d) {
+			if( s == 'registrations' ) {
+				return 'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.classShow();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'class\'});';
+			} else if( s == 'offerings' ) {
+				return 'M.ciniki_fatt_offerings.offeringShow(\'M.ciniki_fatt_offerings.classShow();\',\'' + d.offering.id + '\');';
+			}
+			return '';
+		};
+		this.class.addClose('Back');
 	};
 
 	this.start = function(cb, appPrefix, aG) {
@@ -320,7 +400,9 @@ function ciniki_fatt_offerings() {
 		//
 		// Decide what to show
 		//
-		if( args.offering_id != null ) {
+		if( args.appointment_id != null ) {
+			this.classShow(cb, args.appointment_id);
+		} else if( args.offering_id != null ) {
 			this.offeringShow(cb, args.offering_id);
 		} else {
 			var dt = new Date();
@@ -508,4 +590,23 @@ function ciniki_fatt_offerings() {
 	this.showFromCustomer = function(cid) {
 		this.registrationEdit(this.registration.cb, cid, this.registration.offering_id, 0);
 	};
+
+	this.classShow = function(cb, cid) {
+		if( cid != null ) { this.class.class_id = cid; }
+		M.api.getJSONCb('ciniki.fatt.classGet', {'business_id':M.curBusinessID, 
+			'class_id':this.class.class_id}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				var p = M.ciniki_fatt_offerings.class;
+				p.data = rsp.class;
+				p.refresh();
+				p.show(cb);
+		});
+	};
+
+	this.classPrintList = function(cid) {
+		M.api.openFile('ciniki.fatt.classRegistrations', {'business_id':M.curBusinessID, 'output':'pdf', 'class_id':cid});
+	}
 }

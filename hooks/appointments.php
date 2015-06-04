@@ -106,7 +106,7 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 		. "WHERE ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_fatt_offering_dates.start_date >= '" . $start_date->format('Y-m-d H:i:s') . "' "
 		. "AND ciniki_fatt_offering_dates.start_date < '" . $end_date->format('Y-m-d H:i:s') . "' "
-		. "GROUP BY ciniki_fatt_offerings.id "
+		. "GROUP BY ciniki_fatt_offering_dates.start_date, ciniki_fatt_offering_dates.location_id "
 		. "ORDER BY ciniki_fatt_offering_dates.start_date, ciniki_fatt_locations.code, ciniki_fatt_courses.code "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');

@@ -5,6 +5,8 @@ function ciniki_fatt_settings() {
 	this.courseForms = {
 		'':'None',
 		};
+	this.toggleOptions = {'no':'Hide', 'yes':'Display'};
+	this.positionOptions = {'left':'Left', 'center':'Center', 'right':'Right', 'off':'Off'};
 
 	this.init = function() {
 		//
@@ -19,6 +21,9 @@ function ciniki_fatt_settings() {
 				'instructors':{'label':'Instructors', 'visible':'no', 'fn':'M.ciniki_fatt_settings.instructorList(\'M.ciniki_fatt_settings.showMenu();\');'},
 				'locations':{'label':'Locations', 'visible':'no', 'fn':'M.ciniki_fatt_settings.locationList(\'M.ciniki_fatt_settings.showMenu();\');'},
 				'certs':{'label':'Certifications', 'visible':'no', 'fn':'M.ciniki_fatt_settings.certList(\'M.ciniki_fatt_settings.showMenu();\');'},
+				}},
+			'_classes':{'label':'', 'list':{
+				'documents':{'label':'Document Headers', 'visible':'yes', 'fn':'M.ciniki_fatt_settings.documentsShow(\'M.ciniki_fatt_settings.showMenu();\');'},
 				}},
 		};
 		this.menu.addClose('Back');
@@ -543,6 +548,48 @@ function ciniki_fatt_settings() {
 		this.message.addButton('save', 'Save', 'M.ciniki_fatt_settings.messageSave();');
 		this.message.addClose('Cancel');
 
+		//
+		// The documents settings panel
+		//
+		this.documents = new M.panel('Documents',
+			'ciniki_fatt_settings', 'documents',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.documents');
+		this.documents.sections = {
+			'image':{'label':'Header Image', 'fields':{
+				'default-header-image':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+				}},
+			'header':{'label':'Header Address Options', 'fields':{
+				'default-header-contact-position':{'label':'Position', 'type':'toggle', 'default':'center', 'toggles':this.positionOptions},
+				'default-header-name':{'label':'Business Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'default-header-address':{'label':'Address', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'default-header-phone':{'label':'Phone', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'default-header-cell':{'label':'Cell', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'default-header-fax':{'label':'Fax', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'default-header-email':{'label':'Email', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'default-header-website':{'label':'Website', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				}},
+			'_buttons':{'label':'', 'buttons':{
+				'save':{'label':'Save', 'fn':'M.ciniki_fatt_settings.documentsSave();'},
+				}},
+		};
+		this.documents.fieldHistoryArgs = function(s, i) {
+			return {'method':'ciniki.fatt.settingsHistory', 
+				'args':{'business_id':M.curBusinessID, 'setting':i}};
+		}
+		this.documents.fieldValue = function(s, i, d) {
+			if( this.data[i] == null && d.default != null ) { return d.default; }
+			return this.data[i];
+		};
+		this.documents.addDropImage = function(iid) {
+			M.ciniki_fatt_settings.documents.setFieldValue('default-header-image', iid);
+			return true;
+		};
+		this.documents.deleteImage = function(fid) {
+			this.setFieldValue(fid, 0);
+			return true;
+		};
+		this.documents.addButton('save', 'Save', 'M.ciniki_fatt_settings.documentsSave();');
+		this.documents.addClose('Cancel');
 	}
 
 	//
@@ -1053,6 +1100,41 @@ function ciniki_fatt_settings() {
 				}
 				M.ciniki_fatt_settings.message.close();
 			});
+		}
+	};
+
+	//
+	// Classes
+	//
+	this.documentsShow = function(cb) {
+		M.api.getJSONCb('ciniki.fatt.settingsGet', {'business_id':M.curBusinessID}, function(rsp) {
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			}
+			var p = M.ciniki_fatt_settings.documents;
+			p.data = rsp.settings;
+			p.refresh();
+			p.show(cb);
+		});
+	};
+
+	//
+	// Save the Invoice settings
+	//
+	this.documentsSave = function() {
+		var c = this.documents.serializeForm('no');
+		if( c != '' ) {
+			M.api.postJSONCb('ciniki.fatt.settingsUpdate', {'business_id':M.curBusinessID}, 
+				c, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					M.ciniki_fatt_settings.documents.close();
+				});
+		} else {
+			this.documents.close();
 		}
 	};
 }
