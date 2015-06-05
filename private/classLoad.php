@@ -176,6 +176,7 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
 		. "ciniki_fatt_offering_registrations.customer_notes, "
 		. "ciniki_fatt_offering_registrations.notes, "
 		. "IFNULL(c1.display_name, '') AS customer_display_name, "
+		. "IFNULL(c1.type, '') AS customer_type, "
 		. "IFNULL(c2.display_name, '') AS student_display_name "
 		. "FROM ciniki_fatt_offering_registrations "
 		. "LEFT JOIN ciniki_customers AS c1 ON ("
@@ -197,7 +198,7 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
 		array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
 			'fields'=>array('id', 'offering_id', 'invoice_id', 
-				'customer_id', 'customer_display_name',
+				'customer_id', 'customer_display_name', 'customer_type', 
 				'student_id', 'student_display_name',
 				'customer_notes', 'notes')),
 	));
