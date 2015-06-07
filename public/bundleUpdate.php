@@ -2,32 +2,27 @@
 //
 // Description
 // ===========
-// This method will update a category in the database.
+// This method will update a bundle in the database.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business the category is attached to.
+// business_id:		The ID of the business the bundle is attached to.
 // 
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_fatt_categoryUpdate(&$ciniki) {
+function ciniki_fatt_bundleUpdate(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-        'category_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
+        'bundle_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
 		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
-		'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'), 
-		'sequence'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Sequence'), 
-		'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
-		'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
-		'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'), 
 		'courses'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Courses'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -40,34 +35,10 @@ function ciniki_fatt_categoryUpdate(&$ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.categoryUpdate'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.bundleUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-
-	//
-	// Check for new permalink
-	//
-	if( isset($args['name']) ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
-		//
-		// Make sure the permalink is unique
-		//
-		$strsql = "SELECT id, name, permalink "
-			. "FROM ciniki_fatt_categories "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
-			. "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
-			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'category');
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( $rc['num_rows'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2314', 'msg'=>'You already have a category with this name, please choose another name'));
-		}
-	}
 
 	//
 	// Start transaction
@@ -82,10 +53,10 @@ function ciniki_fatt_categoryUpdate(&$ciniki) {
 	}   
 
 	//
-	// Update the category in the database
+	// Update the bundle in the database
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.category', $args['category_id'], $args, 0x04);
+	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.bundle', $args['bundle_id'], $args, 0x04);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 		return $rc;
@@ -95,8 +66,8 @@ function ciniki_fatt_categoryUpdate(&$ciniki) {
 	// Update the courses
 	//
 	if( isset($args['courses']) ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'categoryUpdateCourses');
-		$rc = ciniki_fatt_categoryUpdateCourses($ciniki, $args['business_id'], $args['category_id'], $args['courses']);
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'bundleUpdateCourses');
+		$rc = ciniki_fatt_bundleUpdateCourses($ciniki, $args['business_id'], $args['bundle_id'], $args['courses']);
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 			return $rc;

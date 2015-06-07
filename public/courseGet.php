@@ -136,6 +136,42 @@ function ciniki_fatt_courseGet($ciniki) {
 	}
 
 	//
+	// Get the bundles for the course and the business
+	//
+	if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) > 0 ) {
+		$rsp['course']['bundles'] = '';
+		$strsql = "SELECT ciniki_fatt_bundles.id, "
+			. "ciniki_fatt_bundles.name, "
+			. "IFNULL(ciniki_fatt_course_bundles.id, 0) AS link_id "
+			. "FROM ciniki_fatt_bundles "
+			. "LEFT JOIN ciniki_fatt_course_bundles ON ("
+				. "ciniki_fatt_bundles.id = ciniki_fatt_course_bundles.bundle_id "
+				. "AND ciniki_fatt_course_bundles.course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
+				. "AND ciniki_fatt_course_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") "
+			. "WHERE ciniki_fatt_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY ciniki_fatt_bundles.name "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+			array('container'=>'bundles', 'fname'=>'id', 'name'=>'item',
+				'fields'=>array('id', 'name', 'link_id')),
+		));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		$rsp['bundles'] = array();
+		if( isset($rc['bundles']) ) {
+			$rsp['bundles'] = $rc['bundles'];
+			foreach($rsp['bundles'] as $cid => $item) {
+				if( $item['item']['link_id'] > 0 ) {
+					$rsp['course']['bundles'] .= ($rsp['course']['bundles']!=''?',':'') . $item['item']['id'];
+				}
+				unset($rsp['bundles'][$cid]['item']['link_id']);
+			}
+		}
+	}
+
+	//
 	// Get the certs for the course and the business
 	//
 	if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x10) > 0 ) {

@@ -39,6 +39,10 @@ function ciniki_fatt_settings() {
 				'addTxt':'Add Category',
 				'addFn':'M.ciniki_fatt_settings.categoryEdit(\'M.ciniki_fatt_settings.courseList();\',0);',
 				},
+			'bundles':{'label':'Bundles', 'type':'simplegrid', 'num_cols':1,
+				'addTxt':'Add Bundle',
+				'addFn':'M.ciniki_fatt_settings.bundleEdit(\'M.ciniki_fatt_settings.courseList();\',0);',
+				},
 			'courses':{'label':'Courses', 'type':'simplegrid', 'num_cols':4,
 				'headerValues':['Code', 'Name', 'Price', 'Status'],
 				'cellClasses':['multiline', 'multiline', 'multiline', 'multiline'],
@@ -49,6 +53,8 @@ function ciniki_fatt_settings() {
 		this.courses.cellValue = function(s, i, j, d) {
 			if( s == 'categories' ) {
 				return d.category.name;
+			} else if( s == 'bundles' ) {
+				return d.bundle.name;
 			} else {
 				switch(j) {
 					case 0: return '<span class="maintext">' + d.course.code + '</span><span class="subtext">' + (d.course.num_seats_per_instructor>0?d.course.num_seats_per_instructor + ' seats':'unlimited') + '</span>';
@@ -62,6 +68,8 @@ function ciniki_fatt_settings() {
 		this.courses.rowFn = function(s, i, d) {
 			if( s == 'categories' ) {
 				return 'M.ciniki_fatt_settings.categoryEdit(\'M.ciniki_fatt_settings.courseList();\',\'' + d.category.id + '\');';
+			} else if( s == 'bundles' ) {
+				return 'M.ciniki_fatt_settings.bundleEdit(\'M.ciniki_fatt_settings.courseList();\',\'' + d.bundle.id + '\');';
 			} else {
 				return 'M.ciniki_fatt_settings.courseEdit(\'M.ciniki_fatt_settings.courseList();\',\'' + d.course.id + '\');';
 			}
@@ -95,6 +103,9 @@ function ciniki_fatt_settings() {
 				}},
 			'_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'categories':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				}},
+			'_bundles':{'label':'Bundles', 'aside':'yes', 'active':'no', 'fields':{
+				'bundles':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
 				}},
 			'_certs':{'label':'Certifications', 'aside':'yes', 'active':'no', 'fields':{
 				'certs':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
@@ -198,6 +209,9 @@ function ciniki_fatt_settings() {
 //			'_synopsis':{'label':'Synopsis', 'fields':{
 //				'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 //				}},
+			'_courses':{'label':'Courses', 'active':'yes', 'fields':{
+				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				}},
 			'_description':{'label':'Description', 'fields':{
 				'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
 				}},
@@ -223,6 +237,55 @@ function ciniki_fatt_settings() {
 		};
 		this.category.addButton('save', 'Save', 'M.ciniki_fatt_settings.categorySave();');
 		this.category.addClose('Cancel');
+
+		//
+		// The bundle edit panel 
+		//
+		this.bundle = new M.panel('Course Bundle',
+			'ciniki_fatt_settings', 'bundle',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.bundle');
+		this.bundle.bundle_id = 0;
+		this.bundle.data = {};
+		this.bundle.sections = {
+//			'image':{'label':'', 'aside':'yes', 'fields':{
+//				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+//				}},
+			'details':{'label':'', 'aside':'no', 'fields':{
+				'name':{'label':'Name', 'type':'text'},
+//				'sequence':{'label':'Sequence', 'type':'text', 'size':'tiny'},
+				}},
+			'_courses':{'label':'Courses', 'active':'yes', 'fields':{
+				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				}},
+			// Future synopsis if require 
+//			'_synopsis':{'label':'Synopsis', 'fields':{
+//				'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
+//				}},
+//			'_description':{'label':'Description', 'fields':{
+//				'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+//				}},
+			'_buttons':{'label':'', 'buttons':{
+				'save':{'label':'Save', 'fn':'M.ciniki_fatt_settings.bundleSave();'},
+				'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_settings.bundleDelete(M.ciniki_fatt_settings.bundle.bundle_id);'},
+				}},
+		};
+		this.bundle.fieldValue = function(s, i, d) {
+			if( this.data[i] == null ) { return ''; }
+			return this.data[i];
+		};
+		this.bundle.fieldHistoryArgs = function(s, i) {
+			return {'method':'ciniki.fatt.bundleHistory', 'args':{'business_id':M.curBusinessID, 'bundle_id':this.bundle_id, 'field':i}};
+		}
+		this.bundle.addDropImage = function(iid) {
+			M.ciniki_fatt_settings.bundle.setFieldValue('primary_image_id', iid, null, null);
+			return true;
+		};
+		this.bundle.deleteImage = function(fid) {
+			this.setFieldValue(fid, 0, null, null);
+			return true;
+		};
+		this.bundle.addButton('save', 'Save', 'M.ciniki_fatt_settings.bundleSave();');
+		this.bundle.addClose('Cancel');
 
 		//
 		// Instructors
@@ -634,8 +697,14 @@ function ciniki_fatt_settings() {
 //			this.courses.sections.courses.headerValues = ['Name', 'Price', 'Status'];
 			this.courses.delButton('add_c');
 		}
+		if( (M.curBusiness.modules['ciniki.fatt'].flags&0x40) > 0 ) {
+			this.courses.sections.bundles.active = 'yes';
+		} else {
+			this.courses.sections.bundles.active = 'no';
+		}
 		this.cert.sections.messages.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x20) > 0?'yes':'no');
 		this.course.sections._categories.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x02) > 0?'yes':'no');
+		this.course.sections._bundles.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x40) > 0?'yes':'no');
 		this.course.sections._certs.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x10) > 0?'yes':'no');
 		this.course.sections.messages.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x08) > 0?'yes':'no');
 
@@ -692,7 +761,7 @@ function ciniki_fatt_settings() {
 	//
 	this.courseList = function(cb) {
 		M.api.getJSONCb('ciniki.fatt.courseList', {'business_id':M.curBusinessID, 
-			'course_id':this.course.course_id, 'categories':'yes'}, function(rsp) {
+			'course_id':this.course.course_id, 'categories':'yes', 'bundles':'yes'}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
@@ -716,6 +785,7 @@ function ciniki_fatt_settings() {
 				var p = M.ciniki_fatt_settings.course;
 				p.data = rsp.course;
 				p.sections._categories.fields.categories.list = (rsp.categories!=null?rsp.categories:{});
+				p.sections._bundles.fields.bundles.list = (rsp.bundles!=null?rsp.bundles:{});
 				p.sections._certs.fields.certs.list = (rsp.certs!=null?rsp.certs:{});
 				p.refresh();
 				p.show(cb);
@@ -775,6 +845,7 @@ function ciniki_fatt_settings() {
 				}
 				var p = M.ciniki_fatt_settings.category;
 				p.data = rsp.category;
+				p.sections._courses.fields.courses.list = (rsp.courses!=null?rsp.courses:{});
 				p.refresh();
 				p.show(cb);
 		});
@@ -815,6 +886,65 @@ function ciniki_fatt_settings() {
 					return false;
 				}
 				M.ciniki_fatt_settings.category.close();
+			});
+		}
+	};
+
+	//
+	// Bundles
+	//
+	this.bundleEdit = function(cb, cid) {
+		if( cid != null ) { this.bundle.bundle_id = cid; }
+		this.bundle.sections._buttons.buttons.delete.visible = (this.bundle.bundle_id>0?'yes':'no');
+		M.api.getJSONCb('ciniki.fatt.bundleGet', {'business_id':M.curBusinessID, 
+			'bundle_id':this.bundle.bundle_id}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				var p = M.ciniki_fatt_settings.bundle;
+				p.data = rsp.bundle;
+				p.sections._courses.fields.courses.list = (rsp.courses!=null?rsp.courses:{});
+				p.refresh();
+				p.show(cb);
+		});
+	};
+
+	this.bundleSave = function() {
+		if( this.bundle.bundle_id > 0 ) {
+			var c = this.bundle.serializeForm('no');
+			if( c != '' ) {
+				M.api.postJSONCb('ciniki.fatt.bundleUpdate', {'business_id':M.curBusinessID,
+					'bundle_id':this.bundle.bundle_id}, c, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						}
+						M.ciniki_fatt_settings.bundle.close();
+					});
+			} else {
+				this.bundle.close();
+			}
+		} else {
+			var c = this.bundle.serializeForm('yes');
+			M.api.postJSONCb('ciniki.fatt.bundleAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				M.ciniki_fatt_settings.bundle.close();
+			});
+		}
+	};
+
+	this.bundleDelete = function(lid) {
+		if( confirm('Are you sure you want to remove this bundle?') ) {
+			M.api.getJSONCb('ciniki.fatt.bundleDelete', {'business_id':M.curBusinessID, 'bundle_id':lid}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				M.ciniki_fatt_settings.bundle.close();
 			});
 		}
 	};

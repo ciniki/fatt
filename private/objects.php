@@ -64,6 +64,29 @@ function ciniki_fatt_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_fatt_history',
 		);
+	$objects['bundle'] = array(
+		'name'=>'Bundle',
+		'o_name'=>'bundle',
+		'o_container'=>'bundles',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_bundles',
+		'fields'=>array(
+			'name'=>array(),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
+	$objects['course_bundle'] = array(
+		'name'=>'Course Bundle',
+		'o_name'=>'course_bundle',
+		'o_container'=>'course_bundles',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_course_bundles',
+		'fields'=>array(
+			'course_id'=>array('ref'=>'ciniki.fatt.course'),
+			'bundle_id'=>array('ref'=>'ciniki.fatt.bundle'),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
 	$objects['course_cert'] = array(
 		'name'=>'Course Certification',
 		'o_name'=>'course_cert',

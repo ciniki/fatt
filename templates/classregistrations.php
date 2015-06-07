@@ -174,8 +174,8 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $business_id, $class
 	$pdf->SetFont('', 'B');
 	$pdf->SetCellPadding(2);
 	$pdf->Cell($w[0], 6, 'Course', 1, 0, 'L', 1);
-	$pdf->Cell($w[1], 6, 'Business', 1, 0, 'L', 1);
-	$pdf->Cell($w[2], 6, 'Customer', 1, 0, 'L', 1);
+	$pdf->Cell($w[1], 6, 'Student', 1, 0, 'L', 1);
+	$pdf->Cell($w[2], 6, 'Business', 1, 0, 'L', 1);
 	$pdf->Cell($w[3], 6, 'Initials', 1, 0, 'L', 1);
 	$pdf->Cell($w[4], 6, 'Status', 1, 0, 'L', 1);
 	$pdf->Cell($w[5], 6, 'P/F', 1, 0, 'L', 1);
@@ -373,8 +373,8 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $business_id, $class
 			$pdf->SetFillColor(224);
 			$pdf->SetFont('', 'B');
 			$pdf->Cell($w[0], 6, 'Course', 1, 0, 'L', 1);
-			$pdf->Cell($w[1], 6, 'Business', 1, 0, 'L', 1);
-			$pdf->Cell($w[2], 6, 'Customer', 1, 0, 'L', 1);
+			$pdf->Cell($w[1], 6, 'Student', 1, 0, 'L', 1);
+			$pdf->Cell($w[2], 6, 'Business', 1, 0, 'L', 1);
 			$pdf->Cell($w[3], 6, 'Initials', 1, 0, 'L', 1);
 			$pdf->Cell($w[4], 6, 'Status', 1, 0, 'L', 1);
 			$pdf->Cell($w[5], 6, 'P/F', 1, 0, 'L', 1);
@@ -385,8 +385,8 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $business_id, $class
 		}
 
 		$pdf->MultiCell($w[0], $lh, $reg['course_code'], 1, 'L', $fill, 0);
-		$pdf->MultiCell($w[1], $lh, $business_information, 1, 'L', $fill, 0);
-		$pdf->MultiCell($w[2], $lh, $student_information, 1, 'L', $fill, 0);
+		$pdf->MultiCell($w[1], $lh, $student_information, 1, 'L', $fill, 0);
+		$pdf->MultiCell($w[2], $lh, $business_information, 1, 'L', $fill, 0);
 		$pdf->MultiCell($w[3], $lh, ' ', 1, 'L', $fill, 0);
 		$pdf->MultiCell($w[4], $lh, $reg['invoice_status'], 1, 'L', $fill, 0);
 		$pdf->MultiCell($w[5], $lh, ' ', 1, 'L', $fill, 0);

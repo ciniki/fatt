@@ -37,6 +37,7 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
 		'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
 		'cert_form'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certification Form'), 
 		'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Categories'), 
+		'bundles'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Bundles'), 
 		'certs'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Certifications'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -106,6 +107,18 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
 	if( isset($args['categories']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'courseUpdateCategories');
 		$rc = ciniki_fatt_courseUpdateCategories($ciniki, $args['business_id'], $args['course_id'], $args['categories']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+			return $rc;
+		}
+	}
+
+	//
+	// Update the bundles
+	//
+	if( isset($args['bundles']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'courseUpdateBundles');
+		$rc = ciniki_fatt_courseUpdateBundles($ciniki, $args['business_id'], $args['course_id'], $args['bundles']);
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 			return $rc;

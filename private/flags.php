@@ -20,7 +20,7 @@ function ciniki_fatt_flags($ciniki, $modules) {
 		// 0x10
 		array('flag'=>array('bit'=>'5', 'name'=>'Certs')),
 		array('flag'=>array('bit'=>'6', 'name'=>'Cert Messages')),
-//		array('flag'=>array('bit'=>'7', 'name'=>'')),
+		array('flag'=>array('bit'=>'7', 'name'=>'Bundles')),
 //		array('flag'=>array('bit'=>'8', 'name'=>'')),
 		// 0x0100
 		array('flag'=>array('bit'=>'9', 'name'=>'Devices')),

@@ -85,8 +85,42 @@ function ciniki_fatt_categoryGet($ciniki) {
 	if( !isset($rc['categories']) || !isset($rc['categories'][0]) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2293', 'msg'=>'Unable to find category'));
 	}
-	$category = $rc['categories'][0]['category'];
+	$rsp = array('stat'=>'ok', 'category'=>$rc['categories'][0]['category']);
 
-	return array('stat'=>'ok', 'category'=>$category);
+	//
+	// Get the list of courses for the category
+	//
+	$rsp['category']['courses'] = '';
+	$strsql = "SELECT ciniki_fatt_courses.id, "
+		. "ciniki_fatt_courses.name, "
+		. "IFNULL(ciniki_fatt_course_categories.id, 0) AS link_id "
+		. "FROM ciniki_fatt_courses "
+		. "LEFT JOIN ciniki_fatt_course_categories ON ("
+			. "ciniki_fatt_courses.id = ciniki_fatt_course_categories.course_id "
+			. "AND ciniki_fatt_course_categories.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+			. "AND ciniki_fatt_course_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. ") "
+		. "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "ORDER BY ciniki_fatt_courses.name "
+		. "";
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+		array('container'=>'courses', 'fname'=>'id', 'name'=>'item',
+			'fields'=>array('id', 'name', 'link_id')),
+	));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$rsp['courses'] = array();
+	if( isset($rc['courses']) ) {
+		$rsp['courses'] = $rc['courses'];
+		foreach($rsp['courses'] as $cid => $item) {
+			if( $item['item']['link_id'] > 0 ) {
+				$rsp['category']['courses'] .= ($rsp['category']['courses']!=''?',':'') . $item['item']['id'];
+			}
+			unset($rsp['courses'][$cid]['item']['link_id']);
+		}
+	}
+
+	return $rsp;
 }
 ?>

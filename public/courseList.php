@@ -21,6 +21,7 @@ function ciniki_fatt_courseList($ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'), 
+		'bundles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bundles'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -120,6 +121,32 @@ function ciniki_fatt_courseList($ciniki) {
 		}
 		if( isset($rc['categories']) ) {
 			$rsp['categories'] = $rc['categories'];
+		}
+	}
+
+	//
+	// Check if we should return the bundles as well
+	//
+	if( isset($args['bundles']) && $args['bundles'] == 'yes' 
+		&& isset($ciniki['business']['modules']['ciniki.fatt']['flags'])
+		&& ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) > 0 
+		) {
+		$strsql = "SELECT ciniki_fatt_bundles.id, "
+			. "ciniki_fatt_bundles.name "
+			. "FROM ciniki_fatt_bundles "
+			. "WHERE ciniki_fatt_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY name "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+			array('container'=>'bundles', 'fname'=>'id', 'name'=>'bundle',
+				'fields'=>array('id', 'name')),
+			));
+		if( $rc['stat'] != 'ok' ) {	
+			return $rc;
+		}
+		if( isset($rc['bundles']) ) {
+			$rsp['bundles'] = $rc['bundles'];
 		}
 	}
 

@@ -344,6 +344,10 @@ function ciniki_fatt_offerings() {
 			return '';
 		};
 		this.class.addClose('Back');
+
+		//
+		// This panel is for adding offerings based on calendar date with auto settings
+		//
 	};
 
 	this.start = function(cb, appPrefix, aG) {
