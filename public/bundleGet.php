@@ -63,7 +63,7 @@ function ciniki_fatt_bundleGet($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['bundles']) || !isset($rc['bundles'][0]) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2293', 'msg'=>'Unable to find bundle'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2432', 'msg'=>'Unable to find bundle'));
 	}
 	$rsp = array('stat'=>'ok', 'bundle'=>$rc['bundles'][0]['bundle']);
 

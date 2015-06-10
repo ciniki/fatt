@@ -52,7 +52,7 @@ function ciniki_fatt_bundleDelete(&$ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['bundle']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2294', 'msg'=>'The bundle does not exist'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2433', 'msg'=>'The bundle does not exist'));
 	}
 	$bundle_uuid = $rc['bundle']['uuid'];
 
@@ -71,7 +71,7 @@ function ciniki_fatt_bundleDelete(&$ciniki) {
 	}
 	if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
 		$count = $rc['num']['items'];
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2313', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' in that bundle.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2434', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' in that bundle.'));
 	}
 
 	//

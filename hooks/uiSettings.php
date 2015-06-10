@@ -52,6 +52,31 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 					$settings['courses'][$cid]['course']['price'], $intl_currency);
 			}
 		}
+		if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x40) > 0 ) {
+			$strsql = "SELECT ciniki_fatt_bundles.id, ciniki_fatt_bundles.name, MAX(num_days) as num_days "
+				. "FROM ciniki_fatt_bundles, ciniki_fatt_course_bundles, ciniki_fatt_courses "
+				. "WHERE ciniki_fatt_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+				. "AND ciniki_fatt_bundles.id = ciniki_fatt_course_bundles.bundle_id "
+				. "AND ciniki_fatt_course_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+				. "AND ciniki_fatt_course_bundles.course_id = ciniki_fatt_courses.id "
+				. "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+				. "AND ciniki_fatt_courses.status = 10 "
+				. "GROUP BY ciniki_fatt_bundles.id "
+				. "ORDER BY ciniki_fatt_bundles.name "
+				. "";
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+			$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+				array('container'=>'bundles', 'fname'=>'id', 'name'=>'bundle',
+					'fields'=>array('id', 'name', 'num_days')),
+				));
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			if( isset($rc['bundles']) ) {
+				$settings['bundles'] = $rc['bundles'];
+			}
+		}
+
 
 		$strsql = "SELECT id, name "
 			. "FROM ciniki_fatt_instructors "

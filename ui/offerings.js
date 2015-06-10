@@ -348,6 +348,60 @@ function ciniki_fatt_offerings() {
 		//
 		// This panel is for adding offerings based on calendar date with auto settings
 		//
+		this.add = new M.panel('New Offering',
+			'ciniki_fatt_offerings', 'add',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.offerings.add');
+		this.add.data = {};
+		this.add.sections = {
+			'details':{'label':'', 'aside':'yes', 'fields':{
+				'course_id':{'label':'Course', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_fatt_offerings.add.courseChange'},
+				'day1':{'label':'Day 1', 'type':'appointment', 'caloffset':0,
+					'start':'6:00', 'end':'20:00', 'interval':'30', 'notimelabel':''},
+				'day2':{'label':'Day 2', 'visible':'no', 'type':'appointment', 'caloffset':0,
+					'start':'6:00', 'end':'20:00', 'interval':'30', 'notimelabel':''},
+				'location_id':{'label':'Location', 'type':'select', 'options':{}},
+				'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}, '5':{'name':'Online Registrations'}}},
+				}},
+			'_instructors':{'label':'Instructors', 'aside':'yes', 'active':'no', 'fields':{
+				'instructors':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'instructor', 'list':{}},
+				}},
+			'_buttons':{'label':'', 'buttons':{
+				'add':{'label':'Add', 'fn':'M.ciniki_fatt_offerings.addCourses();'},
+				}},
+		};
+		this.add.liveAppointmentDayEvents = function(i, day, cb) {
+			if( i == 'day1' ) {
+				if( day == '--' ) { day = 'today';}
+				M.api.getJSONCb('ciniki.calendars.appointments', {'business_id':M.curBusinessID, 'date':day}, cb);
+			}
+			else if( i == 'day2' ) {
+				if( day == '--' ) { day = 'today';}
+				M.api.getJSONCb('ciniki.calendars.appointments', {'business_id':M.curBusinessID, 'date':day}, cb);
+			}
+		};
+		this.add.fieldValue = function(s, i, d) {
+			if( this.data[i] == null ) { return ''; }
+			return this.data[i];
+		};
+		this.add.courseChange = function(s, i) {
+			var cid = this.formValue(i);
+			if( this.courses[cid] != null && this.courses[cid].num_days > 1 ) {
+				M.gE(this.panelUID + '_day2').parentNode.parentNode.style.display = 'table-row';	
+			} else {
+				M.gE(this.panelUID + '_day2').parentNode.parentNode.style.display = 'none';	
+			}
+			// Only change the price for new offering add, existing courses may have price changed manually and don't want to override.
+//			if( this.data.price == '' ) {
+//				if( this.courses[cid] != null && this.courses[cid].price != null ) {
+//					this.setFieldValue('price', this.courses[cid].price);
+//				}
+//			}
+		};
+//		this.add.fieldHistoryArgs = function(s, i) {
+//			return {'method':'ciniki.fatt.offeringDateHistory', 'args':{'business_id':M.curBusinessID, 'date_id':this.date_id, 'field':i}};
+//		};
+		this.add.addButton('save', 'Save', 'M.ciniki_fatt_offerings.addCourses();');
+		this.add.addClose('Cancel');
 	};
 
 	this.start = function(cb, appPrefix, aG) {
@@ -368,14 +422,31 @@ function ciniki_fatt_offerings() {
 		// Use settings to update course list
 		//
 		this.edit.courses = {};
+		this.add.courses = {};
 		var courses = {};
+		var acourses = {};
+		//
+		// Add the bundles to the list of courses for add
+		//
 		if( M.curBusiness.modules['ciniki.fatt'].settings.courses != null ) {
 			for(var i in M.curBusiness.modules['ciniki.fatt'].settings.courses) {
+				this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.num_days;
 				courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
+				acourses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
 				this.edit.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
+				this.add.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
 			}
 		}
 		this.edit.sections.details.fields.course_id.options = courses;
+
+		if( M.curBusiness.modules['ciniki.fatt'].settings.bundles != null ) {
+			for(var i in M.curBusiness.modules['ciniki.fatt'].settings.bundles) {
+//				this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.num_days;
+				acourses['b-' + M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.id] = 'Bundle: ' + M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.name;
+				this.add.courses['b-' + M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.id] = M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle;
+			}
+		}
+		this.add.sections.details.fields.course_id.options = acourses;
 	
 		//
 		// Use settings to setup location list for offering date edit
@@ -387,24 +458,31 @@ function ciniki_fatt_offerings() {
 			}
 		}
 		this.odate.sections.details.fields.location_id.options = locations;
+		this.add.sections.details.fields.location_id.options = locations;
 
 		//
 		// Use settings to update instructor list
 		//
 		this.edit.sections._instructors.active = 'no';
+		this.add.sections._instructors.active = 'no';
 		if( M.curBusiness.modules['ciniki.fatt'].settings.instructors != null ) {
 			this.edit.sections._instructors.fields.instructors.list = M.curBusiness.modules['ciniki.fatt'].settings.instructors;
+			this.add.sections._instructors.fields.instructors.list = M.curBusiness.modules['ciniki.fatt'].settings.instructors;
 			if( M.curBusiness.modules['ciniki.fatt'].settings.instructors.length > 0 ) {
 				this.edit.sections._instructors.active = 'yes';
+				this.add.sections._instructors.active = 'yes';
 			}
 		} else {
 			this.edit.sections._instructors.fields.instructors.list = {};
+			this.add.sections._instructors.fields.instructors.list = {};
 		}
 
 		//
 		// Decide what to show
 		//
-		if( args.appointment_id != null ) {
+		if( args.add != null && args.add == 'courses' ) {
+			this.addShow(cb, args.date, args.time, args.allday);
+		} else if( args.appointment_id != null ) {
 			this.classShow(cb, args.appointment_id);
 		} else if( args.offering_id != null ) {
 			this.offeringShow(cb, args.offering_id);
@@ -605,6 +683,15 @@ function ciniki_fatt_offerings() {
 				}
 				var p = M.ciniki_fatt_offerings.class;
 				p.data = rsp.class;
+				if( rsp.class.registrations != null && rsp.class.registrations.length > 0 ) {
+					p.sections.offerings.aside = 'yes';
+					p.sections.registrations.visible = 'yes';
+					p.sections._buttons.buttons.printlist.visible = 'yes';
+				} else {
+					p.sections.offerings.aside = 'no';
+					p.sections.registrations.visible = 'no';
+					p.sections._buttons.buttons.printlist.visible = 'no';
+				}
 				p.refresh();
 				p.show(cb);
 		});
@@ -612,5 +699,29 @@ function ciniki_fatt_offerings() {
 
 	this.classPrintList = function(cid) {
 		M.api.openFile('ciniki.fatt.classRegistrations', {'business_id':M.curBusinessID, 'output':'pdf', 'class_id':cid});
-	}
+	};
+
+	this.addShow = function(cb, d, t, ad) {
+		this.add.reset();
+		var p = d.split(/-/);
+		var d = new Date(p[0],p[1]-1,p[2]);
+		this.add.data = {'day1':M.dateFormat(d) + (ad==0?' ' + t:' 8:30 am')};
+		d.setDate(d.getDate() + 1);
+		this.add.data['day2'] = M.dateFormat(d) + (ad==0?' ' + t:' 8:30 am');
+		this.add.sections.details.fields.day2.visible = (this.add.ndays>1?'yes':'no');
+		this.add.refresh();
+		this.add.show(cb);
+	};
+
+	this.addCourses = function() {
+		var c = this.add.serializeForm('yes');
+		M.api.postJSONCb('ciniki.fatt.classAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			}
+			M.ciniki_fatt_offerings.add.close();
+		});
+		
+	};
 }
