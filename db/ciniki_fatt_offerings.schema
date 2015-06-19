@@ -38,6 +38,8 @@
 # seats_remaining:	The number of seats that are available for registrations. Based on other
 #					offerings that share the same date and location.
 #
+# num_registrations: The number of registrations for this course.
+#
 # date_added:		The UTC date and time the record was added.
 # last_updated:		The UTC date and time the record was last updated.
 #
@@ -54,9 +56,10 @@ create table ciniki_fatt_offerings (
 	location varchar(150) not null,
 	max_seats int not null,	
 	seats_remaining int not null,
+	num_registrations int not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
 	unique index (business_id, permalink),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

@@ -50,6 +50,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		. "ciniki_fatt_offerings.location, "
 		. "ciniki_fatt_offerings.max_seats, "
 		. "ciniki_fatt_offerings.seats_remaining, "
+		. "ciniki_fatt_offerings.num_registrations AS old_num_registrations, "
 		. "IFNULL(ciniki_fatt_courses.num_seats_per_instructor, 0) AS num_seats_per_instructor, "
 		. "COUNT(ciniki_fatt_offering_instructors.id) AS num_instructors, "
 		. "COUNT(ciniki_fatt_offering_registrations.id) AS num_registrations "
@@ -73,7 +74,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'offerings', 'fname'=>'id',
 			'fields'=>array('id', 'course_id', 'start_date', 'date_string', 'location', 
-				'max_seats', 'seats_remaining', 'num_seats_per_instructor', 'num_instructors', 'num_registrations'),
+				'max_seats', 'seats_remaining', 'num_seats_per_instructor', 'num_instructors', 
+				'old_num_registrations', 'num_registrations'),
 			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>'Y-m-d H:i'))),
 		));
 	if( $rc['stat'] != 'ok' ) {
@@ -276,6 +278,9 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		$offering_update_args['start_date'] = $first_date->format('Y-m-d H:i');
 	} elseif( !isset($first_date) && $offering['start_date'] != '0000-00-00 00:00' && $offering['start_date'] != '' ) {
 		$offering_update_args['start_date'] = '0000-00-00 00:00';
+	}
+	if( $offering['old_num_registrations'] != $offering['num_registrations'] ) {
+		$offering_update_args['num_registrations'] = $offering['num_registrations'];
 	}
 	if( isset($date_string) && $date_string != $offering['date_string'] ) {
 		$offering_update_args['date_string'] = $date_string;
