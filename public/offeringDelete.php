@@ -104,11 +104,11 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
 	if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
 		$items = $rc['rows'];
 		foreach($items as $fid => $item) {
-			$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.offeringinstructor', 
+			$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.offeringdate', 
 				$item['id'], $item['uuid'], 0x04);
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-				return $rc;	
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2438', 'msg'=>'Unable to remove offering date', 'err'=>$rc['err']));
 			}
 		}
 	}
@@ -133,7 +133,7 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
 				$item['id'], $item['uuid'], 0x04);
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-				return $rc;	
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2439', 'msg'=>'Unable to remove offering instructor', 'err'=>$rc['err']));
 			}
 		}
 	}
@@ -145,7 +145,7 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
 		$args['offering_id'], $offering_uuid, 0x04);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2440', 'msg'=>'Unable to remove offering', 'err'=>$rc['err']));
 	}
 
 	//

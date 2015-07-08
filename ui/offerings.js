@@ -594,14 +594,14 @@ function ciniki_fatt_offerings() {
 		}
 	};
 
-	this.offeringDelete = function() {
+	this.offeringDelete = function(oid) {
 		if( confirm('Are you sure you want to remove this offering?') ) {
-			M.api.getJSONCb('ciniki.fatt.offeringDelete', {'business_id':M.curBusinessID, 'course_id':lid}, function(rsp) {
+			M.api.getJSONCb('ciniki.fatt.offeringDelete', {'business_id':M.curBusinessID, 'offering_id':oid}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
 				}
-				M.ciniki_fatt_settings.edit.close();
+				M.ciniki_fatt_offerings.offering.close();
 			});
 		}
 	};
