@@ -1,0 +1,5 @@
+#
+# Add the num_registrations field to make it faster.
+#
+ALTER TABLE ciniki_fatt_offerings ADD COLUMN num_registrations int not null AFTER seats_remaining;
+ALTER TABLE ciniki_fatt_offerings COMMENT='v1.02';
