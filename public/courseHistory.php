@@ -46,6 +46,11 @@ function ciniki_fatt_courseHistory($ciniki) {
 		return $rc;
 	}
 
+	if( $args['field'] == 'price' ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
+		return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['business_id'], 'ciniki_fatt_courses', $args['course_id'], $args['field'], 'currency');
+	}
+
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
 	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['business_id'], 'ciniki_fatt_courses', $args['course_id'], $args['field']);
 }
