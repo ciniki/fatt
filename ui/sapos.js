@@ -126,6 +126,7 @@ function ciniki_fatt_sapos() {
 			if( this.data.customer_id == this.student_id ) {
 				this.data.student_details = this.data.customer_details;
 				this.sections.customer_details.visible = 'hidden';
+				this.sections.customer_details.visible = 'yes';
 			} else {
 				this.sections.customer_details.visible = 'yes';
 			}
