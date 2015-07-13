@@ -28,7 +28,7 @@ function ciniki_fatt_courseAdd(&$ciniki) {
 		'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
 		'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
 		'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'), 
-		'price'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Price'), 
+		'price'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Price'), 
 		'taxtype_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Taxes'), 
 		'num_days'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Number of Days'), 
 		'num_hours'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Number of Hours'), 
