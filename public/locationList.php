@@ -53,6 +53,7 @@ function ciniki_fatt_locationList($ciniki) {
 		. "ciniki_fatt_locations.name, "
 		. "ciniki_fatt_locations.status, "
 		. "ciniki_fatt_locations.status AS status_text, "
+		. "ciniki_fatt_locations.flags, "
 		. "ciniki_fatt_locations.city "
 		. "FROM ciniki_fatt_locations "
 		. "WHERE ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -62,7 +63,7 @@ function ciniki_fatt_locationList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'locations', 'fname'=>'id', 'name'=>'location',
-			'fields'=>array('id', 'code', 'name', 'city', 'status', 'status_text'),
+			'fields'=>array('id', 'code', 'name', 'city', 'status', 'status_text', 'flags'),
 			'maps'=>array('status_text'=>$maps['location']['status'])),
 		));
 	return $rc;

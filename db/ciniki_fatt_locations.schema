@@ -16,6 +16,13 @@
 #
 # status:			The status of the address.
 #
+# flags:			The flags for the location.
+#
+#					0x01 - Course dependant address, not always at the same location.
+#					0x02 - 
+#					0x04 - 
+#					0x08 - 
+#
 # address1:			The first line of the address.
 # address2:			The second line of the address.
 # city:				The city for the location.
@@ -43,6 +50,7 @@ create table ciniki_fatt_locations (
 	name varchar(250) not null,
 	permalink varchar(250) not null,
 	status tinyint unsigned not null,
+	flags tinyint unsigned not null,
 	address1 varchar(250) not null,
 	address2 varchar(250) not null,
 	city varchar(150) not null,

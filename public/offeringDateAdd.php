@@ -26,6 +26,13 @@ function ciniki_fatt_offeringDateAdd(&$ciniki) {
 		'num_hours'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Hours'), 
 		'day_number'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Day'), 
 		'location_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Location'), 
+		'address1'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Address'), 
+		'address2'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Address'), 
+		'city'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'City'), 
+		'province'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Province'), 
+		'postal'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Postal'), 
+		'latitude'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Latitude'), 
+		'longitude'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Longitude'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

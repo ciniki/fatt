@@ -27,6 +27,15 @@ function ciniki_fatt_classAdd(&$ciniki) {
 		'flags'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Options'), 
 		'location_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Location'), 
 		'instructors'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Instructors'), 
+		'address1'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Address'), 
+		'address2'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Address'), 
+		'city'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'City'), 
+		'province'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Province'), 
+		'postal'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Postal'), 
+		'latitude'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Latitude'), 
+		'longitude'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Longitude'), 
+		'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Customer'), 
+		'num_seats'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Seats'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -163,6 +172,13 @@ function ciniki_fatt_classAdd(&$ciniki) {
 			'num_hours'=>$course['num_hours'],
 			'day_number'=>1,
 			'location_id'=>$args['location_id'],
+			'address1'=>$args['address1'],
+			'address2'=>$args['address2'],
+			'city'=>$args['city'],
+			'province'=>$args['province'],
+			'postal'=>$args['postal'],
+			'latitude'=>$args['latitude'],
+			'longitude'=>$args['longitude'],
 			);
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
 		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.offeringdate', $date_args, 0x04);
@@ -198,6 +214,16 @@ function ciniki_fatt_classAdd(&$ciniki) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 				return $rc;
 			}
+		}
+
+		//
+		// Check if this is not a bundle and the customer is set
+		//
+		if( strncmp($args['course_id'], 'b-', 2) != 0 
+			&& isset($args['customer_id']) && $args['customer_id'] > 0 
+			&& isset($args['num_seats']) && $args['num_seats'] > 0 
+			) {
+
 		}
 
 		//

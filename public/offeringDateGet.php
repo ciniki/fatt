@@ -115,7 +115,14 @@ function ciniki_fatt_offeringDateGet($ciniki) {
 		. "ciniki_fatt_offering_dates.start_date AS date, "
 		. "ciniki_fatt_offering_dates.start_date AS time, "
 		. "ciniki_fatt_offering_dates.num_hours, "
-		. "ciniki_fatt_offering_dates.location_id "
+		. "ciniki_fatt_offering_dates.location_id, "
+		. "ciniki_fatt_offering_dates.address1, "
+		. "ciniki_fatt_offering_dates.address2, "
+		. "ciniki_fatt_offering_dates.city, "
+		. "ciniki_fatt_offering_dates.province, "
+		. "ciniki_fatt_offering_dates.postal, "
+		. "ciniki_fatt_offering_dates.latitude, "
+		. "ciniki_fatt_offering_dates.longitude "
 		. "FROM ciniki_fatt_offering_dates "
 		. "WHERE ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_fatt_offering_dates.id = '" . ciniki_core_dbQuote($ciniki, $args['date_id']) . "' "
@@ -123,7 +130,8 @@ function ciniki_fatt_offeringDateGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'dates', 'fname'=>'id', 'name'=>'date',
-			'fields'=>array('id', 'day_number', 'start_date', 'start_date_ts', 'date', 'time', 'num_hours', 'location_id'),
+			'fields'=>array('id', 'day_number', 'start_date', 'start_date_ts', 'date', 'time', 'num_hours', 'location_id',
+				'address1', 'address2', 'city', 'province', 'postal', 'latitude', 'longitude'),
 			'utctotz'=>array(
 				'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
 				'date'=>array('timezone'=>$intl_timezone, 'format'=>'Y-m-d'),

@@ -172,7 +172,15 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 		. "ciniki_fatt_offering_dates.start_date, "
 		. "ciniki_fatt_offering_dates.num_hours, "
 		. "ciniki_fatt_offering_dates.location_id, "
-		. "IFNULL(ciniki_fatt_locations.name, 'Unknown') AS location_name "
+		. "ciniki_fatt_locations.flags AS location_flags, "
+		. "IFNULL(ciniki_fatt_locations.name, 'Unknown') AS location_name, "
+		. "ciniki_fatt_offering_dates.address1, "
+		. "ciniki_fatt_offering_dates.address2, "
+		. "ciniki_fatt_offering_dates.city, "
+		. "ciniki_fatt_offering_dates.province, "
+		. "ciniki_fatt_offering_dates.postal, "
+		. "ciniki_fatt_offering_dates.latitude, "
+		. "ciniki_fatt_offering_dates.longitude "
 		. "FROM ciniki_fatt_offering_dates "
 		. "LEFT JOIN ciniki_fatt_locations ON ("
 			. "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
@@ -184,9 +192,8 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
 		array('container'=>'dates', 'fname'=>'id', 'name'=>'date',
-			'fields'=>array('id', 'day_number', 
-				'start_date', 'num_hours',
-				'location_id', 'location_name'),
+			'fields'=>array('id', 'day_number', 'start_date', 'num_hours', 'location_id', 'location_name', 'location_flags', 
+				'address1', 'address2', 'city', 'postal', 'latitude', 'longitude'),
 			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format)),
 			),
 	));

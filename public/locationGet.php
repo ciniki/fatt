@@ -54,6 +54,7 @@ function ciniki_fatt_locationGet($ciniki) {
 		. "ciniki_fatt_locations.name, "
 		. "ciniki_fatt_locations.permalink, "
 		. "ciniki_fatt_locations.status, "
+		. "ciniki_fatt_locations.flags, "
 		. "ciniki_fatt_locations.address1, "
 		. "ciniki_fatt_locations.address2, "
 		. "ciniki_fatt_locations.city, "
@@ -71,7 +72,7 @@ function ciniki_fatt_locationGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'locations', 'fname'=>'id', 'name'=>'location',
-			'fields'=>array('id', 'code', 'name', 'permalink', 'status', 
+			'fields'=>array('id', 'code', 'name', 'permalink', 'status', 'flags',
 				'address1', 'address2', 'city', 'province', 'postal', 
 				'latitude', 'longitude', 'url', 'description', 'num_seats')),
 	));

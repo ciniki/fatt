@@ -75,13 +75,21 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
 		. "ciniki_fatt_courses.num_seats_per_instructor AS instructor_seats, "
 		. "ciniki_fatt_locations.code AS location_code, "
 		. "ciniki_fatt_locations.name AS location_name, "
+		. "ciniki_fatt_locations.flags AS location_flags, "
 		. "ciniki_fatt_locations.num_seats AS location_seats, "
 		. "ciniki_fatt_offering_dates.start_date AS start_date, "
 		. "ciniki_fatt_offering_dates.start_date AS date, "
 		. "ciniki_fatt_offerings.date_string, "
 		. "ciniki_fatt_offerings.location, "
 		. "ciniki_fatt_offerings.max_seats, "
-		. "ciniki_fatt_offerings.seats_remaining "
+		. "ciniki_fatt_offerings.seats_remaining, "
+		. "ciniki_fatt_offering_dates.address1, "
+		. "ciniki_fatt_offering_dates.address2, "
+		. "ciniki_fatt_offering_dates.city, "
+		. "ciniki_fatt_offering_dates.province, "
+		. "ciniki_fatt_offering_dates.postal, "
+		. "ciniki_fatt_offering_dates.latitude, "
+		. "ciniki_fatt_offering_dates.longitude "
 		. "FROM ciniki_fatt_offering_dates "
 		. "LEFT JOIN ciniki_fatt_offerings ON ("
 			. "ciniki_fatt_offering_dates.offering_id = ciniki_fatt_offerings.id "
@@ -104,7 +112,8 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'classes', 'fname'=>'appointment_id', 'name'=>'class',
-			'fields'=>array('appointment_id', 'course_codes', 'start_date', 'date', 'location_code', 'location_name', 'offering_ids'),
+			'fields'=>array('appointment_id', 'course_codes', 'start_date', 'date', 'location_code', 'location_name', 'location_flags', 'offering_ids',
+				'address1', 'address2', 'city', 'province', 'postal', 'latitude', 'longitude'),
 			'dlists'=>array('course_codes'=>'/', 'offering_ids'=>','),
 			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
 				'date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),

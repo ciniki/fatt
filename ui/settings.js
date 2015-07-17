@@ -408,18 +408,23 @@ function ciniki_fatt_settings() {
 				'num_seats':{'label':'Seats', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
 				}},
-			'address':{'label':'', 'aside':'yes', 'fields':{
-				'address1':{'label':'Address', 'type':'text'},
+			'_address_flags':{'label':'', 'aside':'yes', 'fields':{
+				'flags_1':{'label':'Address', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 
+					'default':'off', 'off':'Fixed Location', 'on':'Variable Location', 
+					'off_sections':['address', '_map', '_map_buttons']},
+				}},
+			'address':{'label':'', 'aside':'yes', 'visible':'hidden', 'fields':{
+				'address1':{'label':'Street', 'type':'text'},
 				'address2':{'label':'', 'type':'text'},
 				'city':{'label':'City', 'type':'text', 'size':'medium'},
 				'province':{'label':'Province', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal', 'type':'text', 'size':'small'},
 				}},
-			'_map':{'label':'Location Map', 'aside':'yes', 'visible':'yes', 'fields':{
+			'_map':{'label':'Location Map', 'aside':'yes', 'visible':'hidden', 'fields':{
 				'latitude':{'label':'Latitude', 'type':'text', 'size':'small'},
 				'longitude':{'label':'Longitude', 'type':'text', 'size':'small'},
 				}},
-			'_map_buttons':{'label':'', 'aside':'yes', 'buttons':{
+			'_map_buttons':{'label':'', 'aside':'yes', 'visible':'hidden', 'buttons':{
 				'_latlong':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_fatt_settings.location.lookupLatLong();'},
 				}},
 			'_description':{'label':'Description', 'fields':{
@@ -1049,6 +1054,15 @@ function ciniki_fatt_settings() {
 				}
 				var p = M.ciniki_fatt_settings.location;
 				p.data = rsp.location;
+		//		if( (rsp.location.flags&0x01) == 1 ) {
+		//			p.sections.address.visible = 'hidden';
+		//			p.sections._map.visible = 'hidden';
+		//			p.sections._map_buttons.visible = 'hidden';
+		//		} else {
+		//			p.sections.address.visible = 'yes';
+		//			p.sections._map.visible = 'yes';
+		//			p.sections._map_buttons.visible = 'yes';
+		//		}
 				p.refresh();
 				p.show(cb);
 		});

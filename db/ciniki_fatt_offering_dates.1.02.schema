@@ -1,0 +1,11 @@
+#
+# Add address fields for off site locations
+#
+ALTER TABLE ciniki_fatt_offering_dates ADD COLUMN address1 varchar(250) not null AFTER location_id;
+ALTER TABLE ciniki_fatt_offering_dates ADD COLUMN address2 varchar(250) not null AFTER address1;
+ALTER TABLE ciniki_fatt_offering_dates ADD COLUMN city varchar(250) not null AFTER address2;
+ALTER TABLE ciniki_fatt_offering_dates ADD COLUMN province varchar(250) not null AFTER city;
+ALTER TABLE ciniki_fatt_offering_dates ADD COLUMN postal varchar(250) not null AFTER province;
+ALTER TABLE ciniki_fatt_offering_dates ADD COLUMN latitude decimal(18,12) not null AFTER postal;
+ALTER TABLE ciniki_fatt_offering_dates ADD COLUMN longitude decimal(18,12) not null AFTER latitude;
+ALTER TABLE ciniki_fatt_offering_dates COMMENT='v1.02';
