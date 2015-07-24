@@ -924,6 +924,16 @@ function ciniki_fatt_offerings() {
 	};
 
 	this.addCourses = function() {
+		var nv = this.add.formFieldValue(this.add.sections.details.fields.course_id, 'course_id');
+		if( nv == 0 ) {
+			alert('You must specify a course');
+			return false;
+		}
+		var nv = this.add.formFieldValue(this.add.sections.details.fields.location_id, 'location_id');
+		if( nv == 0 ) {
+			alert('You must specify a location');
+			return false;
+		}
 		var c = this.add.serializeForm('yes');
 		if( this.add.customer_id > 0 ) {
 			c += '&customer_id=' + encodeURIComponent(this.add.customer_id);
