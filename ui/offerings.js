@@ -388,7 +388,8 @@ function ciniki_fatt_offerings() {
 				if( j == 0 ) {
 					return '<span class="maintext">' + d.offering.course_name + '</span><span class="subtext">' + M.ciniki_fatt_offerings.courseReg(d.offering, 'comma') + '</span>';
 				} else if( j == 1 ) {
-					return '<button onclick="event.stopPropagation();M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.classShow();\',\'mc\',{\'offering_id\':\'' + d.offering.id + '\',\'source\':\'class\'});">Add Registration</button>';
+					return '<button onclick="event.stopPropagation();M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.classShow();\',\'mc\',{\'offering_id\':\'' + d.offering.id + '\',\'source\':\'class\'});">Add Registration</button>'
+						+ ' <button onclick="event.stopPropagation();M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.classShow();\',\'mc\',{\'offering_id\':\'' + d.offering.id + '\',\'source\':\'class\',\'saveseats\':\'yes\'});">Save Seats</button>';
 				}
 			}
 		};

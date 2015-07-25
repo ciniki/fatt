@@ -176,7 +176,7 @@ function ciniki_fatt_sapos() {
 		// Decide what to show
 		//
 		if( args.offering_id != null ) {
-			this.registrationAdd(cb, args.offering_id);
+			this.registrationAdd(cb, args.offering_id, args.saveseats);
 		} else if( args.item_object != null && args.item_object == 'ciniki.fatt.offeringregistration' ) {
 			this.registrationEdit(cb, args.item_object_id, args.source);
 		} else if( args.registration_id != null ) {
@@ -189,19 +189,33 @@ function ciniki_fatt_sapos() {
 	//
 	// Registration Edit
 	//
-	this.registrationAdd = function(cb, oid) {
+	this.registrationAdd = function(cb, oid, ss) {
 		this.regadd.offering_id = oid;
 		this.regadd.cb = cb;
-		M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.invoiceCreate', 'customer_id':0});
+		if( ss == 'yes' ) {
+			M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0});
+		} else {
+			M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.invoiceCreate', 'customer_id':0});
+		}
 	};
 
-	this.invoiceCreate = function(cid) {
+	this.saveSeats = function(cid) {
+		var ns = prompt('How many seats?');
+		if( ns != null ) {
+			this.invoiceCreate(cid, ns);
+		}
+	}
+
+	this.invoiceCreate = function(cid, ns) {
 		args = {
 			'customer_id':cid,
 			'object':'ciniki.fatt.offering',
 			'object_id':this.regadd.offering_id,
 			'payment_status':10,
 			};
+		if( ns != null && ns > 1 ) {
+			args['quantity'] = ns;
+		}
 		M.startApp('ciniki.sapos.invoice',null,this.regadd.cb,'mc',args);
 //		M.api.getJSONCb('ciniki.fatt.offeringRegistrationAdd', {'business_id':M.curBusinessID, 'offering_id':this.registration.offering_id}, function(rsp) {
 //			if( rsp.stat != 'ok' ) {
