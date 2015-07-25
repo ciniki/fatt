@@ -207,27 +207,24 @@ function ciniki_fatt_sapos() {
 	}
 
 	this.invoiceCreate = function(cid, ns) {
-		args = {
-			'customer_id':cid,
-			'object':'ciniki.fatt.offering',
-			'object_id':this.regadd.offering_id,
-			'payment_status':10,
-			};
 		if( ns != null && ns > 1 ) {
-			args['quantity'] = ns;
+			args = {
+				'customer_id':cid,
+				'payment_status':10,
+				'objects':[],
+				};
+			for(var i=0;i<ns;i++) {
+				args['objects'][i] = {'object':'ciniki.fatt.offering','id':this.regadd.offering_id};
+			}
+		} else {
+			args = {
+				'customer_id':cid,
+				'object':'ciniki.fatt.offering',
+				'object_id':this.regadd.offering_id,
+				'payment_status':10,
+				};
 		}
 		M.startApp('ciniki.sapos.invoice',null,this.regadd.cb,'mc',args);
-//		M.api.getJSONCb('ciniki.fatt.offeringRegistrationAdd', {'business_id':M.curBusinessID, 'offering_id':this.registration.offering_id}, function(rsp) {
-//			if( rsp.stat != 'ok' ) {
-//				M.api.err(rsp);
-//				return false;
-//			}
-//			var p = M.ciniki_fatt_offerings.registration;
-//			p.data = rsp.registration;
-//			p.registration_id = rsp.registration.id;
-//			p.refresh();
-//			p.show();
-//		});
 	};
 
 	this.registrationEdit = function(cb, rid, source) {
