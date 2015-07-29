@@ -50,6 +50,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 		. "ciniki_fatt_offering_registrations.customer_id, "
 		. "ciniki_fatt_offering_registrations.student_id, "
 		. "ciniki_fatt_offering_registrations.invoice_id, "
+		. "ciniki_fatt_offering_registrations.status, "
 		. "ciniki_fatt_offering_registrations.customer_notes, "
 		. "ciniki_fatt_offering_registrations.notes, "
 		. "ciniki_fatt_offering_registrations.test_results, "
@@ -78,7 +79,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
 		array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-			'fields'=>array('id', 'offering_id', 'customer_id', 'student_id', 'invoice_id', 
+			'fields'=>array('id', 'offering_id', 'customer_id', 'student_id', 'invoice_id', 'status',
 				'customer_notes', 'notes', 'test_results',
 				'course_id', 'course_name', 'permalink', 'price', 'flags', 'flags_display',
 				'date_string', 'location', 'max_seats', 'seats_remaining'),

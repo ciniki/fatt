@@ -23,6 +23,7 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'cert_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Certification'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Customer'), 
+		'offering_i'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Offering'), 
 		'date_received'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Certification Date'), 
 		'date_expiry'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Certification Expiry'), 
 		'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
@@ -40,47 +41,6 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	
-	//
-	// Get the time information for business and user
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-	$rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$intl_timezone = $rc['settings']['intl-default-timezone'];
-	date_default_timezone_set($intl_timezone);
-
-	if( !isset($args['date_expiry']) || $args['date_expiry'] == '' ) {
-		//
-		// Load the cert information
-		//
-		$strsql = "SELECT id, name, years_valid "
-			. "FROM ciniki_fatt_certs "
-			. "WHERE ciniki_fatt_certs.id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
-			. "AND ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'cert');
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( !isset($rc['cert']) ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2321', 'msg'=>'The certification does not exist'));
-		}
-		$cert = $rc['cert'];
-
-		//
-		// Setup the expiry date, based on date received and years_valid from cert 
-		//
-		if( $cert['years_valid'] > 0 ) {
-			$dt = new DateTime($args['date_received'], new DateTimeZone($intl_timezone));
-			$dt->add(new DateInterval('P' . $cert['years_valid'] . 'Y'));
-			$args['date_expiry'] = $dt->format('Y-m-d');
-		} else {
-			$args['date_expiry'] = '';
-		}
-	}
 
 	//
 	// Start transaction
@@ -97,8 +57,8 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
 	//
 	// Add the cert to the database
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.certcustomer', $args, 0x04);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'certCustomerAdd');
+	$rc = ciniki_fatt__certCustomerAdd($ciniki, $args['business_id'], $args);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 		return $rc;

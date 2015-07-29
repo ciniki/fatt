@@ -111,6 +111,7 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 		. "ciniki_fatt_offering_registrations.customer_id, "
 		. "ciniki_fatt_offering_registrations.student_id, "
 		. "ciniki_fatt_offering_registrations.invoice_id, "
+		. "ciniki_fatt_offering_registrations.status, "
 		. "ciniki_fatt_offering_registrations.customer_notes, "
 		. "ciniki_fatt_offering_registrations.notes, "
 		. "IFNULL(c1.display_name, '') AS customer_display_name, "
@@ -130,7 +131,7 @@ function ciniki_fatt_offeringLoad($ciniki, $business_id, $offering_id) {
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
 		array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-			'fields'=>array('id', 'invoice_id', 
+			'fields'=>array('id', 'invoice_id', 'status',
 				'customer_id', 'customer_display_name',
 				'student_id', 'student_display_name',
 				'customer_notes', 'notes')),

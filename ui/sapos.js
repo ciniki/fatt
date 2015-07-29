@@ -5,6 +5,13 @@ function ciniki_fatt_sapos() {
 	// Placeholder for adding customer/registration
 	this.regadd = {};
 
+	this.regStatus = {
+		'0':'Incomplete',
+		'40':'No Show',
+		'10':'Pass',
+		'50':'Fail',
+	};
+
 	this.init = function() {
 		//
 		// The registration panel
@@ -43,6 +50,10 @@ function ciniki_fatt_sapos() {
 				'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
 				'unit_discount_percentage':{'label':'Discount %', 'type':'text', 'size':'small'},
 				'taxtype_id':{'label':'Taxes', 'type':'select', 'options':{}},
+				}},
+			'_status':{'label':'', 'fields':{
+//				'status':{'label':'Status', 'type':'select', 'options':{'0':'Incomplete', '40':'No Show', '10':'Pass', '50':'Fail'}},
+				'status':{'label':'Status', 'type':'toggle', 'toggles':M.ciniki_fatt_sapos.regStatus},
 				}},
 //			'_test_results':{'label':'Test Results', 'fields':{
 //				}},

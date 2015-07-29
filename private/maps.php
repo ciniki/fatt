@@ -49,6 +49,14 @@ function ciniki_fatt_maps($ciniki) {
 			0x10=>'Online Registrations',
 			),
 		);
+	$maps['offeringregistration'] = array(
+		'status'=>array(
+			'0'=>'Incomplete',
+			'10'=>'Pass',
+			'40'=>'No Show',
+			'50'=>'Fail',
+			),
+		);
 
 	return array('stat'=>'ok', 'maps'=>$maps);
 }

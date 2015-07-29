@@ -25,5 +25,6 @@ create table ciniki_fatt_course_certs (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
+	unique index (course_id, cert_id),
 	index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

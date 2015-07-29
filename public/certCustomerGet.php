@@ -76,6 +76,7 @@ function ciniki_fatt_certCustomerGet($ciniki) {
 		$strsql = "SELECT ciniki_fatt_cert_customers.id, "
 			. "ciniki_fatt_cert_customers.cert_id, "
 			. "ciniki_fatt_cert_customers.customer_id, "
+			. "ciniki_fatt_cert_customers.offering_id, "
 			. "DATE_FORMAT(ciniki_fatt_cert_customers.date_received, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS date_received, "
 			. "DATE_FORMAT(ciniki_fatt_cert_customers.date_expiry, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS date_expiry, "
 			. "ciniki_fatt_cert_customers.flags "

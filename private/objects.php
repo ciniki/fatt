@@ -169,6 +169,7 @@ function ciniki_fatt_objects($ciniki) {
 		'fields'=>array(
 			'cert_id'=>array('ref'=>'ciniki.fatt.cert'),
 			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'offering_id'=>array('ref'=>'ciniki.fatt.offering'),
 			'date_received'=>array(),
 			'date_expiry'=>array(),
 			'flags'=>array('default'=>'1'),
@@ -256,6 +257,7 @@ function ciniki_fatt_objects($ciniki) {
 			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
 			'student_id'=>array('ref'=>'ciniki.customers.customer'),
 			'invoice_id'=>array('ref'=>'ciniki.sapos.invoice'),
+			'status'=>array('default'=>'0'),
 			'customer_notes'=>array('default'=>''),
 			'notes'=>array('default'=>''),
 			'test_results'=>array('default'=>'0'),

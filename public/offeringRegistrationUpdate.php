@@ -24,6 +24,7 @@ function ciniki_fatt_offeringRegistrationUpdate(&$ciniki) {
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'), 
 		'item_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Invoice Item'),
 		'student_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Student'),
+		'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
 		'customer_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer Notes'), 
 		'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
 		'test_results'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Test Results'), 
@@ -49,9 +50,9 @@ function ciniki_fatt_offeringRegistrationUpdate(&$ciniki) {
     }   
 
 	//
-	// Get the offering ID
+	// Get the current registration
 	//
-	$strsql = "SELECT id, offering_id, student_id "
+	$strsql = "SELECT id, offering_id, student_id, status "
 		. "FROM ciniki_fatt_offering_registrations "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -75,7 +76,7 @@ function ciniki_fatt_offeringRegistrationUpdate(&$ciniki) {
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.fatt');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
-	}   
+	}
 
 	//
 	// Update the offering in the database
@@ -85,6 +86,18 @@ function ciniki_fatt_offeringRegistrationUpdate(&$ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 		return $rc;
+	}
+
+	//
+	// Check if the status changed
+	//
+	if( isset($args['status']) && $args['status'] != $registration['status'] ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationUpdateCerts');
+		$rc = ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $args['business_id'], $args['registration_id'], $registration);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+			return $rc;
+		}
 	}
 
 	//
