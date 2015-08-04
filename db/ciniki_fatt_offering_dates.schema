@@ -53,4 +53,4 @@ create table ciniki_fatt_offering_dates (
 	primary key (id),
 	index (start_date, num_hours),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';
