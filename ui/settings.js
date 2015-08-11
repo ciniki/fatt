@@ -407,6 +407,7 @@ function ciniki_fatt_settings() {
 				'url':{'label':'Website', 'type':'text'},
 				'num_seats':{'label':'Seats', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
+				'colour':{'label':'Colour', 'type':'colour'},
 				}},
 			'_address_flags':{'label':'', 'aside':'yes', 'fields':{
 				'flags_1':{'label':'Address', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 

@@ -143,6 +143,7 @@ function ciniki_fatt_objects($ciniki) {
 			'url'=>array('default'=>''),
 			'description'=>array('default'=>''),
 			'num_seats'=>array('default'=>'0'),
+			'colour'=>array('default'=>''),
 			),
 		'history_table'=>'ciniki_fatt_history',
 		);

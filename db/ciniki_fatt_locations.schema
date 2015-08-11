@@ -61,6 +61,7 @@ create table ciniki_fatt_locations (
 	url varchar(250) not null,
 	description varchar(6000) not null,
 	num_seats int not null,
+	colour varchar(20) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),

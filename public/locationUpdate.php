@@ -37,6 +37,7 @@ function ciniki_fatt_locationUpdate(&$ciniki) {
 		'url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Website'),
 		'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
 		'num_seats'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Number of Seats'), 
+		'colour'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Colour'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

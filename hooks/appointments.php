@@ -65,6 +65,7 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 		. "ciniki_fatt_locations.code AS location_codes, "
 		. "ciniki_fatt_locations.name AS location_name, "
 		. "ciniki_fatt_locations.num_seats AS location_seats, "
+		. "ciniki_fatt_locations.colour AS location_colour, "
 //		. "ciniki_fatt_offering_dates.id AS offering_date_id, "
 		. "ciniki_fatt_offering_dates.start_date AS start_date, "
 		. "ciniki_fatt_offering_dates.start_date as start_ts, "
@@ -115,7 +116,7 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'appointments', 'fname'=>'appointment_id', 'name'=>'appointment', 
 			'fields'=>array('id'=>'appointment_id', 'course_codes', 'start_date', 'start_ts', 'date', 'time', '12hour', 'duration', 
-				'secondary_text'=>'location_name', 'location_codes', 'max_seats', 'seats_remaining', 'instructors', 'instructor_codes'),
+				'secondary_text'=>'location_name', 'location_codes', 'colour'=>'location_colour', 'max_seats', 'seats_remaining', 'instructors', 'instructor_codes'),
 			'dlists'=>array('course_codes'=>'/', 'location_codes'=>',', 'instructors'=>', ', 'instructor_codes'=>','),
 			'utctotz'=>array('start_ts'=>array('timezone'=>$intl_timezone, 'format'=>'U'),
 				'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
@@ -187,7 +188,9 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 		$appointments[$aid]['appointment']['allday'] = 'no';
 		$appointments[$aid]['appointment']['repeat_type'] = '0';
 		$appointments[$aid]['appointment']['repeat_interval'] = '1';
-		$appointments[$aid]['appointment']['colour'] = '#ffcccc';
+		if( $appointments[$aid]['appointment']['colour'] == '' ) {
+			$appointments[$aid]['appointment']['colour'] = '#ffcccc';
+		}
 		$appointments[$aid]['appointment']['calendar'] = 'Courses';
 		$appointments[$aid]['appointment']['module'] = 'ciniki.fatt';
 //		if( $appointment['appointment']['location_name'] != '' ) {

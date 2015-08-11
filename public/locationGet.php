@@ -64,7 +64,8 @@ function ciniki_fatt_locationGet($ciniki) {
 		. "ciniki_fatt_locations.longitude, "
 		. "ciniki_fatt_locations.url, "
 		. "ciniki_fatt_locations.description, "
-		. "ciniki_fatt_locations.num_seats "
+		. "ciniki_fatt_locations.num_seats, "
+		. "ciniki_fatt_locations.colour "
 		. "FROM ciniki_fatt_locations "
 		. "WHERE ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_fatt_locations.id = '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
@@ -74,7 +75,7 @@ function ciniki_fatt_locationGet($ciniki) {
 		array('container'=>'locations', 'fname'=>'id', 'name'=>'location',
 			'fields'=>array('id', 'code', 'name', 'permalink', 'status', 'flags',
 				'address1', 'address2', 'city', 'province', 'postal', 
-				'latitude', 'longitude', 'url', 'description', 'num_seats')),
+				'latitude', 'longitude', 'url', 'description', 'num_seats', 'colour')),
 	));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
