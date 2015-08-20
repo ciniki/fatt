@@ -427,6 +427,10 @@ function ciniki_fatt_offerings() {
 		this.add.data = {};
 		this.add.customer_id = 0;
 		this.add.sections = {
+			'_tabs':{'label':'', 'visible':'no', 'type':'paneltabs', 'selected':'offering', 'tabs':{
+				'offering':{'label':'Class', 'fn':''},
+				'appointment':{'label':'Appointment', 'fn':''},
+				}},
 			'details':{'label':'', 'aside':'yes', 'fields':{
 				'course_id':{'label':'Course', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_fatt_offerings.add.courseChange'},
 				'day1':{'label':'Day 1', 'type':'appointment', 'caloffset':0,
@@ -950,6 +954,12 @@ function ciniki_fatt_offerings() {
 	};
 
 	this.addShow = function(cb, d, t, ad) {
+		// Decide if tabs should be shown at top to switch to appointment from offering
+		this.add.sections._tabs.visible = 'no';
+		if( M.curBusiness.modules['ciniki.atdo'] != null && (M.curBusiness.modules['ciniki.atdo'].flags&0x01) == 1 ) {
+			this.add.sections._tabs.visible = 'yes';
+			this.add.sections._tabs.tabs.appointment.fn = 'M.startApp(\'ciniki.atdo.main\',null,\'' + cb + '\',\'mc\',{\'add\':\'appointment\',\'date\':\'' + d + '\',\'time\':\'' + t + '\',\'allday\':\'' + ad + '\'});';
+		}
 		this.add.reset();
 		var p = d.split(/-/);
 		var d = new Date(p[0],p[1]-1,p[2]);
