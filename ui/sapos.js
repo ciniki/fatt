@@ -253,7 +253,7 @@ function ciniki_fatt_sapos() {
 				if( rsp.registration.item_id != null ) {
 					p.item_id = rsp.registration.item_id;
 				}
-				if( rsp.registration.invoice_status < 50 ) {
+				if( rsp.registration.invoice_status < 50 || (M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] != null && M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
 					p.sections._buttons.buttons.delete.visible = 'yes';
 				} else { 
 					p.sections._buttons.buttons.delete.visible = 'no';
