@@ -21,6 +21,7 @@ function ciniki_fatt_certBusinessExpirations($ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+		'output'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Format'),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -103,7 +104,6 @@ function ciniki_fatt_certBusinessExpirations($ciniki) {
 		$customers[$customer['customer']['id']]['certs'] = array();
 	}
 
-
 	//
 	// Get the certifications for the employees
 	//
@@ -125,7 +125,6 @@ function ciniki_fatt_certBusinessExpirations($ciniki) {
 			. "AND ciniki_fatt_cert_customers.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, array_keys($customers)) . ") "
 			. "ORDER BY ciniki_fatt_cert_customers.customer_id, ciniki_fatt_cert_customers.cert_id, days_till_expiry ASC "
 			. "";
-		error_log($strsql);
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 			array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
 				'fields'=>array('id', 'customer_id', 'name', 'date_received', 'date_expiry', 'days_till_expiry', 'years_valid')),
@@ -143,7 +142,7 @@ function ciniki_fatt_certBusinessExpirations($ciniki) {
 						$rsp['certs'][$cid]['cert']['expiry_text'] = "Expired " . abs($age) . " day" . ($age<1?'s':'') . " ago";
 					}
 				} else {
-					$rsp['certs'][$cid]['cert']['date_expiry'] = 'No Expiration';
+					$rsp['certs'][$cid]['cert']['date_expiry'] = '';
 					$rsp['certs'][$cid]['cert']['expiry_text'] = 'No Expiration';
 				}
 				//
@@ -165,6 +164,67 @@ function ciniki_fatt_certBusinessExpirations($ciniki) {
 	foreach($customers as $customer) {
 		if( count($customer['certs']) == 0 ) {
 			$rsp['certs'][] = array('cert'=>array('id'=>'0', 'cert_id'=>'0', 'customer_id'=>$customer['id'], 'display_name'=>$customer['display_name'], 'name'=>'', 'years_valid'=>'', 'days_to_expiry'=>'', 'expiry_text'=>'', 'date_received'=>'', 'date_expiry'=>''));
+		}
+	}
+
+	if( isset($args['output']) && $args['output'] == 'pdf' ) {
+		//
+		// Load business details
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
+		$rc = ciniki_businesses_businessDetails($ciniki, $args['business_id']);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['details']) && is_array($rc['details']) ) {	
+			$rsp['business_details'] = $rc['details'];
+		} else {
+			$rsp['business_details'] = array();
+		}
+
+		//
+		// Use the invoice header settings for consistence, load from sapos module
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+		$rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_sapos_settings', 'business_id', $args['business_id'],
+			'ciniki.sapos', 'settings', 'invoice');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['settings']) ) {
+			$rsp['sapos_settings'] = $rc['settings'];
+		} else {
+			$rsp['sapos_settings'] = array();
+		}
+
+		if( isset($rsp['customer']['addresses']) ) {
+			foreach($rsp['customer']['addresses'] as $address) {
+				if( ($address['address']['flags']&0x02) == 0x02 ) {
+					$rsp['customer']['billing_address1'] = $address['address']['address1'];
+					$rsp['customer']['billing_address2'] = $address['address']['address2'];
+					$rsp['customer']['billing_city'] = $address['address']['city'];
+					$rsp['customer']['billing_province'] = $address['address']['province'];
+					$rsp['customer']['billing_postal'] = $address['address']['postal'];
+					$rsp['customer']['billing_country'] = $address['address']['country'];
+					break;
+				}
+			}
+		}
+
+		$cur_date = new DateTime('now', new DateTimeZone($intl_timezone));
+		$rsp['report_date'] = $cur_date->format($php_date_format);
+
+		//
+		// Generate the pdf
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'templates', 'businessExpirations');
+		$rc = ciniki_fatt_templates_businessExpirations($ciniki, $args['business_id'], $rsp);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['pdf']) ) {
+			$filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $rsp['customer']['display_name']));
+			$rc['pdf']->Output($filename . '.pdf', 'D');
 		}
 	}
 

@@ -199,6 +199,9 @@ function ciniki_fatt_certs() {
 				'cellClasses':['multiline', 'multiline', 'multiline'],
 				'noData':'No certifications',
 				},
+			'_buttons':{'label':'', 'buttons':{
+				'print':{'label':'Print Report', 'fn':'M.ciniki_fatt_certs.downloadBusinessCerts();'},
+				}},
 			};
 		this.businesscerts.sectionData = function(s) { return this.data[s]; }
 		this.businesscerts.cellValue = function(s, i, j, d) {
@@ -426,5 +429,9 @@ function ciniki_fatt_certs() {
 			p.show(cb);
 		});
 
+	};
+
+	this.downloadBusinessCerts = function() {
+		M.api.openPDF('ciniki.fatt.certBusinessExpirations', {'business_id':M.curBusinessID, 'customer_id':this.businesscerts.customer_id, 'output':'pdf'});
 	};
 }
