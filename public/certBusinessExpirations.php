@@ -100,56 +100,71 @@ function ciniki_fatt_certBusinessExpirations($ciniki) {
 	$customers = array();
 	foreach($rc['customers'] as $customer) {
 		$customers[$customer['customer']['id']] = $customer['customer'];
+		$customers[$customer['customer']['id']]['certs'] = array();
 	}
 
 
 	//
 	// Get the certifications for the employees
 	//
-	$strsql = "SELECT ciniki_fatt_cert_customers.id, "
-		. "ciniki_fatt_cert_customers.cert_id, "
-		. "ciniki_fatt_cert_customers.customer_id, "
-		. "ciniki_fatt_certs.name, "
-		. "ciniki_fatt_certs.years_valid, "
-		. "DATE_FORMAT(ciniki_fatt_cert_customers.date_received, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS date_received, "
-		. "DATE_FORMAT(ciniki_fatt_cert_customers.date_expiry, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS date_expiry, "
-		. "DATEDIFF(ciniki_fatt_cert_customers.date_expiry, '" . ciniki_core_dbQuote($ciniki, $cur_date->format('Y-m-d')) . "') AS days_till_expiry "
-		. "FROM ciniki_fatt_cert_customers "
-		. "INNER JOIN ciniki_fatt_certs ON ("
-			. "ciniki_fatt_cert_customers.cert_id = ciniki_fatt_certs.id "
-			. ((isset($args['grouping']) && $args['grouping'] != '' )?"AND ciniki_fatt_certs.grouping = '" . ciniki_core_dbQuote($ciniki, $args['grouping']) . "' ":"")
-			. "AND ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "WHERE ciniki_fatt_cert_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_fatt_cert_customers.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, array_keys($customers)) . ") "
-		. "ORDER BY ciniki_fatt_cert_customers.customer_id, ciniki_fatt_cert_customers.cert_id, days_till_expiry ASC "
-		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
-		array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
-			'fields'=>array('id', 'customer_id', 'name', 'date_received', 'date_expiry', 'days_till_expiry', 'years_valid')),
-		));
-	$rsp['certs'] = array();
-	if( isset($rc['certs']) ) {
-		$rsp['certs'] = $rc['certs'];
-		foreach($rsp['certs'] as $cid => $cert) {
-			if( isset($customers[$cert['cert']['customer_id']]) ) {
-				$rsp['certs'][$cid]['cert']['display_name'] = $customers[$cert['cert']['customer_id']]['display_name'];
-			} else {
-				$rsp['certs'][$cid]['cert']['display_name'] = '';
-			}
-			if( $cert['cert']['years_valid'] > 0 ) {
-				$age = $cert['cert']['days_till_expiry'];
-				if( $age > 0 ) {
-					$rsp['certs'][$cid]['cert']['expiry_text'] = "Expiring in " . abs($age) . " day" . ($age>1?'s':'');
-				} elseif( $age == 0 ) {
-					$rsp['certs'][$cid]['cert']['expiry_text'] = "Expired today";
-				} elseif( $age < 0 ) {
-					$rsp['certs'][$cid]['cert']['expiry_text'] = "Expired " . abs($age) . " day" . ($age<1?'s':'') . " ago";
+	if( count($customers) > 0 ) {
+		$strsql = "SELECT ciniki_fatt_cert_customers.id, "
+			. "ciniki_fatt_cert_customers.cert_id, "
+			. "ciniki_fatt_cert_customers.customer_id, "
+			. "ciniki_fatt_certs.name, "
+			. "ciniki_fatt_certs.years_valid, "
+			. "DATE_FORMAT(ciniki_fatt_cert_customers.date_received, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS date_received, "
+			. "DATE_FORMAT(ciniki_fatt_cert_customers.date_expiry, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS date_expiry, "
+			. "DATEDIFF(ciniki_fatt_cert_customers.date_expiry, '" . ciniki_core_dbQuote($ciniki, $cur_date->format('Y-m-d')) . "') AS days_till_expiry "
+			. "FROM ciniki_fatt_cert_customers "
+			. "INNER JOIN ciniki_fatt_certs ON ("
+				. "ciniki_fatt_cert_customers.cert_id = ciniki_fatt_certs.id "
+				. "AND ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") "
+			. "WHERE ciniki_fatt_cert_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_fatt_cert_customers.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, array_keys($customers)) . ") "
+			. "ORDER BY ciniki_fatt_cert_customers.customer_id, ciniki_fatt_cert_customers.cert_id, days_till_expiry ASC "
+			. "";
+		error_log($strsql);
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+			array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
+				'fields'=>array('id', 'customer_id', 'name', 'date_received', 'date_expiry', 'days_till_expiry', 'years_valid')),
+			));
+		if( isset($rc['certs']) ) {
+			$rsp['certs'] = $rc['certs'];
+			foreach($rsp['certs'] as $cid => $cert) {
+				if( $cert['cert']['years_valid'] > 0 ) {
+					$age = $cert['cert']['days_till_expiry'];
+					if( $age > 0 ) {
+						$rsp['certs'][$cid]['cert']['expiry_text'] = "Expiring in " . abs($age) . " day" . ($age>1?'s':'');
+					} elseif( $age == 0 ) {
+						$rsp['certs'][$cid]['cert']['expiry_text'] = "Expired today";
+					} elseif( $age < 0 ) {
+						$rsp['certs'][$cid]['cert']['expiry_text'] = "Expired " . abs($age) . " day" . ($age<1?'s':'') . " ago";
+					}
+				} else {
+					$rsp['certs'][$cid]['cert']['date_expiry'] = 'No Expiration';
+					$rsp['certs'][$cid]['cert']['expiry_text'] = 'No Expiration';
 				}
-			} else {
-				$rsp['certs'][$cid]['cert']['date_expiry'] = 'No Expiration';
-				$rsp['certs'][$cid]['cert']['expiry_text'] = 'No Expiration';
+				//
+				// Attach the customer name to the cert and the customer to the cert
+				//
+				if( isset($customers[$cert['cert']['customer_id']]) ) {
+					$customers[$cert['cert']['customer_id']]['certs'][] = $rsp['certs'][$cid];
+					$rsp['certs'][$cid]['cert']['display_name'] = $customers[$cert['cert']['customer_id']]['display_name'];
+				} else {
+					$rsp['certs'][$cid]['cert']['display_name'] = '';
+				}
 			}
+		}
+	}
+
+	//
+	// Check for customers with no certifications
+	//
+	foreach($customers as $customer) {
+		if( count($customer['certs']) == 0 ) {
+			$rsp['certs'][] = array('cert'=>array('id'=>'0', 'cert_id'=>'0', 'customer_id'=>$customer['id'], 'display_name'=>$customer['display_name'], 'name'=>'', 'years_valid'=>'', 'days_to_expiry'=>'', 'expiry_text'=>'', 'date_received'=>'', 'date_expiry'=>''));
 		}
 	}
 

@@ -23,7 +23,7 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'cert_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Certification'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Customer'), 
-		'offering_i'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Offering'), 
+		'offering_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Offering'), 
 		'date_received'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Certification Date'), 
 		'date_expiry'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Certification Expiry'), 
 		'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
