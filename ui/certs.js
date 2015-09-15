@@ -6,12 +6,18 @@ function ciniki_fatt_certs() {
 		//
 		// The menu panel
 		//
-		this.main = new M.panel('Settings',
-			'ciniki_fatt_certs', 'main',
-			'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.main');
-		this.main.sections = {	
-		};
-		this.main.addClose('Back');
+		this.menu = new M.panel('Certifications',
+			'ciniki_fatt_certs', 'menu',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.menu');
+		this.menu.sections = {	
+			'_a':{'label':'', 'type':'simplelist', 'list':{
+				'expirations':{'label':'Certificate Expirations', 'fn':'M.ciniki_fatt_certs.expirationsShow(\'M.ciniki_fatt_certs.showMenu();\',\'\',\'\');'},
+				}},
+			'_b':{'label':'', 'type':'simplelist', 'list':{
+				'businesses':{'label':'Business Report', 'fn':'M.ciniki_fatt_certs.businessesShow(\'M.ciniki_fatt_certs.showMenu();\');'},
+				}},
+			};
+		this.menu.addClose('Back');
 
 		//
 		// The cert expirations panel
@@ -146,6 +152,85 @@ function ciniki_fatt_certs() {
 		}
 		this.certcustomer.addButton('save', 'Save', 'M.ciniki_fatt_certs.certcustomerSave();');
 		this.certcustomer.addClose('Cancel');
+
+		//
+		// The panel to display the business list
+		//
+		this.businesses = new M.panel('Businesses',
+			'ciniki_fatt_certs', 'businesses',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.businesses');
+		this.businesses.data = {};
+		this.businesses.sections = {
+			'customers':{'label':'', 'type':'simplegrid', 'num_cols':1},
+			};
+		this.businesses.sectionData = function(s) { return this.data[s]; }
+		this.businesses.cellValue = function(s, i, j, d) {
+			if( s == 'customers' ) {
+				switch (j) {
+					case 0: return d.customer.display_name;
+				}
+			}
+		}
+		this.businesses.rowFn = function(s, i, d) {
+			return 'M.ciniki_fatt_certs.businessCertsShow(\'M.ciniki_fatt_certs.businessesShow();\',\'' + d.customer.id + '\');';
+		}
+		this.businesses.addClose('Back');
+
+		//
+		// The panel to list the business employee certifications
+		//
+		this.businesscerts = new M.panel('Businesses Certifications',
+			'ciniki_fatt_certs', 'businesscerts',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.businesscerts');
+		this.businesscerts.customer_id = 0;
+		this.businesscerts.data = {};
+		this.businesscerts.sections = {
+			'customer_details':{'label':'', 'type':'simplegrid', 'num_cols':2,
+				'cellClasses':['label',''],
+//				'addTxt':'Edit',
+//				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_sapos_invoice.showInvoice();\',\'mc\',{\'next\':\'M.ciniki_sapos_invoice.updateInvoiceCustomer\',\'customer_id\':M.ciniki_sapos_invoice.invoice.data.customer_id});',
+//				'changeTxt':'Change customer',
+//				'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_sapos_invoice.showInvoice();\',\'mc\',{\'next\':\'M.ciniki_sapos_invoice.updateInvoiceCustomer\',\'customer_id\':0});',
+				},
+			'certs':{'label':'Certifications', 'type':'simplegrid', 'num_cols':3,
+				'headerValues':['Customer', 'Certification', 'Expiration'],
+				'sortable':'yes',
+				'sortTypes':['text', 'text', 'altnumber'],
+				'cellClasses':['multiline', 'multiline', 'multiline'],
+				'noData':'No certifications',
+				},
+			};
+		this.businesscerts.sectionData = function(s) { return this.data[s]; }
+		this.businesscerts.cellValue = function(s, i, j, d) {
+			if( s == 'customer_details' ) {
+				switch (j) {
+					case 0: return d.detail.label;
+					case 1: return (d.detail.label == 'Email'?M.linkEmail(d.detail.value):d.detail.value);
+				}
+			}
+			else if( s == 'certs' ) {
+				switch (j) {
+					case 0: return d.cert.display_name;
+					case 1: return '<span class="maintext">' + d.cert.name + '</span><span class="subtext">' + d.cert.date_received + '</span>';
+					case 2: return '<span class="maintext">' + d.cert.expiry_text + '</span><span class="subtext">' + d.cert.date_expiry + '</span>';
+				}
+			}
+		}
+		this.businesscerts.cellSortValue = function(s, i, j, d) {
+			switch(j) {
+				case 0: return d.cert.display_name;
+				case 1: return d.cert.name;
+				case 2: return d.cert.days_till_expiry;
+			}
+		};
+		this.businesscerts.rowFn = function(s, i, d) {
+			if( s == 'certs' ) {
+				return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_certs.businessCertsShow();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
+			}
+			return '';
+		}
+		
+		this.businesscerts.addClose('Back');
 	}
 
 	//
@@ -196,20 +281,17 @@ function ciniki_fatt_certs() {
 		if( args.certcustomer_id != null ) {
 			this.certcustomerEdit(cb, args.certcustomer_id, args.cert_id, args.customer_id);
 		} else {
-//			var edt = new Date();
-//			var sdt = new Date();
-//			edt.setDate(edt.getDate()+90);
-//			this.expirationsShow(cb, sdt.toDateString(), edt.toDateString());
-			this.expirationsShow(cb, '', '');
+			this.showMenu(cb);
+//			this.expirationsShow(cb, '', '');
 		}
 	}
 
 	//
 	// Grab the stats for the business from the database and present the list of orders.
 	//
-	this.showMain = function(cb) {
-		this.main.refresh();
-		this.main.show(cb);
+	this.showMenu = function(cb) {
+		this.menu.refresh();
+		this.menu.show(cb);
 	}
 
 	this.expirationsShow = function(cb, grouping, timespan) {
@@ -316,5 +398,33 @@ function ciniki_fatt_certs() {
 				M.ciniki_fatt_certs.certcustomer.close();
 			});
 		}
+	};
+
+	this.businessesShow = function(cb) {
+		M.api.getJSONCb('ciniki.fatt.certBusinessList', {'business_id':M.curBusinessID}, function(rsp) {
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			}
+			var p = M.ciniki_fatt_certs.businesses;
+			p.data = rsp;
+			p.refresh();
+			p.show(cb);
+		});
+	};
+
+	this.businessCertsShow = function(cb, bid) {
+		if( bid != null ) { this.businesscerts.customer_id = bid; }
+		M.api.getJSONCb('ciniki.fatt.certBusinessExpirations', {'business_id':M.curBusinessID, 'customer_id':this.businesscerts.customer_id}, function(rsp) {
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			}
+			var p = M.ciniki_fatt_certs.businesscerts;
+			p.data = rsp;
+			p.refresh();
+			p.show(cb);
+		});
+
 	};
 }
