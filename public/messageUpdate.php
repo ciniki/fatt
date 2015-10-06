@@ -24,10 +24,12 @@ function ciniki_fatt_messageUpdate(&$ciniki) {
         'message_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Location'), 
 		'object'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Object'), 
 		'object_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Object ID'), 
-		'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('0', '10'), 'name'=>'Status'), 
+		'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('0', '10', '20'), 'name'=>'Status'), 
 		'days'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Days'), 
 		'subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subject'), 
 		'message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'), 
+		'parent_subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent Subject'), 
+		'parent_message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent Message'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

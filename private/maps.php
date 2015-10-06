@@ -36,6 +36,13 @@ function ciniki_fatt_maps($ciniki) {
 			'50'=>'Archive',
 			),
 		);
+	$maps['message'] = array(
+		'status'=>array(
+			'0'=>'Inactive',
+			'10'=>'Pending Approval',
+			'20'=>'Auto Send',
+			),
+		);
 	$maps['cert'] = array(
 		'status'=>array(
 			'10'=>'Active',

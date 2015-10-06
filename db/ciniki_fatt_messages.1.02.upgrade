@@ -1,0 +1,6 @@
+#
+# Add parent message fields
+#
+ALTER TABLE ciniki_fatt_messages ADD COLUMN parent_subject varchar(250) not null AFTER message;
+ALTER TABLE ciniki_fatt_messages ADD COLUMN parent_message varchar(20000) not null AFTER parent_subject;
+ALTER TABLE ciniki_fatt_messages COMMENT='v1.02';

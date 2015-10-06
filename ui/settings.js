@@ -519,6 +519,7 @@ function ciniki_fatt_settings() {
 				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
 				}},
 			'messages':{'label':'Messages', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+				'cellClasses':['multiline', 'multiline'],
 				'addTxt':'New Reminder',
 				'addFn':'M.ciniki_fatt_settings.cert.messageEdit(0)',
 				},
@@ -567,14 +568,14 @@ function ciniki_fatt_settings() {
 		this.cert.cellValue = function(s, i, j, d) {
 			if( j == 0 ) {
 				if( d.message.days < 0 ) {
-					return Math.abs(d.message.days) + ' days before expiry';
+					return '<span class="maintext">' + Math.abs(d.message.days) + ' days before expiry' + '</span><span class="subtext">' + d.message.status_text + '</span>';
 				} else if( d.message.days == 0 ) {
-					return 'on expiry day';
+					return '<span class="maintext">on expiry day' + '</span><span class="subtext">' + d.message.status_text + '</span>';
 				} else if( d.message.days > 0 ) {
-					return Math.abs(d.message.days) + ' days after expiry';
+					return '<span class="maintext">' + Math.abs(d.message.days) + ' days after expiry' + '</span><span class="subtext">' + d.message.status_text + '</span>';
 				}
 			} else if( j == 1 ) {
-				return d.message.subject;
+				return '<span class="maintext">' + d.message.subject + '</span><span class="subtext">' + d.message.parent_subject + '</span>';
 			}
 		}
 		this.cert.rowFn = function(s, i, d) {
@@ -595,12 +596,20 @@ function ciniki_fatt_settings() {
 		this.message.data = {};
 		this.message.sections = {
 			'details':{'label':'', 'fields':{
-				'status':{'label':'Status', 'type':'toggle', 'toggles':{'0':'Inactive', '10':'Active'}},
+				'status':{'label':'Status', 'type':'select', 'options':{'0':'Inactive', '10':'Require Approval', '20':'Auto Send'}},
 				'days':{'label':'Days', 'type':'text', 'size':'small'},
+				}},
+			'_subject':{'label':'', 'fields':{
 				'subject':{'label':'Subject', 'type':'text'},
 				}},
-			'_message':{'label':'Message', 'fields':{
+			'_message':{'label':'', 'fields':{
 				'message':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+				}},
+			'_parent_subject':{'label':'', 'fields':{
+				'parent_subject':{'label':'Subject', 'type':'text'},
+				}},
+			'_parent_message':{'label':'', 'fields':{
+				'parent_message':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_fatt_settings.messageSave();'},
@@ -713,6 +722,18 @@ function ciniki_fatt_settings() {
 		this.course.sections._bundles.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x40) > 0?'yes':'no');
 		this.course.sections._certs.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x10) > 0?'yes':'no');
 		this.course.sections.messages.active = ((M.curBusiness.modules['ciniki.fatt'].flags&0x08) > 0?'yes':'no');
+		if( M.curBusiness.modules['ciniki.customers'].settings != null 
+			&& M.curBusiness.modules['ciniki.customers'].settings['ui-labels-parent'] != null ) {
+			this.message.sections._parent_subject.label = M.curBusiness.modules['ciniki.customers'].settings['ui-labels-parent'] + ' Message';
+		} else {
+			this.message.sections._parent_subject.label = 'Parent Message';
+		}
+		if( M.curBusiness.modules['ciniki.customers'].settings != null 
+			&& M.curBusiness.modules['ciniki.customers'].settings['ui-labels-child'] != null ) {
+			this.message.sections._subject.label = M.curBusiness.modules['ciniki.customers'].settings['ui-labels-child'] + ' Message';
+		} else {
+			this.message.sections._subject.label = 'Customer Message';
+		}
 
 		//
 		// Setup the tax types

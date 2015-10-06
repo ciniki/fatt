@@ -40,6 +40,16 @@ function ciniki_fatt_certGet($ciniki) {
     }   
 	$modules = $rc['modules'];
 
+	//
+	// Load the status maps for the text description of each status
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'maps');
+	$rc = ciniki_fatt_maps($ciniki);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$maps = $rc['maps'];
+
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 
 	if( $args['cert_id'] == 0 ) {	
@@ -118,7 +128,8 @@ function ciniki_fatt_certGet($ciniki) {
 	if( isset($args['messages']) && $args['messages'] == 'yes' 
 		&& ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x20) > 0 
 		) {
-		$strsql = "SELECT id, days, subject, message "
+		$strsql = "SELECT id, status, status AS status_text, "
+			. "days, subject, message, parent_subject, parent_message "
 			. "FROM ciniki_fatt_messages "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND object = 'ciniki.fatt.cert' "
@@ -127,7 +138,8 @@ function ciniki_fatt_certGet($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 			array('container'=>'messages', 'fname'=>'id', 'name'=>'message',
-				'fields'=>array('id', 'days', 'subject', 'message')),
+				'fields'=>array('id', 'status', 'status_text', 'days', 'subject', 'message', 'parent_subject', 'parent_message'),
+				'maps'=>array('status_text'=>$maps['message']['status'])),
 		));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

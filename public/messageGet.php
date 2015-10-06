@@ -47,6 +47,8 @@ function ciniki_fatt_messageGet($ciniki) {
 			'days'=>'',
 			'subject'=>'',
 			'message'=>'',
+			'parent_subject'=>'',
+			'parent_message'=>'',
 			));
 	}
 
@@ -59,7 +61,9 @@ function ciniki_fatt_messageGet($ciniki) {
 		. "ciniki_fatt_messages.status, "
 		. "ciniki_fatt_messages.days, "
 		. "ciniki_fatt_messages.subject, "
-		. "ciniki_fatt_messages.message "
+		. "ciniki_fatt_messages.message, "
+		. "ciniki_fatt_messages.parent_subject, "
+		. "ciniki_fatt_messages.parent_message "
 		. "FROM ciniki_fatt_messages "
 		. "WHERE ciniki_fatt_messages.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_fatt_messages.id = '" . ciniki_core_dbQuote($ciniki, $args['message_id']) . "' "
@@ -67,7 +71,7 @@ function ciniki_fatt_messageGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.messages', array(
 		array('container'=>'messages', 'fname'=>'id', 'name'=>'message',
-			'fields'=>array('id', 'object', 'object_id', 'status', 'days', 'subject', 'message')),
+			'fields'=>array('id', 'object', 'object_id', 'status', 'days', 'subject', 'message', 'parent_subject', 'parent_message')),
 	));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

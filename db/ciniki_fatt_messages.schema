@@ -3,6 +3,14 @@
 # -----------
 # This tables stores the certifications a customer has received.
 #
+# The following substitutions are allowed in the messages and subject.
+#
+# {_customer_name_} 	- The display_name of the customer.
+# {_employee_name_}		- The display_name of the customer.
+# {_parent_name_}		- The display_name of the parent.
+# {_employer_name_}		- The display name of the parent.
+
+#
 # Fields
 # ------
 # id:				The ID assigned to the course.
@@ -16,7 +24,9 @@
 #					to send them out.
 #
 #					0 - Inactive
-#					10 - Active
+#					10 - Active - Put emails in pending status
+#					20 - Active - Put emails in queue **future**
+#					
 #
 # days:				The number of days plus or minus of the "date_expiry" field in the objects table.
 #					-90 will send the message 90 days before expiry.  
@@ -26,6 +36,9 @@
 # subject:			The subject of the message to be sent.
 #
 # message:			The message content to be sent.
+#
+# parent_subject:	The subject to send to the parent of the customer.
+# parent_message:	The message to send to the parent of the customer.
 #
 # date_added:		The UTC date and time the record was added.
 # last_updated:		The UTC date and time the record was last updated.
@@ -40,9 +53,11 @@ create table ciniki_fatt_messages (
 	days int not null,
 	subject varchar(250) not null,
 	message varchar(20000) not null,
+	parent_subject varchar(250) not null,
+	parent_message varchar(20000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
 	index (object, object_id),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';
