@@ -98,10 +98,10 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 	//
 	// Get the customer details
 	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
 	if( $rsp['registration']['customer_id'] > 0 ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
-		$rc = ciniki_customers__customerDetails($ciniki, $business_id, $rsp['registration']['customer_id'], 
-			array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
+		$rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$rsp['registration']['customer_id'], 
+			'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
@@ -112,8 +112,8 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 	// Get the student details
 	//
 	if( $rsp['registration']['customer_id'] != $rsp['registration']['student_id'] && $rsp['registration']['student_id'] > 0 ) {
-		$rc = ciniki_customers__customerDetails($ciniki, $business_id, $rsp['registration']['student_id'], 
-			array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
+		$rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$rsp['registration']['student_id'], 
+			'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
