@@ -135,7 +135,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		//
 		$strsql = "SELECT ciniki_fatt_offering_dates.offering_id, "
 			. "ciniki_fatt_offerings.max_seats, "
-			. "COUNT(ciniki_fatt_offering_registrations.id) AS num_registrations "
+			. "COUNT(DISTINCT ciniki_fatt_offering_registrations.id) AS num_registrations "
 			. "FROM ciniki_fatt_offering_dates "
 			. "LEFT JOIN ciniki_fatt_offerings ON ("
 				. "ciniki_fatt_offering_dates.offering_id = ciniki_fatt_offerings.id "
@@ -212,11 +212,11 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 				. "ciniki_fatt_offering_dates.location_id = '" . ciniki_core_dbQuote($ciniki, $date['location_id'])  . "' "
 				// Start date of current offering within start/end datetime of other offering
 				. "AND ((unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
-					. "AND unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600) > '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
+					. "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
 					. ") "
 				// end date of current offering withing start/end datetime of other offering
-				. "OR (unix_timestamp(ciniki_fatt_offering_dates.start_date) < '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
-					. "AND unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600) >= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
+				. "OR (unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
+					. "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
 					. ")) "
 				. ") ";
 		}
@@ -236,6 +236,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		} else {
 			$other_offerings = array();
 		}
+//		print_r($strsql);
+//		print_r($other_offerings);
 
 		//
 		// Check if the maximum number of seats in the location is less than the seats remaining
@@ -247,6 +249,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		//
 		// Check the other overlapping offerings
 		//
+//		print("Seats remaining: $seats_remaining\n");
+//		print("other_num_registrations: $other_num_registrations\n");
 		foreach($other_offerings as $oid => $other_offering) {
 			//
 			// Check if the other offering has a lower instructor max that our current seats available
@@ -264,6 +268,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 //				$seats_remaining = $other_offering_seats_remaining>0?$other_offering_seats_remaining:0;
 //			}
 		}
+//		print("Seats remaining: $seats_remaining\n");
+//		print("other_num_registrations: $other_num_registrations\n");
 
 		if( $first_date != NULL ) {
 			$date_string .= ($num_dates>1?' - ':', ') . $first_date->format('Y');
@@ -321,10 +327,15 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		$offering_update_args['max_seats'] = $max_seats;
 	}
 
+//	error_log('testing');
+//	error_log("other_num_remaining: $other_num_remaining");
+//	error_log("seats_remaining: $seats_remaining");
+
 	//
 	// Update the offering
 	//
 	if( count($offering_update_args) > 0 ) {
+//		error_log(print_r($offering_update_args, true));
 		$rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.offering', $offering_id, $offering_update_args, 0x04);
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2344', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
