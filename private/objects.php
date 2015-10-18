@@ -174,7 +174,7 @@ function ciniki_fatt_objects($ciniki) {
 			'date_received'=>array(),
 			'date_expiry'=>array(),
 			'flags'=>array('default'=>'1'),
-			'last_message_days'=>array(),
+			'last_message_day'=>array(),
 			'next_message_date'=>array(),
 			),
 		'history_table'=>'ciniki_fatt_history',

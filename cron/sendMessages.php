@@ -23,9 +23,11 @@ function ciniki_fatt_cron_sendMessages($ciniki) {
 	$strsql = "SELECT DISTINCT business_id "
 		. "FROM ciniki_fatt_cert_customers "
 		. "WHERE next_message_date <= UTC_TIMESTAMP() "
+		. "AND date_expiry <> '0000-00-00' "
 		. "AND (flags&0x03) = 0x01 "	// Certifications that still have messages to go out, and aren't finished
 		. "";
 	$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.fatt', 'businesses', 'business_id');
+	print_r($rc);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
