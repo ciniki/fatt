@@ -11,8 +11,9 @@
 // Returns
 // -------
 //
-function ciniki_fatt_cron_sendMessages($ciniki) {
-	print("CRON: Checking fatt certification expirations for mail to be sent\n");
+function ciniki_fatt_cron_jobs($ciniki) {
+	ciniki_cron_logMsg($ciniki, 0, array('code'=>'0', 'msg'=>'Checking for fatt jobs', 'severity'=>'5'));
+	
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
@@ -28,6 +29,7 @@ function ciniki_fatt_cron_sendMessages($ciniki) {
 		. "";
 	$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.fatt', 'businesses', 'business_id');
 	if( $rc['stat'] != 'ok' ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2628', 'msg'=>'Unable to get list of businesses with FATT certifications', 'err'=>$rc['err']));
 		return $rc;
 	}
 	if( !isset($rc['businesses']) || count($rc['businesses']) == 0 ) {
@@ -42,14 +44,15 @@ function ciniki_fatt_cron_sendMessages($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'cronSendCertExpirationMessages');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 	foreach($businesses as $business_id) {
-		print("CRON: Sending fatt certification expiration messages for $business_id\n");
+		ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'0', 'msg'=>'Sending certfication expiration messages', 'severity'=>'10'));
 
 		//
 		// Process the emails for the business
 		//
 		$rc = ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, 0x07);
 		if( $rc['stat'] != 'ok' ) {
-			error_log("CRON-ERR: Unable to send cert expiration messages for $business_id (" . serialize($rc) . ")");
+			ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2629', 'msg'=>'Unable to send certification expiration messages', 
+				'severity'=>50, 'err'=>$rc['err']));
 			continue;
 		}
 	}
