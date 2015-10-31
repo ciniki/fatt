@@ -211,6 +211,7 @@ function ciniki_fatt_objects($ciniki) {
 			'start_date'=>array('default'=>''),
 			'date_string'=>array('default'=>''),
 			'location'=>array('default'=>''),
+			'city'=>array('default'=>''),
 			'max_seats'=>array('default'=>'0'),
 			'seats_remaining'=>array('default'=>'0'),
 			'num_registrations'=>array('default'=>'0'),

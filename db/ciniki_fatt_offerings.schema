@@ -32,6 +32,8 @@
 #
 # location:			The display string of location(s) from the ciniki_fatt_offering_dates.
 #
+# city:				The city and province the course is taking place in.
+#
 # max_seats:		The maximum number of seats for the offering based on instructor and location, 
 #					whichever is lower. This does not reflect other courses on the same date/location.
 #
@@ -54,6 +56,7 @@ create table ciniki_fatt_offerings (
 	start_date datetime not null,
 	date_string varchar(150) not null,
 	location varchar(150) not null,
+	city varchar(150) not null,
 	max_seats int not null,	
 	seats_remaining int not null,
 	num_registrations int not null,
@@ -62,4 +65,4 @@ create table ciniki_fatt_offerings (
 	primary key (id),
 	unique index (business_id, permalink),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.02';
+) ENGINE='InnoDB', COMMENT='v1.03';

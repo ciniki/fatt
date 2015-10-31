@@ -48,6 +48,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		. "ciniki_fatt_offerings.start_date, "
 		. "ciniki_fatt_offerings.date_string, "
 		. "ciniki_fatt_offerings.location, "
+		. "ciniki_fatt_offerings.city, "
 		. "ciniki_fatt_offerings.max_seats, "
 		. "ciniki_fatt_offerings.seats_remaining, "
 		. "ciniki_fatt_offerings.num_registrations AS old_num_registrations, "
@@ -73,7 +74,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'offerings', 'fname'=>'id',
-			'fields'=>array('id', 'course_id', 'start_date', 'date_string', 'location', 
+			'fields'=>array('id', 'course_id', 'start_date', 'date_string', 'location', 'city',
 				'max_seats', 'seats_remaining', 'num_seats_per_instructor', 'num_instructors', 
 				'old_num_registrations', 'num_registrations'),
 			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>'Y-m-d H:i'))),
@@ -107,6 +108,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		. "ciniki_fatt_offering_dates.num_hours, "
 		. "ciniki_fatt_offering_dates.location_id, "
 		. "IFNULL(ciniki_fatt_locations.name, '') AS location_name, "
+		. "IFNULL(ciniki_fatt_locations.city, '') AS location_city, "
+		. "IFNULL(ciniki_fatt_locations.province, '') AS location_province, "
 		. "IFNULL(ciniki_fatt_locations.num_seats, 0) AS num_seats "
 		. "FROM ciniki_fatt_offering_dates "
 		. "LEFT JOIN ciniki_fatt_locations ON ("
@@ -119,7 +122,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
 		array('container'=>'dates', 'fname'=>'id',
-			'fields'=>array('id', 'start_date', 'num_hours', 'location_id', 'location_name', 'num_seats'),
+			'fields'=>array('id', 'start_date', 'num_hours', 'location_id', 'location_name', 'location_city', 'location_province', 'num_seats'),
 			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>'Y-m-d H:i'))),
 		));
 	if( $rc['stat'] != 'ok' ) {
@@ -152,6 +155,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		$max_location_seats = NULL;
 		$date_string = '';
 		$location = '';
+		$city = '';
 		$first_date = NULL;
 		$prev_date = NULL;
 		$num_dates = 0;
@@ -180,6 +184,9 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 			//
 			if( !preg_match('/' . $date['location_name'] . '/', $location) ) {
 				$location .= ($location != ''?', ':'') . $date['location_name'];
+			}
+			if( !preg_match('/' . $date['location_city'] . '/', $city) ) {
+				$city .= ($city != ''?'/':'') . $date['location_city'] . ', ' . $date['location_province'];
 			}
 			//
 			// Determine the lowest number of seats available at any location 
@@ -297,6 +304,11 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 		$offering_update_args['location'] = $location;
 	} elseif( !isset($location) && $offering['location'] != '' ) {
 		$offering_update_args['location'] = '';
+	}
+	if( isset($city) && $city != $offering['city'] ) {
+		$offering_update_args['city'] = $city;
+	} elseif( !isset($city) && $offering['city'] != '' ) {
+		$offering_update_args['city'] = '';
 	}
 
 	//

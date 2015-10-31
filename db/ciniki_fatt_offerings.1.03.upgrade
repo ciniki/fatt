@@ -1,0 +1,5 @@
+#
+# Add the num_registrations field to make it faster.
+#
+ALTER TABLE ciniki_fatt_offerings ADD COLUMN city varchar(150) not null AFTER location;
+ALTER TABLE ciniki_fatt_offerings COMMENT='v1.03';
