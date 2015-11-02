@@ -23,6 +23,16 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $business_id, $perma
 	}
 
 	//
+	// Get the time information for business and user
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_timezone = $rc['settings']['intl-default-timezone'];
+
+	//
 	// Load the course
 	//
 	$strsql = "SELECT ciniki_fatt_courses.id, "
@@ -62,21 +72,51 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $business_id, $perma
 		. "ciniki_fatt_offerings.date_string, "
 		. "ciniki_fatt_offerings.location, "
 		. "ciniki_fatt_offerings.city, "
-		. "ciniki_fatt_offerings.seats_remaining "
+		. "ciniki_fatt_offerings.seats_remaining, "
+		. "ciniki_fatt_offering_dates.id AS date_id, "
+		. "ciniki_fatt_offering_dates.start_date AS start_time, "
+		. "ADDTIME(ciniki_fatt_offering_dates.start_date, CONCAT_WS(':', ciniki_fatt_offering_dates.num_hours, 0, 0)) AS end_time "
 		. "FROM ciniki_fatt_offerings "
+		. "LEFT JOIN ciniki_fatt_offering_dates ON ("
+			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_dates.offering_id "
+			. "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. ") "
 		. "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_fatt_offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $course['id']) . "' "
 		. "AND (ciniki_fatt_offerings.flags&0x01) = 0x01 "
+		. "AND ciniki_fatt_offerings.start_date >= UTC_TIMESTAMP() "
 		. "ORDER BY ciniki_fatt_offerings.start_date "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');	
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
+		array('container'=>'offerings', 'fname'=>'id', 
+			'fields'=>array('id', 'permalink', 'unit_amount', 'flags', 'start_date', 'date_string', 'location', 'city', 'seats_remaining')),
+		array('container'=>'dates', 'fname'=>'date_id',
+			'fields'=>array('start_time', 'end_time'),
+			'utctotz'=>array(
+				'start_time'=>array('timezone'=>$intl_timezone, 'format'=>'g:ia'),
+				'end_time'=>array('timezone'=>$intl_timezone, 'format'=>'g:ia'),
+			)),
+		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( !isset($rc['rows']) ) {
+	if( !isset($rc['offerings']) ) {
 		$course['offerings'] = array();
 	} else {
-		$course['offerings'] = $rc['rows'];
+		$course['offerings'] = $rc['offerings'];
+		foreach($course['offerings'] as $oid => $offering) {
+			$course['offerings'][$oid]['times'] = '';
+			if( isset($offering['dates']) ) {
+				foreach($offering['dates'] as $did => $date) {
+					$times = $date['start_time'] . ' - ' . $date['end_time'];
+					if( $times != $course['offerings'][$oid]['times'] ) {
+						$course['offerings'][$oid]['times'] .= ($course['offerings'][$oid]['times']!=''?', ':'') . $times;
+					}
+				}
+//				unset($offering['dates']);
+			}
+		}
 	}
 
 	return array('stat'=>'ok', 'course'=>$course);
