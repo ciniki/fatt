@@ -190,7 +190,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
 		}
 
 		if( isset($course['offerings']) && count($course['offerings']) > 0 ) {
-			$page['blocks'][] = array('type'=>'pricetable', 'size'=>'small', 'title'=>'Upcoming Courses', 
+			$page['blocks'][] = array('type'=>'pricetable', 'title'=>'Upcoming Courses', 
 				'headers'=>array('Date(s)', 'Time(s)', 'Location', 'Price'),
 				'fields'=>array('date_string', 'times', 'city', 'price'),
 				'prices'=>$course['offerings']);
