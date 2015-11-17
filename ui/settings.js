@@ -506,11 +506,11 @@ function ciniki_fatt_settings() {
 		//
 		this.cert = new M.panel('Certification',
 			'ciniki_fatt_settings', 'cert',
-			'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.cert');
+			'mc', 'medium mediumaside', 'sectioned', 'ciniki.fatt.settings.cert');
 		this.cert.cert_id = 0;
 		this.cert.data = {};
 		this.cert.sections = {
-			'details':{'label':'', 'fields':{
+			'details':{'label':'Certification', 'aside':'yes', 'fields':{
 				'name':{'label':'Name', 'type':'text'},
 				'grouping':{'label':'Grouping', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
@@ -590,20 +590,20 @@ function ciniki_fatt_settings() {
 		//
 		this.message = new M.panel('Message',
 			'ciniki_fatt_settings', 'message',
-			'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.message');
+			'mc', 'medium mediumaside', 'sectioned', 'ciniki.fatt.settings.message');
 		this.message.message_id = 0;
 		this.message.object = '';
 		this.message.object_id = 0;
 		this.message.data = {};
 		this.message.sections = {
-			'details':{'label':'', 'fields':{
+			'details':{'label':'', 'aside':'yes', 'fields':{
 				'status':{'label':'Status', 'type':'select', 'options':{'0':'Inactive', '10':'Require Approval', '20':'Auto Send'}},
 				'days':{'label':'Days', 'type':'text', 'size':'small'},
 				}},
-			'_subject':{'label':'', 'fields':{
+			'_subject':{'label':'', 'aside':'yes', 'fields':{
 				'subject':{'label':'Subject', 'type':'text'},
 				}},
-			'_message':{'label':'', 'fields':{
+			'_message':{'label':'', 'aside':'yes', 'fields':{
 				'message':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
 				}},
 			'_parent_subject':{'label':'', 'fields':{
