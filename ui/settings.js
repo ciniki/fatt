@@ -92,6 +92,7 @@ function ciniki_fatt_settings() {
 			'details':{'label':'', 'aside':'yes', 'fields':{
 				'name':{'label':'Name', 'type':'text'},
 				'code':{'label':'Code', 'type':'text', 'size':'small'},
+				'sequence':{'label':'Sequence', 'type':'text', 'size':'small'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
 				'price':{'label':'Price', 'type':'text', 'size':'small'},
 				'taxtype_id':{'label':'Tax', 'active':'no', 'type':'select', 'options':{}},

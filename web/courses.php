@@ -27,6 +27,7 @@ function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
 			. "ciniki_fatt_courses.name AS title, "
 			. "ciniki_fatt_courses.code, "
 			. "ciniki_fatt_courses.permalink, "
+			. "ciniki_fatt_courses.sequence, "
 			. "ciniki_fatt_courses.status, "
 			. "ciniki_fatt_courses.primary_image_id AS image_id, "
 			. "ciniki_fatt_courses.synopsis, "
@@ -37,7 +38,7 @@ function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
 			. "AND ciniki_fatt_course_categories.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
 			. "AND ciniki_fatt_course_categories.course_id = ciniki_fatt_courses.id "
 			. "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "ORDER BY ciniki_fatt_courses.name "
+			. "ORDER BY ciniki_fatt_courses.sequence, ciniki_fatt_courses.name "
 			. "";
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(

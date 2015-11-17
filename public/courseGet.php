@@ -53,11 +53,25 @@ function ciniki_fatt_courseGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 
 	if( $args['course_id'] == 0 ) {
+        $strsql = "SELECT MAX(sequence) AS sequence "
+            . "FROM ciniki_fatt_courses "
+            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'max');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['max']['sequence']) ) {
+            $sequence = $rc['max']['sequence'] + 1;
+        } else {
+            $sequence = 1;
+        }
 		$rsp = array('stat'=>'ok', 'course'=>array(
 			'name'=>'',
 			'status'=>'10',
 			'primary_image_id'=>'0',
 			'flags'=>'0',
+            'sequence'=>$sequence,
 			));
 	} else {
 		//
@@ -67,6 +81,7 @@ function ciniki_fatt_courseGet($ciniki) {
 			. "ciniki_fatt_courses.name, "
 			. "ciniki_fatt_courses.code, "
 			. "ciniki_fatt_courses.permalink, "
+			. "ciniki_fatt_courses.sequence, "
 			. "ciniki_fatt_courses.status, "
 			. "ciniki_fatt_courses.primary_image_id, "
 			. "ciniki_fatt_courses.synopsis, "
@@ -84,7 +99,7 @@ function ciniki_fatt_courseGet($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 			array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-				'fields'=>array('id', 'name', 'code', 'status', 'primary_image_id', 'synopsis', 'description', 
+				'fields'=>array('id', 'name', 'code', 'permalink', 'sequence', 'status', 'primary_image_id', 'synopsis', 'description', 
 					'price', 'taxtype_id', 'num_days', 'num_hours', 'num_seats_per_instructor', 'flags', 'cert_form')),
 		));
 		if( $rc['stat'] != 'ok' ) {

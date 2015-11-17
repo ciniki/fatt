@@ -56,6 +56,7 @@ create table ciniki_fatt_courses (
 	name varchar(150) not null,
 	code varchar(50) not null,
 	permalink varchar(150) not null,
+    sequence tinyint unsigned not null,
 	status tinyint unsigned not null,
 	primary_image_id int not null,
 	synopsis varchar(2000) not null,

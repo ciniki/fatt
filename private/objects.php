@@ -22,6 +22,7 @@ function ciniki_fatt_objects($ciniki) {
 			'name'=>array(),
 			'code'=>array(),
 			'permalink'=>array(),
+			'sequence'=>array('default'=>'0'),
 			'status'=>array('default'=>'10'),
 			'primary_image_id'=>array('default'=>'0'),
 			'synopsis'=>array('default'=>''),
