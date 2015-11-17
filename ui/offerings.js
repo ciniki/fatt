@@ -411,7 +411,7 @@ function ciniki_fatt_offerings() {
 			if( s == 'registrations' ) {
 				return 'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.classShow();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'class\'});';
 			} else if( s == 'offerings' ) {
-				return 'M.ciniki_fatt_offerings.offeringShow(\'M.ciniki_fatt_offerings.classShow();\',\'' + d.offering.id + '\');';
+				return 'M.ciniki_fatt_offerings.offeringShow(\'M.ciniki_fatt_offerings.classShow(null,null,"yes");\',\'' + d.offering.id + '\');';
 			}
 			return '';
 		};
@@ -898,10 +898,15 @@ function ciniki_fatt_offerings() {
 		this.registrationEdit(this.registration.cb, cid, this.registration.offering_id, 0);
 	};
 
-	this.classShow = function(cb, cid) {
+	this.classShow = function(cb, cid, rf) {
 		if( cid != null ) { this.class.class_id = cid; }
 		M.api.getJSONCb('ciniki.fatt.classGet', {'business_id':M.curBusinessID, 
 			'class_id':this.class.class_id}, function(rsp) {
+                if( rf != null && rf == 'yes' && rsp.stat == 'noexist' ) {
+                    // Returned from function that may have deleted all the courses in a class
+                    M.ciniki_fatt_offerings.class.close();
+                    return false;
+                }
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
@@ -933,6 +938,12 @@ function ciniki_fatt_offerings() {
 				p.show(cb);
 		});
 	};
+
+    // This function is used when returning from another ui element called from the class panel
+    // This allows for check to see if class still exists
+    this.classShowCb = function() {
+        
+    }
 
 	this.classUpdate = function() {
 		var c = this.class.serializeForm('no');

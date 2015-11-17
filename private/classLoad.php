@@ -125,7 +125,7 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
 		return $rc;
 	}
 	if( !isset($rc['classes'][0]['class']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2422', 'msg'=>'Unable to find class'));
+		return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'2422', 'msg'=>'Unable to find class'));
 	}
 	$class = $rc['classes'][0]['class'];
 
