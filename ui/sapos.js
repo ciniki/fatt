@@ -64,7 +64,7 @@ function ciniki_fatt_sapos() {
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
 			'_buttons':{'label':'', 'buttons':{
-                'switch':{'label':'Switch Course', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateCourses();'},
+                'switch':{'label':'Switch Course', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateCourses();'},
 				'save':{'label':'Save', 'fn':'M.ciniki_fatt_sapos.registrationSave();'},
 				'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_sapos.registrationDelete();'},
 				}},
@@ -269,6 +269,11 @@ function ciniki_fatt_sapos() {
 				if( rsp.registration.item_id != null ) {
 					p.item_id = rsp.registration.item_id;
 				}
+				if( rsp.registration.alternate_courses != null ) {
+                    p.sections._buttons.buttons.switch.visible = 'yes';
+                } else {
+                    p.sections._buttons.buttons.switch.visible = 'no';
+                }
 				if( rsp.registration.invoice_status < 50 || (M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] != null && M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
 					p.sections._buttons.buttons.delete.visible = 'yes';
 				} else { 
