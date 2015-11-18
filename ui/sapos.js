@@ -301,7 +301,6 @@ function ciniki_fatt_sapos() {
 	};
 
     this.registrationSwitchCourse = function(oid) {
-        console.log(oid);
         M.api.getJSONCb('ciniki.fatt.offeringRegistrationSwitchOffering', {'business_id':M.curBusinessID, 
             'registration_id':this.registration.registration_id, 'item_id':this.registration.data.item_id, 'offering_id':oid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
