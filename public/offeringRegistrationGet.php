@@ -39,6 +39,45 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
     }   
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationLoad');
-	return ciniki_fatt_offeringRegistrationLoad($ciniki, $args['business_id'], $args['registration_id']);
+	$rc = ciniki_fatt_offeringRegistrationLoad($ciniki, $args['business_id'], $args['registration_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( !isset($rc['registration']) ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1999', 'msg'=>'Registration does not exist'));
+    }
+    $registration = $rc['registration'];
+
+    //
+    // Look up alternate course that can be switched
+    //
+    $strsql = "SELECT DISTINCT ciniki_fatt_offerings.id, "
+        . "ciniki_fatt_offerings.course_id "
+        . "FROM ciniki_fatt_offering_dates AS d1 "
+        . "LEFT JOIN ciniki_fatt_offering_dates AS d2 ON ("
+            . "d1.start_date = d2.start_date "
+            . "AND d1.location_id = d2.location_id "
+            . "AND d2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_fatt_offerings ON ("
+            . "d2.offering_id = ciniki_fatt_offerings.id "
+            . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_offerings.id <> '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
+            . ") "
+        . "WHERE d1.offering_id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
+        . "AND d1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
+        array('container'=>'alternate_courses', 'fname'=>'id', 'fields'=>array('id', 'course_id')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['alternate_courses']) ) {
+        $registration['alternate_courses'] = $rc['alternate_courses'];
+    }
+
+    return array('stat'=>'ok', 'registration'=>$registration);
 }
 ?>

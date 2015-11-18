@@ -56,7 +56,9 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
 		$page['title'] = 'Courses';
 	}
 	if( count($page['breadcrumbs']) == 0 ) {
-		$page['breadcrumbs'][] = array('name'=>'Courses', 'url'=>$args['base_url']);
+        if( !isset($settings['page-fatt-menu-categories']) || $settings['page-fatt-menu-categories'] != 'yes' ) {
+            $page['breadcrumbs'][] = array('name'=>'Courses', 'url'=>$args['base_url']);
+        }
 	}
 
 	$display = '';
@@ -144,7 +146,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
 
 	elseif( $display == 'category' ) {
 		if( isset($category['image_id']) && $category['image_id'] > 0 ) {
-			$page['blocks'][] = array('type'=>'asideimage', 'primary'=>'yes', 'image_id'=>$post['image_id'], 'title'=>$post['title'], 'caption'=>'');
+			$page['blocks'][] = array('type'=>'asideimage', 'primary'=>'yes', 'image_id'=>$category['image_id'], 'title'=>$category['name'], 'caption'=>'');
 		}
 		if( isset($category['description']) && $category['description'] != '' ) {
 			$page['blocks'][] = array('type'=>'content', 'title'=>'', 'content'=>$category['description']);

@@ -37,10 +37,9 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 			. "AND status = 10 "
 			. "ORDER BY name "
 			. "";
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
-			array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-				'fields'=>array('id', 'name', 'price', 'num_days')),
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
+			array('container'=>'courses', 'fname'=>'id', 'fields'=>array('id', 'name', 'price', 'num_days')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
@@ -48,8 +47,10 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 		if( isset($rc['courses']) ) {
 			$settings['courses'] = $rc['courses'];
 			foreach($settings['courses'] as $cid => $course) {
-				$settings['courses'][$cid]['course']['price'] = numfmt_format_currency($intl_currency_fmt, 
-					$settings['courses'][$cid]['course']['price'], $intl_currency);
+				$settings['courses'][$cid]['price'] = numfmt_format_currency($intl_currency_fmt, 
+					$settings['courses'][$cid]['price'], $intl_currency);
+//				$settings['courses'][$cid]['course']['price'] = numfmt_format_currency($intl_currency_fmt, 
+//					$settings['courses'][$cid]['course']['price'], $intl_currency);
 			}
 		}
 		if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x40) > 0 ) {

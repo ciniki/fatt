@@ -629,11 +629,16 @@ function ciniki_fatt_offerings() {
 		
 		if( M.curBusiness.modules['ciniki.fatt'].settings.courses != null ) {
 			for(var i in M.curBusiness.modules['ciniki.fatt'].settings.courses) {
-				this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.num_days;
-				courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
-				acourses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
-				this.edit.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
-				this.add.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
+				this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].num_days;
+				courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].name;
+				acourses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].name;
+				this.edit.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i];
+				this.add.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i];
+//				this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.num_days;
+//				courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
+//				acourses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
+//				this.edit.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
+//				this.add.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
 			}
 		}
 		this.edit.sections.details.fields.course_id.options = courses;
