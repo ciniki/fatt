@@ -33,8 +33,6 @@ function ciniki_fatt_sapos() {
 				'date_string':{'label':'When'},
 				'location':{'label':'Location'},
 				}},
-            'alternate_courses':{'label':'Switch Course', 'aside':'yes', 'visible':'hidden', 'type':'simplegrid', 'num_cols':1, 
-                },
 			'customer_details':{'label':'Bill To', 'visible':'no', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
 				'cellClasses':['label',''],
 				},
@@ -63,8 +61,12 @@ function ciniki_fatt_sapos() {
 			'_notes':{'label':'Notes', 'fields':{
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
-			'_buttons':{'label':'', 'buttons':{
+            'alternate_courses':{'label':'Switch Course', 'visible':'hidden', 'type':'simplegrid', 'num_cols':1, 
+                },
+			'_switch':{'label':'', 'buttons':{
                 'switch':{'label':'Switch Course', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateCourses();'},
+                }},
+			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_fatt_sapos.registrationSave();'},
 				'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_sapos.registrationDelete();'},
 				}},
@@ -270,9 +272,9 @@ function ciniki_fatt_sapos() {
 					p.item_id = rsp.registration.item_id;
 				}
 				if( rsp.registration.alternate_courses != null ) {
-                    p.sections._buttons.buttons.switch.visible = 'yes';
+                    p.sections._switch.buttons.switch.visible = 'yes';
                 } else {
-                    p.sections._buttons.buttons.switch.visible = 'no';
+                    p.sections._switch.buttons.switch.visible = 'no';
                 }
 				if( rsp.registration.invoice_status < 50 || (M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] != null && M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
 					p.sections._buttons.buttons.delete.visible = 'yes';
@@ -312,7 +314,7 @@ function ciniki_fatt_sapos() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_fatt_sapos.registrationEdit();
+                M.ciniki_fatt_sapos.registration.close();
             });
     };
 
