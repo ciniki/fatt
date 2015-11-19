@@ -32,7 +32,7 @@ function ciniki_fatt_certBusinessExpirations($ciniki) {
     // Check access to business_id as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.certBusinessEmployees');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.certBusinessExpirations');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   

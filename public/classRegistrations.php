@@ -32,7 +32,7 @@ function ciniki_fatt_classRegistrations($ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.classGet'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.classRegistrations'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
