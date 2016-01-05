@@ -20,7 +20,7 @@ function ciniki_fatt_hooks_checkObjectUsed($ciniki, $business_id, $args) {
 
 	if( $args['object'] == 'ciniki.customers.customer' ) {
 		//
-		// Check the invoice customers
+		// Check the customer certifications
 		//
 		$strsql = "SELECT 'items', COUNT(*) "
 			. "FROM ciniki_fatt_cert_customers "
@@ -35,6 +35,23 @@ function ciniki_fatt_hooks_checkObjectUsed($ciniki, $business_id, $args) {
 			$used = 'yes';
 			$count = $rc['num']['items'];
 			$msg .= ($msg!=''?' ':'') . "There " . ($count==1?'is':'are') . " $count certification" . ($count==1?'':'s') . " for this customer.";
+		}
+		//
+		// Check the course offering registrations
+		//
+		$strsql = "SELECT 'items', COUNT(*) "
+			. "FROM ciniki_fatt_offering_registrations "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "";
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.fatt', 'num');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
+			$used = 'yes';
+			$count = $rc['num']['items'];
+			$msg .= ($msg!=''?' ':'') . "There " . ($count==1?'is':'are') . " $count course registrations" . ($count==1?'':'s') . " for this customer.";
 		}
 	}
 
