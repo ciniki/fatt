@@ -46,7 +46,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND status = 10 "
 		. "AND object = 'ciniki.fatt.cert' "
-		. "ORDER BY cert_id, days DESC "
+		. "ORDER BY cert_id, days ASC "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
