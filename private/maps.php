@@ -64,6 +64,13 @@ function ciniki_fatt_maps($ciniki) {
 			'50'=>'Fail',
 			),
 		);
+	$maps['aed'] = array(
+		'status'=>array(
+			'10'=>'Active',
+			'40'=>'Out for service',
+			'60'=>'Deleted',
+			),
+		);
 
 	return array('stat'=>'ok', 'maps'=>$maps);
 }

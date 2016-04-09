@@ -254,7 +254,7 @@ function ciniki_fatt_objects($ciniki) {
 		'history_table'=>'ciniki_fatt_history',
 		);
 	$objects['offeringregistration'] = array(
-		'name'=>'Course Offering registration',
+		'name'=>'Course Offering Registration',
 		'o_name'=>'offeringregistration',
 		'o_container'=>'offeringregistrations',
 		'sync'=>'yes',
@@ -268,6 +268,30 @@ function ciniki_fatt_objects($ciniki) {
 			'customer_notes'=>array('default'=>''),
 			'notes'=>array('default'=>''),
 			'test_results'=>array('default'=>'0'),
+			),
+		'history_table'=>'ciniki_fatt_history',
+		);
+	$objects['aed'] = array(
+		'name'=>'AED',
+		'o_name'=>'aed',
+		'o_container'=>'aeds',
+		'sync'=>'yes',
+		'table'=>'ciniki_fatt_aeds',
+		'fields'=>array(
+			'customer_id'=>array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+			'location'=>array('name'=>'Location'),
+			'status'=>array('name'=>'Status', 'default'=>'10'),
+            'flags'=>array('name'=>'Options', 'default'=>0),
+			'make'=>array('name'=>'Make', 'default'=>''),
+			'model'=>array('name'=>'Model Number', 'default'=>''),
+			'serial'=>array('name'=>'Serial Number', 'default'=>''),
+            'device_expiration'=>array('name'=>'Device Expiration Date'),
+            'primary_battery_expiration'=>array('name'=>'Primary Battery Expiration Date'),
+            'secondary_battery_expiration'=>array('name'=>'Secondary Battery Expiration Date'),
+            'primary_adult_pads_expiration'=>array('name'=>'Primary Adult Pads Expiration Date'),
+            'secondary_adult_pads_expiration'=>array('name'=>'Secondary Adult Pads Expiration Date'),
+            'primary_child_pads_expiration'=>array('name'=>'Primary Child Pads Expiration Date'),
+            'secondary_child_pads_expiration'=>array('name'=>'Secondary Child Pads Expiration Date'),
 			),
 		'history_table'=>'ciniki_fatt_history',
 		);
