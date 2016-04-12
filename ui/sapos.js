@@ -41,7 +41,7 @@ function ciniki_fatt_sapos() {
 				'addTxt':'Edit',
 				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':M.ciniki_fatt_sapos.registration.student_id});',
 				'changeTxt':'Edit',
-				'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':0});',
+				'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':0,\'parent_id\':M.ciniki_fatt_sapos.registration.data.customer_id,\'parent_name\':escape(M.ciniki_fatt_sapos.registration.data.customer_name)});',
 				},
 			'invoice_details':{'label':'Invoice', 'type':'simplegrid', 'num_cols':2,
 				'cellClasses':['label',''],

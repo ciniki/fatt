@@ -105,6 +105,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
+        $rsp['registration']['customer_name'] = $rc['customer']['display_name'];
 		$rsp['registration']['customer_details'] = $rc['details'];
 	}
 
