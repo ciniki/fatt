@@ -44,6 +44,7 @@ function ciniki_fatt_cron_jobs($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'cronSendCertExpirationMessages');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 	foreach($businesses as $business_id) {
+        error_log("Sending for business: $business_id");
 		ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'0', 'msg'=>'Sending certfication expiration messages', 'severity'=>'10'));
 
 		//

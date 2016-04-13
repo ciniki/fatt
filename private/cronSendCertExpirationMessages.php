@@ -44,7 +44,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
 		. "subject, message, parent_subject, parent_message "
 		. "FROM ciniki_fatt_messages "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND status = 10 "
+		. "AND (status = 10 || status = 20) "
 		. "AND object = 'ciniki.fatt.cert' "
 		. "ORDER BY cert_id, days ASC "
 		. "";
@@ -90,11 +90,11 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
 	}
 	$cert_customers = $rc['rows'];
 
+
 	//
 	// Process the cert customers and check for what messages should be sent
 	//
 	foreach($cert_customers as $cc) {
-		
 		//
 		// Check there are cert messages for the customers certification
 		//
@@ -126,7 +126,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
 		$next_message_to_send = NULL;
 		foreach($cert_messages[$cc['cert_id']]['messages'] as $message ) {
 			//
-			// Check if expiry time is still before message days
+			// Check if expiry time is still before message days (negative numbers)
 			//
 			if( $message['days'] > $cc['days_till_expiry'] ) {
 				$next_message_to_send = $message;
