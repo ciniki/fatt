@@ -153,6 +153,9 @@ function ciniki_fatt_aeds() {
                 'changeTxt':'Change customer',
                 'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_aeds.edit.show();\',\'mc\',{\'next\':\'M.ciniki_fatt_aeds.aedEditUpdateCustomer\',\'customer_id\':0});',
                 },
+			'image':{'label':'', 'aside':'yes', 'fields':{
+				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+				}},
 			'details':{'label':'', 'aside':'yes', 'fields':{
 				'location':{'label':'Location', 'type':'text'},
 				'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '40':'Out for service', '60':'Deleted'}},
@@ -160,8 +163,9 @@ function ciniki_fatt_aeds() {
 				'make':{'label':'Make', 'type':'text'},
 				'model':{'label':'Model', 'type':'text'},
 				'serial':{'label':'Serial', 'type':'text'},
+				'flags1':{'label':'Options', 'type':'flagspiece', 'field':'flags', 'mask':0x3000, 'flags':{'13':{'name':'Wall Mount'}, '14':{'name':'Alarmed Cabinet'}}},
 				}},
-			'options':{'label':'Battery', 'aside':'yes', 'fields':{
+			'options':{'label':'Battery', 'fields':{
 				'flags_1':{'label':'Secondary Battery', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'default':'no', 'on_fields':['secondary_battery_expiration']},
 				'flags_5':{'label':'Primary Adult Pads', 'type':'flagtoggle', 'bit':0x10, 'field':'flags', 'default':'yes', 'on_fields':['primary_adult_pads_expiration']},
 				'flags_6':{'label':'Secondary Adult Pads', 'type':'flagtoggle', 'bit':0x20, 'field':'flags', 'default':'no', 'on_fields':['secondary_adult_pads_expiration']},
@@ -169,7 +173,7 @@ function ciniki_fatt_aeds() {
 				'flags_10':{'label':'Secondary Child Pads', 'type':'flagtoggle', 'bit':0x0200, 'field':'flags', 'default':'no', 'on_fields':['secondary_child_pads_expiration']},
 				}},
 			'expirations':{'label':'Expiration Dates', 'fields':{
-				'device_expiration':{'label':'Device', 'type':'date'},
+				'device_expiration':{'label':'Device Warranty', 'type':'date'},
 				'primary_battery_expiration':{'label':'Primary Battery', 'type':'date'},
 				'secondary_battery_expiration':{'label':'Secondary Battery', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x01)>0?'yes':'no';}, 'type':'date'},
                 }},
@@ -179,6 +183,9 @@ function ciniki_fatt_aeds() {
 				'primary_child_pads_expiration':{'label':'Primary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0100)>0?'yes':'no';}, 'type':'date'},
 				'secondary_child_pads_expiration':{'label':'Secondary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0200)>0?'yes':'no';}, 'type':'date'},
 				}},
+            '_notes':{'label':'Notes', 'fields':{
+                'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+                }},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_fatt_aeds.aedSave();'},
 				'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_aeds.aedDelete(M.ciniki_fatt_aeds.edit.aed_id);'},
@@ -203,6 +210,14 @@ function ciniki_fatt_aeds() {
 			}
         };
         this.edit.rowFn = function(s, i, d) { return ''; }
+		this.edit.addDropImage = function(iid) {
+			M.ciniki_fatt_aeds.edit.setFieldValue('primary_image_id', iid, null, null);
+			return true;
+		};
+		this.edit.deleteImage = function(fid) {
+			this.setFieldValue(fid, 0, null, null);
+			return true;
+		};
 		this.edit.addButton('save', 'Save', 'M.ciniki_fatt_aeds.aedSave();');
 		this.edit.addClose('Cancel');
 	};

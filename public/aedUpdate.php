@@ -32,6 +32,8 @@ function ciniki_fatt_aedUpdate(&$ciniki) {
         'secondary_adult_pads_expiration'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Secondary Adult Pads Expiration Date'),
         'primary_child_pads_expiration'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Primary Child Pads Expiration Date'),
         'secondary_child_pads_expiration'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Secondary Child Pads Expiration Date'),
+        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
+        'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

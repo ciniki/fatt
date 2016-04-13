@@ -73,6 +73,8 @@ function ciniki_fatt_aedGet($ciniki) {
             'secondary_adult_pads_expiration'=>'',
             'primary_child_pads_expiration'=>'',
             'secondary_child_pads_expiration'=>'',
+            'primary_image_id'=>0,
+            'notes'=>'',
         );
     }
 
@@ -94,7 +96,9 @@ function ciniki_fatt_aedGet($ciniki) {
             . "DATE_FORMAT(ciniki_fatt_aeds.primary_adult_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS primary_adult_pads_expiration, "
             . "DATE_FORMAT(ciniki_fatt_aeds.secondary_adult_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS secondary_adult_pads_expiration, "
             . "DATE_FORMAT(ciniki_fatt_aeds.primary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS primary_child_pads_expiration, "
-            . "DATE_FORMAT(ciniki_fatt_aeds.secondary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS secondary_child_pads_expiration "
+            . "DATE_FORMAT(ciniki_fatt_aeds.secondary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS secondary_child_pads_expiration, "
+            . "ciniki_fatt_aeds.primary_image_id, "
+            . "ciniki_fatt_aeds.notes "
             . "FROM ciniki_fatt_aeds "
             . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "AND ciniki_fatt_aeds.id = '" . ciniki_core_dbQuote($ciniki, $args['aed_id']) . "' "

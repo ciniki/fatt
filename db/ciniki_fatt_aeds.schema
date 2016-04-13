@@ -33,6 +33,10 @@
 #                   0x0200 - Secondary Child Pads
 #                   0x0400 - 
 #                   0x0800 - 
+#                   0x1000 - Wall Mount
+#                   0x2000 - Alarmed Cabinet 
+#                   0x4000 -
+#                   0x8000 -
 #
 # make:				The make of the device.
 # model:			The model number of the device.
@@ -45,6 +49,10 @@
 # secondary_adult_pads_expiration:  The date the secondary adult pads expire (if any).
 # primary_child_pads_expiration:    The date the primary child pads expire (if any).
 # secondary_child_pads_expiration:  The date the secondary child pads expire (if any).
+#
+# primary_image_id:     The ID of the primary image for the AED.
+# 
+# notes:                Any private notes about the AED.
 #
 # date_added:		The UTC date and time the record was added.
 # last_updated:		The UTC date and time the record was last updated.
@@ -67,6 +75,8 @@ create table ciniki_fatt_aeds (
 	secondary_adult_pads_expiration date not null,
 	primary_child_pads_expiration date not null,
 	secondary_child_pads_expiration date not null,
+    primary_image_id int not null,
+    notes varchar(10000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),

@@ -292,6 +292,8 @@ function ciniki_fatt_objects($ciniki) {
             'secondary_adult_pads_expiration'=>array('name'=>'Secondary Adult Pads Expiration Date'),
             'primary_child_pads_expiration'=>array('name'=>'Primary Child Pads Expiration Date'),
             'secondary_child_pads_expiration'=>array('name'=>'Secondary Child Pads Expiration Date'),
+            'primary_image_id'=>array('name'=>'Image', 'default'=>'0'),
+            'notes'=>array('name'=>'Notes', 'default'=>''),
 			),
 		'history_table'=>'ciniki_fatt_history',
 		);
