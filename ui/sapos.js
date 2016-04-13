@@ -239,6 +239,7 @@ function ciniki_fatt_sapos() {
 		if( ns != null && ns > 1 ) {
 			args = {
 				'customer_id':cid,
+                'bill_parent':'yes',
 				'payment_status':10,
 				'objects':[],
 				};
@@ -248,6 +249,7 @@ function ciniki_fatt_sapos() {
 		} else {
 			args = {
 				'customer_id':cid,
+                'bill_parent':'yes',
 				'object':'ciniki.fatt.offering',
 				'object_id':this.regadd.offering_id,
 				'payment_status':10,

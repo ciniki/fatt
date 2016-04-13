@@ -56,7 +56,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
 		//
 		$reg_args = array('offering_id'=>$offering['id'],
 			'customer_id'=>$invoice['customer_id'],
-			'student_id'=>$invoice['customer_id'],
+			'student_id'=>(isset($item['student_id']) ? $item['student_id'] : $invoice['customer_id']),
 			'invoice_id'=>$invoice['id'],
 			);
 		$rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.fatt.offeringregistration', $reg_args, 0x04);
