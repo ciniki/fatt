@@ -125,21 +125,25 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
 		$cur_message_to_send = NULL;
 		$next_message_to_send = NULL;
 		foreach($cert_messages[$cc['cert_id']]['messages'] as $message ) {
-			//
-			// Check if expiry time is still before message days (negative numbers)
-			//
-			if( $message['days'] > $cc['days_till_expiry'] ) {
-				$next_message_to_send = $message;
-				break;
-			}
-			
+//            error_log('message ' . $cc['id'] . ' days ' . $cc['days_till_expiry'] . ' message ' . $message['days']);
+
 			//
 			// Check if message could be sent. It must be exactly on the day to send
 			// as the number of days till expiry is specified in the email.
 			//
-			elseif( $message['days'] == $cc['days_till_expiry'] ) {
+			if( $message['days'] == $cc['days_till_expiry'] ) {
 				$cur_message_to_send = $message;
 			}
+
+			//
+			// Check if expiry time is still before message days (negative numbers)
+			//
+			elseif( $message['days'] > $cc['days_till_expiry'] ) {
+				$next_message_to_send = $message;
+ //               error_log('break');
+				break;
+			}
+			
 		}
 
 		//
