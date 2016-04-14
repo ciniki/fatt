@@ -241,6 +241,8 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
 			foreach($class['registrations'] as $rid => $registration) {
 				if( isset($rc['invoices'][$registration['registration']['invoice_id']]) ) {
 					$class['registrations'][$rid]['registration']['invoice_status'] = $rc['invoices'][$registration['registration']['invoice_id']]['status_text'];
+					$class['registrations'][$rid]['registration']['invoice_customer_id'] = $rc['invoices'][$registration['registration']['invoice_id']]['customer_id'];
+					$class['registrations'][$rid]['registration']['invoice_number'] = $rc['invoices'][$registration['registration']['invoice_id']]['invoice_number'];
 				}
 			}
 		}

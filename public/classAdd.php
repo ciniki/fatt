@@ -220,7 +220,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
 		//
 		// Check if this is not a bundle and the customer is set
 		//
-		if( strncmp($args['course_id'], 'b-', 2) != 0 
+		if( isset($args['course_id']) && strncmp($args['course_id'], 'b-', 2) != 0 
 			&& isset($args['customer_id']) && $args['customer_id'] > 0 
 			&& isset($args['num_seats']) && $args['num_seats'] > 0 
 			) {

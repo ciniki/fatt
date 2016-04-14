@@ -8,7 +8,8 @@ function ciniki_fatt_offerings() {
 
 	
 	this.regStatus = {
-		'0':'Incomplete',
+		'0':'Reg',
+		'30':'Cancel',
 		'40':'No Show',
 		'10':'Pass',
 		'50':'Fail',
@@ -115,6 +116,10 @@ function ciniki_fatt_offerings() {
 			'instructors':{'label':'Instructors', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
 				'cellClasses':['multiline', 'multiline'],
 				},
+//            '_tabs':{'label':'', 'type':'paneltabs', 'selected':'registrations', 'tabs':{
+//                'registrations':{'label':'Registrations', 'fn':'M.ciniki_fatt_offerings.offeringSwitchTab(\'registrations\');'},
+//                'invoices':{'label':'Invoices', 'fn':'M.ciniki_fatt_offerings.offeringSwitchTab(\'invoices\');'},
+//                }},
 			'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':2,
 				'addTxt':'Add Registration',
 				'addFn':'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.offeringShow();\',\'mc\',{\'offering_id\':M.ciniki_fatt_offerings.offering.offering_id,\'source\':\'offering\'});',
@@ -357,6 +362,10 @@ function ciniki_fatt_offerings() {
 			'offerings':{'label':'Courses', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
 				'cellClasses':['multiline', 'textbuttons'],
 				},
+//            '_tabs':{'label':'', 'type':'paneltabs', 'selected':'registrations', 'tabs':{
+//                'registrations':{'label':'Registrations', 'fn':'M.ciniki_fatt_offerings.classSwitchTab(\'registrations\');'},
+//                'invoices':{'label':'Invoices', 'fn':'M.ciniki_fatt_offerings.classSwitchTab(\'invoices\');'},
+//                }},
 			'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3,
 				'cellClasses':['multiline', 'multiline', 'textbuttons'],
 				'fields':{},
@@ -387,11 +396,11 @@ function ciniki_fatt_offerings() {
 				return '<span class="maintext">' + d.instructor.name + '</span><span class="subtext">' + d.instructor.email + (d.instructor.email!=''?' - ':'') + d.instructor.phone + '</span>';
 			} else if( s == 'registrations' ) {
 				if( j == 0 ) {	
-					var inv = d.registration.invoice_status!=null?'<span class="subtext">' + d.registration.invoice_status+'</span>':'';
+					var inv = d.registration.invoice_status!=null?'<span class="subtext">#' + d.registration.invoice_number + ': ' + d.registration.invoice_status + '</span>':'';
 					return '<span class="maintext">' + d.registration.course_code + '</span>' + inv;
 				} else if( j == 1 ) {
 					if( d.registration.customer_id != d.registration.student_id ) {
-						return '<span class="maintext">' + (d.registration.student_display_name!=''?d.registration.student_display_name:'???') + ' <span class="subtext">' + d.registration.customer_display_name + '</span>';
+						return '<span class="xaintext">' + (d.registration.student_display_name!=''?d.registration.student_display_name:'???') + ' <span class="subtext">' + d.registration.customer_display_name + '</span>';
 					}  
 					return d.registration.customer_display_name;
 				}
@@ -733,9 +742,14 @@ function ciniki_fatt_offerings() {
 			});
 	};
 
+/*    this.offeringSwitchTab = function(tab) {
+
+    }; */
+
 	this.offeringShow = function(cb, oid) {
 		if( oid != null ) { this.offering.offering_id = oid; }
 		if( cb != null ) { this.offering.cb = cb; }
+//        if( tab != null ) { this.offering.sections._tabs.selected = tab; }
 		M.api.getJSONCb('ciniki.fatt.offeringGet', {'business_id':M.curBusinessID, 
 			'offering_id':this.offering.offering_id}, this.offeringShowFinish);
 	};
@@ -903,6 +917,11 @@ function ciniki_fatt_offerings() {
 		this.registrationEdit(this.registration.cb, cid, this.registration.offering_id, 0);
 	};
 
+    this.classSwitchTab = function(tab) {
+        this.class.sections._tabs.selected = tab;
+//        this.class.sortRegistrations();
+    };
+
 	this.classShow = function(cb, cid, rf) {
 		if( cid != null ) { this.class.class_id = cid; }
 		M.api.getJSONCb('ciniki.fatt.classGet', {'business_id':M.curBusinessID, 
@@ -941,6 +960,7 @@ function ciniki_fatt_offerings() {
 				}
 				p.refresh();
 				p.show(cb);
+//                p.sortRegistrations();
 		});
 	};
 

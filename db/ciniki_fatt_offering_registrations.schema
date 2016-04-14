@@ -27,6 +27,7 @@
 #
 #					0 - Incomplete
 #					10 - pass
+#					30 - cancelled
 #					40 - noshow
 #					50 - fail
 #					

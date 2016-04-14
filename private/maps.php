@@ -60,6 +60,7 @@ function ciniki_fatt_maps($ciniki) {
 		'status'=>array(
 			'0'=>'Incomplete',
 			'10'=>'Pass',
+			'30'=>'Cancelled',
 			'40'=>'No Show',
 			'50'=>'Fail',
 			),
