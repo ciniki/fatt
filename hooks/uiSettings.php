@@ -102,7 +102,7 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 	// Load the fatt locations for the business
 	//
 	if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x04) > 0 ) {
-		$strsql = "SELECT id, name, flags "
+		$strsql = "SELECT id, name, flags, colour "
 			. "FROM ciniki_fatt_locations "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND status = 10 "
@@ -111,7 +111,7 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
 			array('container'=>'locations', 'fname'=>'id', 'name'=>'location',
-				'fields'=>array('id', 'name', 'flags')),
+				'fields'=>array('id', 'name', 'flags', 'colour')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

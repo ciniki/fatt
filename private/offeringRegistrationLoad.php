@@ -60,6 +60,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 		. "ciniki_fatt_offerings.price, "
 		. "ciniki_fatt_offerings.flags, "
 		. "ciniki_fatt_offerings.flags AS flags_display, "
+		. "ciniki_fatt_offerings.start_date, "
 		. "ciniki_fatt_offerings.date_string, "
 		. "ciniki_fatt_offerings.location, "
 		. "ciniki_fatt_offerings.max_seats, "
@@ -82,7 +83,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
 			'fields'=>array('id', 'offering_id', 'customer_id', 'student_id', 'invoice_id', 'status',
 				'customer_notes', 'notes', 'test_results',
 				'course_id', 'course_name', 'permalink', 'price', 'flags', 'flags_display',
-				'date_string', 'location', 'max_seats', 'seats_remaining'),
+				'start_date', 'date_string', 'location', 'max_seats', 'seats_remaining'),
 			'flags'=>array('flags_display'=>$maps['offering']['flags']),
 			),
 	));

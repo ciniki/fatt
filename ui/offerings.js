@@ -345,11 +345,11 @@ function ciniki_fatt_offerings() {
 		//
 		this.class = new M.panel('Class',
 			'ciniki_fatt_offerings', 'class',
-			'mc', 'medium mediumaside', 'sectioned', 'ciniki.fatt.offerings.class');
+			'mc', 'large narrowaside', 'sectioned', 'ciniki.fatt.offerings.class');
 		this.class.class_id = '';
 		this.class.data = {};
 		this.class.sections = {
-			'details':{'label':'Class', 'aside':'yes', 'list':{
+			'details':{'label':'Class', 'aside':'yes', 'type':'simplegrid', 'num_cols':1, 'details':{
 				'course_codes':{'label':'Courses'},
 				'start_date':{'label':'When'},
 				'location_name':{'label':'Location'},
@@ -379,19 +379,35 @@ function ciniki_fatt_offerings() {
 				}},
 			};
 		this.class.sectionData = function(s) { 
-			if( s == 'details' ) { return this.sections[s].list; }
+			if( s == 'details' ) { 
+                if( this.data['location_address'] != null && this.data['location_address'] != '' ) {
+                    return {
+                        'course_codes':{'label':'Courses'},
+                        'start_date':{'label':'When'},
+                        'location_name':{'label':'Location'},
+                        'location_address':{'label':'Address'},
+                        'seats_remaining':{'label':'Available'},
+                        };
+                } else {
+                    return {
+                        'course_codes':{'label':'Courses'},
+                        'start_date':{'label':'When'},
+                        'location_name':{'label':'Location'},
+                        'seats_remaining':{'label':'Available'},
+                        };
+                }
+            }
 			return this.data[s]; 
 		};
-		this.class.listLabel = function(s, i, d) { return d.label; }
-		this.class.listValue = function(s, i, d) { 
-			if( i == 'seats_remaining' ) {
-				if( this.data[i] < 0 ) { return Math.abs(this.data[i]) + ' oversold'; }
-				if( this.data[i] == 0 ) { return 'Sold Out'; }	
-				if( this.data[i] > 0 ) { return this.data[i]; }	
-			}
-			return this.data[i]; 
-		};
 		this.class.cellValue = function(s, i, j, d) {
+            if( s == 'details' ) {
+                if( i == 'seats_remaining' ) {
+                    if( this.data[i] < 0 ) { return Math.abs(this.data[i]) + ' oversold'; }
+                    if( this.data[i] == 0 ) { return 'Sold Out'; }	
+                    if( this.data[i] > 0 ) { return this.data[i] + ' seats available'; }	
+                }
+                return this.data[i];
+            }
 			if( s == 'instructors' ) {
 				return '<span class="maintext">' + d.instructor.name + '</span><span class="subtext">' + d.instructor.email + (d.instructor.email!=''?' - ':'') + d.instructor.phone + '</span>';
 			} else if( s == 'registrations' ) {
@@ -937,9 +953,9 @@ function ciniki_fatt_offerings() {
 				}
 				var p = M.ciniki_fatt_offerings.class;
 				p.data = rsp.class;
-				p.sections.details.list.location_address.visible = 'no';
+				p.sections.details.details.location_address.visible = 'no';
 				if( (rsp.class.location_flags&0x01) == 1 ) {
-					p.sections.details.list.location_address.visible = 'yes';
+					p.sections.details.details.location_address.visible = 'yes';
 					p.data.location_address = M.formatAddress(rsp.class);
 				}
 				p.sections.registrations.fields = {};

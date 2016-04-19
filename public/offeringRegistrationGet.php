@@ -27,6 +27,8 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
         return $rc;
     }   
     $args = $rc['args'];
+
+    $dt = new DateTime('now', new DateTimeZone('UTC'));
     
     //  
     // Make sure this module is activated, and
@@ -78,6 +80,43 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
         $registration['alternate_courses'] = $rc['alternate_courses'];
     }
 
+    //
+    // Lookup alternate dates they could be switch to for the same course
+    //
+    $strsql = "SELECT ciniki_fatt_offerings.id, "
+        . "ciniki_fatt_offerings.date_string, "
+        . "ciniki_fatt_offerings.location, "
+        . "ciniki_fatt_offerings.seats_remaining, "
+        . "ciniki_fatt_locations.colour "
+        . "FROM ciniki_fatt_offerings "
+        . "LEFT JOIN ciniki_fatt_offering_dates ON ("
+            . "ciniki_fatt_offerings.id = ciniki_fatt_offering_dates.offering_id "
+            . "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_fatt_locations ON ("
+            . "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
+            . "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . ") "
+        . "WHERE ciniki_fatt_offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $registration['course_id']) . "' "
+        . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_fatt_offerings.id <> '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
+        . "AND ("
+            . "ciniki_fatt_offerings.start_date > '" . ciniki_core_dbQuote($ciniki, $registration['start_date']) . "' "
+            . "OR ciniki_fatt_offerings.start_date >= '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "' "
+            . ") "
+//        . "GROUP BY ciniki_fatt_offerings.id "
+        . "ORDER BY ciniki_fatt_offerings.start_date "
+        . "";
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
+        array('container'=>'alternate_dates', 'fname'=>'id', 'fields'=>array('id', 'date_string', 'location', 'seats_remaining', 'colour')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['alternate_dates']) ) {
+        $registration['alternate_dates'] = $rc['alternate_dates'];
+    }
+    
     return array('stat'=>'ok', 'registration'=>$registration);
 }
 ?>

@@ -39,6 +39,8 @@
 #
 # num_seats:		The maximum number of available seats in this location.
 #
+# colour:           The colour code to use as background for this location.
+#
 # date_added:		The UTC date and time the record was added.
 # last_updated:		The UTC date and time the record was last updated.
 #
