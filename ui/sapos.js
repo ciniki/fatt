@@ -272,15 +272,19 @@ function ciniki_fatt_sapos() {
 					M.api.err(rsp);
 					return false;
 				}
+                var sd = '';
+                if( rsp.start_date != null && rsp.start_date != '' ) {
+                    sd = rsp.start_date;
+                }
                 if( rsp.invoice_id != null && rsp.invoice_id > 0 ) {
-                    M.ciniki_fatt_sapos.invoiceCreate(cid, ns, rsp.invoice_id);
+                    M.ciniki_fatt_sapos.invoiceCreate(cid, ns, rsp.invoice_id,sd);
                 } else {
-                    M.ciniki_fatt_sapos.invoiceCreate(cid, ns);
+                    M.ciniki_fatt_sapos.invoiceCreate(cid, ns, null, sd);
                 }
             });
     }
 
-	this.invoiceCreate = function(cid, ns, invoice_id) {
+	this.invoiceCreate = function(cid, ns, invoice_id, start_date) {
 		if( ns != null && ns > 1 ) {
 			args = {
 				'customer_id':cid,
@@ -302,6 +306,9 @@ function ciniki_fatt_sapos() {
 		}
         if( invoice_id != null && invoice_id > 0 ) {
             args['invoice_id'] = invoice_id;
+        }
+        if( start_date != null && start_date != '' ) {
+            args['invoice_date'] = start_date;
         }
 		M.startApp('ciniki.sapos.invoice',null,this.regadd.cb,'mc',args);
 	};

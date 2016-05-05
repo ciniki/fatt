@@ -58,7 +58,7 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
     }
 
     //
-    // Get the offering details
+    // Check for an existing invoice
     //
     $strsql = "SELECT r1.invoice_id, r1.customer_id "
         . "FROM ciniki_fatt_offering_dates AS d1, ciniki_fatt_offering_dates AS d2, ciniki_fatt_offering_registrations AS r1 "
@@ -71,7 +71,7 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
         . "AND r1.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "AND r1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
         . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'registration');
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'registration');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -83,7 +83,24 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
             }
         }
     }
+    
+    //
+    // Get the offering date
+    //
+    $strsql = "SELECT start_date "
+        . "FROM ciniki_fatt_offerings "
+        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $start_date = '';
+    if( isset($rc['offering']['start_date']) ) {
+        $start_date = $rc['offering']['start_date'];
+    }
 
-	return array('stat'=>'ok', 'invoice_id'=>$invoice_id);
+	return array('stat'=>'ok', 'invoice_id'=>$invoice_id, 'start_date'=>$start_date);
 }
 ?>
