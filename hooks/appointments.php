@@ -53,6 +53,9 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 	$start_date->setTimezone(new DateTimeZone('UTC'));
 	$end_date->setTimezone(new DateTimeZone('UTC'));
 
+    $start_date_ts = $start_date->format('U');
+    $end_date_ts = $end_date->format('U');
+
 	//
 	// Get the list of offerings
 	//
@@ -66,7 +69,6 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 		. "ciniki_fatt_locations.name AS location_name, "
 		. "ciniki_fatt_locations.num_seats AS location_seats, "
 		. "ciniki_fatt_locations.colour AS location_colour, "
-//		. "ciniki_fatt_offering_dates.id AS offering_date_id, "
 		. "ciniki_fatt_offering_dates.start_date AS start_date, "
 		. "ciniki_fatt_offering_dates.start_date as start_ts, "
 		. "ciniki_fatt_offering_dates.start_date AS date, "
@@ -80,8 +82,6 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 		. "ciniki_fatt_offerings.num_registrations, "
 		. "ciniki_fatt_instructors.initials AS instructor_codes, "
 		. "ciniki_fatt_instructors.name AS instructors "
-//		. "ciniki_fatt_offering_registrations.id AS registration_id "
-//		. "COUNT(ciniki_fatt_offering_registrations.id) AS num_registrations "
 		. "FROM ciniki_fatt_offering_dates "
 		. "LEFT JOIN ciniki_fatt_offerings ON ("
 			. "ciniki_fatt_offering_dates.offering_id = ciniki_fatt_offerings.id "
@@ -103,10 +103,6 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 			. "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
 			. "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
-//		. "LEFT JOIN ciniki_fatt_offering_registrations ON ("
-//			. "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.id "
-//			. "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-//			. ") "
 		. "WHERE ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_fatt_offering_dates.start_date >= '" . $start_date->format('Y-m-d H:i:s') . "' "
 		. "AND ciniki_fatt_offering_dates.start_date < '" . $end_date->format('Y-m-d H:i:s') . "' "
@@ -139,7 +135,6 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 	// Go through and cleanup the appointment
 	//
 	foreach($appointments as $aid => $appointment) {
-//		$instructors = array();
 		$num_registrations = 0;
 		if( isset($appointment['appointment']['offerings']) ) {	
 			$max_seats = 9999;
@@ -156,22 +151,6 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 					$seats_remaining = $offering['offering']['seats_remaining'];
 				}
 				$num_registrations += $offering['offering']['num_registrations'];
-//				if( isset($offering['offering']['instructors']) ) {
-//					$instructor_array = explode(', ', $offering['offering']['instructors']);
-//					foreach($instructor_array as $instructor) {
-//						if( !in_array($instructor, $instructors) ) {
-//							$instructors[] = $instructor;
-//						}
-//					}
-//				}
-//				if( isset($offering['offering']['instructor_codes']) ) {
-//					$codes = explode(',', $offering['offering']['instructor_codes']);
-//					foreach($instructor_array as $instructor) {
-//						if( !in_array($instructor, $instructors) ) {
-//							$instructors[] = $instructor;
-//						}
-//					}
-//				}
 			}
 			if( $seats_remaining < 9999 ) {
 				$appointments[$aid]['appointment']['seats_remaining'] = $seats_remaining;
@@ -192,7 +171,8 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 			$appointments[$aid]['appointment']['colour'] = '#ffcccc';
 		}
 		$appointments[$aid]['appointment']['calendar'] = 'Courses';
-		$appointments[$aid]['appointment']['module'] = 'ciniki.fatt';
+//		$appointments[$aid]['appointment']['module'] = 'ciniki.fatt';
+		$appointments[$aid]['appointment']['app'] = 'ciniki.fatt.offerings';
 //		if( $appointment['appointment']['location_name'] != '' ) {
 //			$appointments[$aid]['appointment']['secondary_text'] = $appointment['appointment']['location_name'];
 //		}
@@ -217,6 +197,151 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 		$appointments[$aid]['appointment']['abbr_subject'] = $appointments[$aid]['appointment']['location_codes'] . ":" . $appointments[$aid]['appointment']['instructor_codes'] . ":" . $appointments[$aid]['appointment']['course_codes'];
 		$appointments[$aid]['appointment']['abbr_secondary_text'] .= ' [' . $num_registrations . '/' . $max_seats . ']';
 	}
+
+    //
+    // Get the list of aed expirations
+    //
+    $strsql = "SELECT ciniki_fatt_aeds.id, "
+        . "ciniki_fatt_aeds.customer_id, "
+        . "IFNULL(ciniki_customers.display_name, 'Unregistered') AS display_name, "
+        . "ciniki_fatt_aeds.location, "
+        . "ciniki_fatt_aeds.status, "
+        . "ciniki_fatt_aeds.flags, "
+        . "ciniki_fatt_aeds.make, "
+        . "ciniki_fatt_aeds.model, "
+        . "ciniki_fatt_aeds.serial, "
+        . "UNIX_TIMESTAMP(ciniki_fatt_aeds.device_expiration) AS device_expiration, "
+        . "UNIX_TIMESTAMP(ciniki_fatt_aeds.primary_battery_expiration) AS primary_battery_expiration, "
+        . "UNIX_TIMESTAMP(ciniki_fatt_aeds.secondary_battery_expiration) AS secondary_battery_expiration, "
+        . "UNIX_TIMESTAMP(ciniki_fatt_aeds.primary_adult_pads_expiration) AS primary_adult_pads_expiration, "
+        . "UNIX_TIMESTAMP(ciniki_fatt_aeds.secondary_adult_pads_expiration) AS secondary_adult_pads_expiration, "
+        . "UNIX_TIMESTAMP(ciniki_fatt_aeds.primary_child_pads_expiration) AS primary_child_pads_expiration, "
+        . "UNIX_TIMESTAMP(ciniki_fatt_aeds.secondary_child_pads_expiration) AS secondary_child_pads_expiration "
+        . "FROM ciniki_fatt_aeds "
+        . "LEFT JOIN ciniki_customers ON ("
+            . "ciniki_fatt_aeds.customer_id = ciniki_customers.id "
+            . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . ") "
+        . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ("
+            . "(ciniki_fatt_aeds.device_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+                . "AND ciniki_fatt_aeds.device_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+                . ") "
+            . "OR (ciniki_fatt_aeds.primary_battery_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+                . "AND ciniki_fatt_aeds.primary_battery_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+                . ") "
+            . "OR (ciniki_fatt_aeds.secondary_battery_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+                . "AND ciniki_fatt_aeds.secondary_battery_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+                . ") "
+            . "OR (ciniki_fatt_aeds.primary_adult_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+                . "AND ciniki_fatt_aeds.primary_adult_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+                . ") "
+            . "OR (ciniki_fatt_aeds.secondary_adult_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+                . "AND ciniki_fatt_aeds.secondary_adult_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+                . ") "
+            . "OR (ciniki_fatt_aeds.primary_child_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+                . "AND ciniki_fatt_aeds.primary_child_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+                . ") "
+            . "OR (ciniki_fatt_aeds.secondary_child_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+                . "AND ciniki_fatt_aeds.secondary_child_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+                . ") "
+            . ") "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
+        array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('customer_id', 'display_name')),
+        array('container'=>'aeds', 'fname'=>'id', 
+            'fields'=>array('id', 'customer_id', 'display_name', 'location', 'status', 'flags', 'make', 'model', 'serial', 
+                'device_expiration', 'primary_battery_expiration', 'secondary_battery_expiration',
+                'primary_adult_pads_expiration', 'secondary_adult_pads_expiration', 'primary_child_pads_expiration', 'secondary_child_pads_expiration', 
+                ),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['customers']) ) {
+        $customers = $rc['customers'];
+        foreach($customers as $cid => $customer) {
+            $lowest_expiration_ts = $end_date_ts;
+            $expiring_pieces = '';
+            if( isset($customer['aeds']) ) {
+                foreach($customer['aeds'] as $aid => $aed) {
+                    if( $aed['device_expiration'] >= $start_date_ts && $aed['device_expiration'] <= $lowest_expiration_ts ) {
+                        $lowest_expiration_ts = $aed['device_expiration'];
+                        if( strstr($expiring_pieces, 'device') === false ) {
+                            $expiring_pieces .= ($expiring_pieces != '' ? ', ' : '') . 'device';
+                        }
+                    }
+                    if( $aed['primary_battery_expiration'] >= $start_date_ts && $aed['primary_battery_expiration'] <= $lowest_expiration_ts ) {
+                        if( $aed['primary_battery_expiration'] < $lowest_expiration_ts ) {
+                            $expiring_pieces = 'battery';
+                        } elseif( strstr($expiring_pieces, 'battery') === false ) {
+                            $expiring_pieces .= ($expiring_pieces != '' ? ', ' : '') . 'battery';
+                        }
+                        $lowest_expiration_ts = $aed['primary_battery_expiration'];
+                    }
+                    if( $aed['secondary_battery_expiration'] >= $start_date_ts && $aed['secondary_battery_expiration'] <= $lowest_expiration_ts ) {
+                        if( $aed['secondary_battery_expiration'] < $lowest_expiration_ts ) {
+                            $expiring_pieces = 'battery';
+                        } elseif( strstr($expiring_pieces, 'battery') === false ) {
+                            $expiring_pieces .= ($expiring_pieces != '' ? ', ' : '') . 'battery';
+                        }
+                        $lowest_expiration_ts = $aed['secondary_battery_expiration'];
+                    }
+                    if( $aed['primary_adult_pads_expiration'] >= $start_date_ts && $aed['primary_adult_pads_expiration'] <= $lowest_expiration_ts ) {
+                        if( $aed['primary_adult_pads_expiration'] < $lowest_expiration_ts ) {
+                            $expiring_pieces = 'pads';
+                        } elseif( strstr($expiring_pieces, 'pads') === false ) {
+                            $expiring_pieces .= ($expiring_pieces != '' ? ', ' : '') . 'pads';
+                        }
+                        $lowest_expiration_ts = $aed['primary_adult_pads_expiration'];
+                    }
+                    if( $aed['secondary_adult_pads_expiration'] >= $start_date_ts && $aed['secondary_adult_pads_expiration'] <= $lowest_expiration_ts ) {
+                        if( $aed['secondary_adult_pads_expiration'] < $lowest_expiration_ts ) {
+                            $expiring_pieces = 'pads';
+                        } elseif( strstr($expiring_pieces, 'pads') === false ) {
+                            $expiring_pieces .= ($expiring_pieces != '' ? ', ' : '') . 'pads';
+                        }
+                        $lowest_expiration_ts = $aed['secondary_adult_pads_expiration'];
+                    }
+                    if( $aed['primary_child_pads_expiration'] >= $start_date_ts && $aed['primary_child_pads_expiration'] <= $lowest_expiration_ts ) {
+                        if( $aed['primary_child_pads_expiration'] < $lowest_expiration_ts ) {
+                            $expiring_pieces = 'pads';
+                        } elseif( strstr($expiring_pieces, 'pads') === false ) {
+                            $expiring_pieces .= ($expiring_pieces != '' ? ', ' : '') . 'pads';
+                        }
+                        $lowest_expiration_ts = $aed['primary_child_pads_expiration'];
+                    }
+                    if( $aed['secondary_child_pads_expiration'] >= $start_date_ts && $aed['secondary_child_pads_expiration'] <= $lowest_expiration_ts ) {
+                        if( $aed['secondary_child_pads_expiration'] < $lowest_expiration_ts ) {
+                            $expiring_pieces = 'pads';
+                        } elseif( strstr($expiring_pieces, 'pads') === false ) {
+                            $expiring_pieces .= ($expiring_pieces != '' ? ', ' : '') . 'pads';
+                        }
+                        $lowest_expiration_ts = $aed['secondary_child_pads_expiration'];
+                    }
+                }
+            }
+            $dt = new DateTime('@' . $lowest_expiration_ts, new DateTimeZone('UTC'));
+            $dt->setTimezone(new DateTimeZone($intl_timezone));
+            $appointment = array(
+                'id'=>'aedcustomer-' . $customer['customer_id'],
+                'calendar'=>'AEDs',
+                'app'=>'ciniki.fatt.aeds',
+                'subject'=>$customer['display_name'],
+                'secondary_text'=>$expiring_pieces,
+                'colour'=>'#ffcccc',
+                'allday'=>'yes',
+                'start_ts'=>$lowest_expiration_ts,
+                'start_date'=>$dt->format($datetime_format),
+                'date'=>$dt->format('Y-m-d'),
+                'time'=>$dt->format('H:i'),
+                '12hour'=>$dt->format('h:i'),
+                );
+            $appointments[] = array('appointment'=>$appointment);
+        }
+    }
 
 	return array('stat'=>'ok', 'appointments'=>$appointments);;
 }

@@ -108,48 +108,60 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             $aeds[$aid]['expiring_pieces'] = '';
             $lowest_expiration = 999999;                    // Number of days until the first piece of equipment expires
             if( $aed['device_expiration_days'] <= $lowest_expiration ) {
-                $lowest_expiration = $aed['device_expiration_days'];
                 if( strstr($aeds[$aid]['expiring_pieces'], 'device') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'device';
                 }
+                $lowest_expiration = $aed['device_expiration_days'];
             }
             if( $aed['primary_battery_expiration_days'] <= $lowest_expiration ) {
-                $lowest_expiration = $aed['primary_battery_expiration_days'];
-                if( strstr($aeds[$aid]['expiring_pieces'], 'battery') === false ) {
+                if( $aed['primary_battery_expiration_days'] < $lowest_expiration ) {
+                    $aeds[$aid]['expiring_pieces'] = 'battery';
+                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'battery') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'battery';
                 }
+                $lowest_expiration = $aed['primary_battery_expiration_days'];
             }
             if( ($aed['flags']&0x01) == 0x01 && $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
-                $lowest_expiration = $aed['secondary_battery_expiration_days'];
-                if( strstr($aeds[$aid]['expiring_pieces'], 'batter') === false ) {
+                if( $aed['secondary_battery_expiration_days'] < $lowest_expiration ) {
+                    $aeds[$aid]['expiring_pieces'] = 'battery';
+                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'batter') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'battery';
                 } else {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . str_replace($aeds[$aid]['expiring_pieces'], 'batteries', 'battery');
                 }
+                $lowest_expiration = $aed['secondary_battery_expiration_days'];
             }
             if( ($aed['flags']&0x10) == 0x10 && $aed['primary_adult_pads_expiration_days'] <= $lowest_expiration ) {
-                $lowest_expiration = $aed['primary_adult_pads_expiration_days'];
-                if( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                if( $aed['primary_adult_pads_expiration_days'] < $lowest_expiration ) {
+                    $aeds[$aid]['expiring_pieces'] = 'pads';
+                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
                 }
+                $lowest_expiration = $aed['primary_adult_pads_expiration_days'];
             }
             if( ($aed['flags']&0x20) == 0x20 && $aed['secondary_adult_pads_expiration_days'] <= $lowest_expiration ) {
-                $lowest_expiration = $aed['secondary_adult_pads_expiration_days'];
-                if( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                if( $aed['secondary_adult_pads_expiration_days'] < $lowest_expiration ) {
+                    $aeds[$aid]['expiring_pieces'] = 'pads';
+                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
                 }
+                $lowest_expiration = $aed['secondary_adult_pads_expiration_days'];
             }
             if( ($aed['flags']&0x0100) == 0x0100 && $aed['primary_child_pads_expiration_days'] <= $lowest_expiration ) {
-                $lowest_expiration = $aed['primary_child_pads_expiration_days'];
-                if( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                if( $aed['primary_child_pads_expiration_days'] < $lowest_expiration ) {
+                    $aeds[$aid]['expiring_pieces'] = 'pads';
+                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
                 }
+                $lowest_expiration = $aed['primary_child_pads_expiration_days'];
             }
             if( ($aed['flags']&0x0200) == 0x0200 && $aed['secondary_child_pads_expiration_days'] < $lowest_expiration ) {
-                $lowest_expiration = $aed['secondary_child_pads_expiration_days'];
-                if( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                if( $aed['secondary_child_pads_expiration_days'] < $lowest_expiration ) {
+                    $aeds[$aid]['expiring_pieces'] = 'pads';
+                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
                 }
+                $lowest_expiration = $aed['secondary_child_pads_expiration_days'];
             }
 
             //

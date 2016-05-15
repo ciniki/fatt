@@ -239,7 +239,11 @@ function ciniki_fatt_aeds() {
 		//
 		// Decide what to show
 		//
-        this.menuShow(cb, 'aeds');
+        if( args.appointment_id != null ) {
+            this.ownerShow(cb, args.appointment_id.replace(/aedcustomer-/,''));
+        } else {
+            this.menuShow(cb, 'aeds');
+        }
 	};
 
 	this.menuShow = function(cb, tab) {
