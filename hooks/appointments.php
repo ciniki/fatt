@@ -199,6 +199,12 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
 	}
 
     //
+    // Convert the start/end dates to local timezone, as expirations are stored as local dates not UTC datetimes.
+    //
+    $start_date->setTimezone(new DateTimeZone($intl_timezone));
+    $end_date->setTimezone(new DateTimeZone($intl_timezone));
+
+    //
     // Get the list of aed expirations
     //
     $strsql = "SELECT ciniki_fatt_aeds.id, "
@@ -224,26 +230,26 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
             . ") "
         . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ("
-            . "(ciniki_fatt_aeds.device_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-                . "AND ciniki_fatt_aeds.device_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+            . "(ciniki_fatt_aeds.device_expiration >= '" . $start_date->format('Y-m-d') . "' "
+                . "AND ciniki_fatt_aeds.device_expiration < '" . $end_date->format('Y-m-d') . "' "
                 . ") "
-            . "OR (ciniki_fatt_aeds.primary_battery_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-                . "AND ciniki_fatt_aeds.primary_battery_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+            . "OR (ciniki_fatt_aeds.primary_battery_expiration >= '" . $start_date->format('Y-m-d') . "' "
+                . "AND ciniki_fatt_aeds.primary_battery_expiration < '" . $end_date->format('Y-m-d') . "' "
                 . ") "
-            . "OR (ciniki_fatt_aeds.secondary_battery_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-                . "AND ciniki_fatt_aeds.secondary_battery_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+            . "OR (ciniki_fatt_aeds.secondary_battery_expiration >= '" . $start_date->format('Y-m-d') . "' "
+                . "AND ciniki_fatt_aeds.secondary_battery_expiration < '" . $end_date->format('Y-m-d') . "' "
                 . ") "
-            . "OR (ciniki_fatt_aeds.primary_adult_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-                . "AND ciniki_fatt_aeds.primary_adult_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+            . "OR (ciniki_fatt_aeds.primary_adult_pads_expiration >= '" . $start_date->format('Y-m-d') . "' "
+                . "AND ciniki_fatt_aeds.primary_adult_pads_expiration < '" . $end_date->format('Y-m-d') . "' "
                 . ") "
-            . "OR (ciniki_fatt_aeds.secondary_adult_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-                . "AND ciniki_fatt_aeds.secondary_adult_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+            . "OR (ciniki_fatt_aeds.secondary_adult_pads_expiration >= '" . $start_date->format('Y-m-d') . "' "
+                . "AND ciniki_fatt_aeds.secondary_adult_pads_expiration < '" . $end_date->format('Y-m-d') . "' "
                 . ") "
-            . "OR (ciniki_fatt_aeds.primary_child_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-                . "AND ciniki_fatt_aeds.primary_child_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+            . "OR (ciniki_fatt_aeds.primary_child_pads_expiration >= '" . $start_date->format('Y-m-d') . "' "
+                . "AND ciniki_fatt_aeds.primary_child_pads_expiration < '" . $end_date->format('Y-m-d') . "' "
                 . ") "
-            . "OR (ciniki_fatt_aeds.secondary_child_pads_expiration >= '" . $start_date->format('Y-m-d H:i:s') . "' "
-                . "AND ciniki_fatt_aeds.secondary_child_pads_expiration < '" . $end_date->format('Y-m-d H:i:s') . "' "
+            . "OR (ciniki_fatt_aeds.secondary_child_pads_expiration >= '" . $start_date->format('Y-m-d') . "' "
+                . "AND ciniki_fatt_aeds.secondary_child_pads_expiration < '" . $end_date->format('Y-m-d') . "' "
                 . ") "
             . ") "
         . "";
@@ -325,6 +331,7 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
             }
             $dt = new DateTime('@' . $lowest_expiration_ts, new DateTimeZone('UTC'));
             $dt->setTimezone(new DateTimeZone($intl_timezone));
+            $dt->setTime(0,0,0);
             $appointment = array(
                 'id'=>'aedcustomer-' . $customer['customer_id'],
                 'calendar'=>'AEDs',
@@ -333,11 +340,11 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
                 'secondary_text'=>$expiring_pieces,
                 'colour'=>'#ffcccc',
                 'allday'=>'yes',
-                'start_ts'=>$lowest_expiration_ts,
+                'start_ts'=>$dt->format('U'), //$lowest_expiration_ts,
                 'start_date'=>$dt->format($datetime_format),
                 'date'=>$dt->format('Y-m-d'),
-                'time'=>$dt->format('H:i'),
-                '12hour'=>$dt->format('h:i'),
+                'time'=>'00:00', //$dt->format('H:i'),
+                '12hour'=>'00:00', //$dt->format('h:i'),
                 );
             $appointments[] = array('appointment'=>$appointment);
         }
