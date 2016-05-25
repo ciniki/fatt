@@ -108,7 +108,7 @@ function ciniki_fatt_cron_jobs(&$ciniki) {
                 . "";
             $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.fatt');
             if( $rc['stat'] != 'ok' ) {
-                ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'3473', 'msg'=>'Unable to send AED expiration message', 
+                ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'3474', 'msg'=>'Unable to send AED expiration message', 
                     'severity'=>50, 'err'=>$rc['err']));
                 continue;
             }
