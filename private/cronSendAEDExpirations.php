@@ -213,12 +213,12 @@ function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'hooks', 'businessOwners');
         $rc = ciniki_businesses_hooks_businessOwners($ciniki, $business_id, array());
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2608', 'msg'=>'Unable to get business owners', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3481', 'msg'=>'Unable to get business owners', 'err'=>$rc['err']));
         }
         $owners = $rc['users'];
         ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'hooks', 'emailUser');
         foreach($owners as $user_id => $owner) {
-            $rc = ciniki_users_hooks_emailUser($ciniki, $business_id, array('user_id'=>1, //$user_id,
+            $rc = ciniki_users_hooks_emailUser($ciniki, $business_id, array('user_id'=>$user_id,
                 'subject'=>'AED Expirations',
                 'textmsg'=>$text_content,
                 ));
