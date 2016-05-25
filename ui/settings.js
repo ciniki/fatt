@@ -25,6 +25,9 @@ function ciniki_fatt_settings() {
 			'_classes':{'label':'', 'list':{
 				'documents':{'label':'Document Headers', 'visible':'yes', 'fn':'M.ciniki_fatt_settings.documentsShow(\'M.ciniki_fatt_settings.showMenu();\');'},
 				}},
+			'_aeds':{'label':'', 'list':{
+				'aeds':{'label':'AEDs', 'visible':'no', 'fn':'M.ciniki_fatt_settings.aeds.edit(\'M.ciniki_fatt_settings.showMenu();\');'},
+                }},
 		};
 		this.menu.addClose('Back');
 
@@ -669,6 +672,70 @@ function ciniki_fatt_settings() {
 		};
 		this.documents.addButton('save', 'Save', 'M.ciniki_fatt_settings.documentsSave();');
 		this.documents.addClose('Cancel');
+
+		//
+		// The aed settings panel
+		//
+		this.aeds = new M.panel('AED Settings',
+			'ciniki_fatt_settings', 'aeds',
+			'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.aeds');
+		this.aeds.sections = {
+			'header':{'label':'Header Address Options', 'fields':{
+				'aeds-expirations-message-enabled':{'label':'Enabled', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+				'aeds-expirations-message-next':{'label':'Next Date', 'type':'date'},
+				}},
+			'_buttons':{'label':'', 'buttons':{
+				'save':{'label':'Save', 'fn':'M.ciniki_fatt_settings.aeds.save();'},
+				}},
+		};
+		this.aeds.fieldHistoryArgs = function(s, i) {
+			return {'method':'ciniki.fatt.settingsHistory', 
+				'args':{'business_id':M.curBusinessID, 'setting':i}};
+		}
+		this.aeds.fieldValue = function(s, i, d) {
+			if( this.data[i] == null && d.default != null ) { return d.default; }
+			return this.data[i];
+		};
+		this.aeds.addDropImage = function(iid) {
+			M.ciniki_fatt_settings.aeds.setFieldValue('default-header-image', iid);
+			return true;
+		};
+		this.aeds.deleteImage = function(fid) {
+			this.setFieldValue(fid, 0);
+			return true;
+		};
+        this.aeds.edit = function(cb) {
+            M.api.getJSONCb('ciniki.fatt.settingsGet', {'business_id':M.curBusinessID}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_fatt_settings.aeds;
+                p.data = rsp.settings;
+                p.refresh();
+                p.show(cb);
+            });
+        };
+
+        //
+        // Save the Invoice settings
+        //
+        this.aeds.save = function() {
+            var c = this.serializeForm('no');
+            if( c != '' ) {
+                M.api.postJSONCb('ciniki.fatt.settingsUpdate', {'business_id':M.curBusinessID}, c, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_fatt_settings.aeds.close();
+                });
+            } else {
+                this.close();
+            }
+        };
+		this.aeds.addButton('save', 'Save', 'M.ciniki_fatt_settings.aeds.save();');
+		this.aeds.addClose('Cancel');
 	}
 
 	//
@@ -696,6 +763,7 @@ function ciniki_fatt_settings() {
 		this.menu.sections._.list.instructors.visible = (M.curBusiness.modules['ciniki.fatt'].flags&0x01)>0?'yes':'no';
 		this.menu.sections._.list.certs.visible = (M.curBusiness.modules['ciniki.fatt'].flags&0x10)>0?'yes':'no';
 		this.menu.sections._.list.locations.visible = (M.curBusiness.modules['ciniki.fatt'].flags&0x04)>0?'yes':'no';
+		this.menu.sections._aeds.list.aeds.visible = (M.curBusiness.modules['ciniki.fatt'].flags&0x0100)>0?'yes':'no';
 
 		//
 		// Determine what is visible

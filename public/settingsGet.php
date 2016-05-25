@@ -38,6 +38,18 @@ function ciniki_fatt_settingsGet($ciniki) {
 	$modules = $rc['modules'];
 	
 	//
+	// Load timezone
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_timezone = $rc['settings']['intl-default-timezone'];
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+	$date_format = ciniki_users_dateFormat($ciniki, 'php');
+
+	//
 	// Grab the settings for the business from the database
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
@@ -50,6 +62,12 @@ function ciniki_fatt_settingsGet($ciniki) {
 		return array('stat'=>'ok', 'settings'=>array());
 	}
 	$settings = $rc['settings'];
+
+    if( isset($settings['aeds-expirations-message-next']) && $settings['aeds-expirations-message-next'] != '' ) {
+        $dt = new DateTime($settings['aeds-expirations-message-next'], new DateTimeZone('UTC'));
+        $dt->setTimezone(new DateTimeZone($intl_timezone));
+        $settings['aeds-expirations-message-next'] = $dt->format($date_format);
+    }
 
 	return array('stat'=>'ok', 'settings'=>$settings);
 }
