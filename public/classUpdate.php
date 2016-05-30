@@ -80,6 +80,32 @@ function ciniki_fatt_classUpdate(&$ciniki) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
 				return $rc;
 			}
+            
+            //
+            // Check if invoice item and possibly invoice should be removed
+            //
+            if( ($ciniki['request']['args'][$arg_name] == 30 || $ciniki['request']['args'][$arg_name] == 40) && $registration['registration']['invoice_id'] > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
+                $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['business_id'], array(
+                    'invoice_id'=>$registration['registration']['invoice_id'],
+                    'object'=>'ciniki.fatt.offeringregistration',
+                    'object_id'=>$registration['registration']['id'],
+                    'deleteinvoice'=>'yes',
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                    return $rc;
+                }
+                //
+                // Update the status
+                //
+                $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array('invoice_id'=>0), 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                    return $rc;
+                }
+            }
+
 			//
 			// Update the certification
 			//

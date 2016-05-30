@@ -45,16 +45,18 @@ function ciniki_fatt_sapos() {
 				'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':0,\'parent_id\':M.ciniki_fatt_sapos.registration.data.customer_id,\'parent_name\':escape(M.ciniki_fatt_sapos.registration.data.customer_name)});',
 				},
 			'invoice_details':{'label':'Invoice', 'type':'simplegrid', 'num_cols':2,
+                'visible':function() { return (M.ciniki_fatt_sapos.registration.data.invoice_id > 0 ? 'yes' : 'no'); },
 				'cellClasses':['label',''],
 				},
-			'details':{'label':'', 'fields':{
-				'unit_amount':{'label':'Price', 'type':'text', 'size':'small'},
-				'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
-				'unit_discount_percentage':{'label':'Discount %', 'type':'text', 'size':'small'},
-				'taxtype_id':{'label':'Taxes', 'type':'select', 'options':{}},
+			'details':{'label':'', 
+                'visible':function() { return (M.ciniki_fatt_sapos.registration.data.invoice_id > 0 ? 'yes' : 'no'); },
+                'fields':{
+                    'unit_amount':{'label':'Price', 'type':'text', 'size':'small'},
+                    'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
+                    'unit_discount_percentage':{'label':'Discount %', 'type':'text', 'size':'small'},
+                    'taxtype_id':{'label':'Taxes', 'type':'select', 'options':{}},
 				}},
-			'_status':{'label':'', 'fields':{
-//				'status':{'label':'Status', 'type':'select', 'options':{'0':'Incomplete', '40':'No Show', '10':'Pass', '50':'Fail'}},
+			'_status':{'label':'Registration Status', 'fields':{
 				'status':{'label':'Status', 'type':'toggle', 'toggles':M.ciniki_fatt_sapos.regStatus},
 				}},
 //			'_test_results':{'label':'Test Results', 'fields':{

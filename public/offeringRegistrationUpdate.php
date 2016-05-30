@@ -135,6 +135,34 @@ function ciniki_fatt_offeringRegistrationUpdate(&$ciniki) {
 		return $rc;
 	}
 
+    //
+    // Check if invoice item and possibly invoice should be removed
+    //
+    if( isset($args['status']) && ($args['status'] == 30 || $args['status'] == 40) && $registration['invoice_id'] > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
+        $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['business_id'], array(
+            'invoice_id'=>$registration['invoice_id'],
+            'object'=>'ciniki.fatt.offeringregistration',
+            'object_id'=>$registration['id'],
+            'deleteinvoice'=>'yes',
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+            return $rc;
+        }
+        if( isset($args['item_id']) ) {
+            unset($args['item_id']);
+        }
+        //
+        // Update the status
+        //
+        $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration['id'], array('invoice_id'=>0), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+            return $rc;
+        }
+    }
+
 	//
 	// Commit the transaction
 	//
@@ -176,9 +204,10 @@ function ciniki_fatt_offeringRegistrationUpdate(&$ciniki) {
             $item_args['description'] = $course['name'];
             $item_args['unit_amount'] = $course['price'];
         }
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
-		$rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $args['business_id'], $item_args);
-		return $rc;
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
+        $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $args['business_id'], $item_args);
+        return $rc;
 	}
 
 	return array('stat'=>'ok');
