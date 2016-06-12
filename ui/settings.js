@@ -106,13 +106,13 @@ function ciniki_fatt_settings() {
 				'cert_form':{'label':'Form', 'type':'select', 'options':this.courseForms},
 				}},
 			'_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
-				'categories':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				'categories':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
 				}},
 			'_bundles':{'label':'Bundles', 'aside':'yes', 'active':'no', 'fields':{
-				'bundles':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				'bundles':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
 				}},
 			'_certs':{'label':'Certifications', 'aside':'yes', 'active':'no', 'fields':{
-				'certs':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				'certs':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
 				}},
 			'_synopsis':{'label':'Synopsis', 'fields':{
 				'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
@@ -214,7 +214,7 @@ function ciniki_fatt_settings() {
 //				'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 //				}},
 			'_courses':{'label':'Courses', 'active':'yes', 'fields':{
-				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
 				}},
 			'_description':{'label':'Description', 'fields':{
 				'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
@@ -259,7 +259,7 @@ function ciniki_fatt_settings() {
 //				'sequence':{'label':'Sequence', 'type':'text', 'size':'tiny'},
 				}},
 			'_courses':{'label':'Courses', 'active':'yes', 'fields':{
-				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
 				}},
 			// Future synopsis if require 
 //			'_synopsis':{'label':'Synopsis', 'fields':{
@@ -520,7 +520,7 @@ function ciniki_fatt_settings() {
 				'years_valid':{'label':'Valid For', 'type':'text', 'size':'small'},
 				}},
 			'_courses':{'label':'Courses', 'aside':'yes', 'active':'yes', 'fields':{
-				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':{}},
+				'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
 				}},
 			'messages':{'label':'Messages', 'active':'no', 'type':'simplegrid', 'num_cols':2,
 				'cellClasses':['multiline', 'multiline'],
