@@ -17,6 +17,8 @@
 #
 # date_received:	The date the customer received the certification.
 #
+# date_expiry:      The date the customer certification expires.
+#
 # flags:			The flags to keep track of reminder emails.
 #					When a user unsubscribed from the notificated, the flag 0x01 is set to off.
 #					When a user signs up for a new course, the flag 0x01 is set to off for existing entries for that course.
