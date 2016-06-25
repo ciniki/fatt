@@ -203,13 +203,13 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         //
         // Get the customer details
         //
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
         $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], array('customer_id'=>$aed['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		$rsp['customer'] = $rc['customer'];
-		$rsp['customer_details'] = $rc['details'];
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp['customer'] = $rc['customer'];
+        $rsp['customer_details'] = $rc['details'];
     }
     
     return $rsp;

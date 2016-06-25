@@ -36,58 +36,58 @@ function ciniki_fatt_classRegistrations($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	$modules = $rc['modules'];
+    $modules = $rc['modules'];
 
-	//
-	// Load business details
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
-	$rc = ciniki_businesses_businessDetails($ciniki, $args['business_id']);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( isset($rc['details']) && is_array($rc['details']) ) {	
-		$business_details = $rc['details'];
-	} else {
-		$business_details = array();
-	}
+    //
+    // Load business details
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
+    $rc = ciniki_businesses_businessDetails($ciniki, $args['business_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['details']) && is_array($rc['details']) ) {   
+        $business_details = $rc['details'];
+    } else {
+        $business_details = array();
+    }
 
-	//
-	// Load the invoice settings
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-	$rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_fatt_settings', 'business_id', $args['business_id'],
-		'ciniki.fatt', 'settings', '');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( isset($rc['settings']) ) {
-		$fatt_settings = $rc['settings'];
-	} else {
-		$fatt_settings = array();
-	}
-	
-	//
-	// Load the template
-	//
-	$rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'templates', 'classregistrations');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$fn = $rc['function_call'];
+    //
+    // Load the invoice settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_fatt_settings', 'business_id', $args['business_id'],
+        'ciniki.fatt', 'settings', '');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['settings']) ) {
+        $fatt_settings = $rc['settings'];
+    } else {
+        $fatt_settings = array();
+    }
+    
+    //
+    // Load the template
+    //
+    $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'templates', 'classregistrations');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $fn = $rc['function_call'];
 
-	$rc = $fn($ciniki, $args['business_id'], $args['class_id'], $business_details, $fatt_settings);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    $rc = $fn($ciniki, $args['business_id'], $args['class_id'], $business_details, $fatt_settings);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	$title = $rc['class']['location_code'] . '_' . $rc['class']['date'];
+    $title = $rc['class']['location_code'] . '_' . $rc['class']['date'];
 
-	$filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
-	if( isset($rc['pdf']) ) {
-		$rc['pdf']->Output($filename . '.pdf', 'D');
-	}
+    $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
+    if( isset($rc['pdf']) ) {
+        $rc['pdf']->Output($filename . '.pdf', 'D');
+    }
 
-	return array('stat'=>'exit');
+    return array('stat'=>'exit');
 }
 ?>

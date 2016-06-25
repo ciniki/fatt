@@ -118,13 +118,13 @@ function ciniki_fatt_aedGet($ciniki) {
         //
         // Get the customer details
         //
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
         $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], array('customer_id'=>$aed['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		$aed['customer'] = $rc['customer'];
-		$aed['customer_details'] = $rc['details'];
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $aed['customer'] = $rc['customer'];
+        $aed['customer_details'] = $rc['details'];
     } else {
         $aed['customer'] = array();
         $aed['customer_details'] = array();

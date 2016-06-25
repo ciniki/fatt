@@ -13,24 +13,24 @@
 //
 function ciniki_fatt_forms_caon201495sfaFill($ciniki, $business_id, $data) {
 
-	//
-	// Open the form
-	//
+    //
+    // Open the form
+    //
 
 
-	//
-	// Fill out the fields
-	//
+    //
+    // Fill out the fields
+    //
 
 
-	//
-	// Send form back 
-	//
+    //
+    // Send form back 
+    //
 
 
 
-	$rsp = array('stat'=>'ok');
+    $rsp = array('stat'=>'ok');
 
-	return $rsp;
+    return $rsp;
 }
 ?>

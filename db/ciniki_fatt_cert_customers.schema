@@ -5,50 +5,50 @@
 #
 # Fields
 # ------
-# id:				The ID assigned to the course.
-# uuid:				The Universal Unique ID.
-# business_id:		The business the course is attached to.
+# id:               The ID assigned to the course.
+# uuid:             The Universal Unique ID.
+# business_id:      The business the course is attached to.
 #
-# cert_id:			The ID of the cert.
+# cert_id:          The ID of the cert.
 #
-# customer_id:		The ID of the customer.
+# customer_id:      The ID of the customer.
 #
-# offering_id:		The offering where the cert was obtained.
+# offering_id:      The offering where the cert was obtained.
 #
-# date_received:	The date the customer received the certification.
+# date_received:    The date the customer received the certification.
 #
 # date_expiry:      The date the customer certification expires.
 #
-# flags:			The flags to keep track of reminder emails.
-#					When a user unsubscribed from the notificated, the flag 0x01 is set to off.
-#					When a user signs up for a new course, the flag 0x01 is set to off for existing entries for that course.
-#					Reminder email messages will only go to customers who do not have the no_emails flag set in ciniki_customer_emails.
+# flags:            The flags to keep track of reminder emails.
+#                   When a user unsubscribed from the notificated, the flag 0x01 is set to off.
+#                   When a user signs up for a new course, the flag 0x01 is set to off for existing entries for that course.
+#                   Reminder email messages will only go to customers who do not have the no_emails flag set in ciniki_customer_emails.
 #
-#					0x01 - Send messages attached to the cert. 
-#					0x02 - Emails finished, no more to send
+#                   0x01 - Send messages attached to the cert. 
+#                   0x02 - Emails finished, no more to send
 #
-# last_message_day:	The day before of after expiry the last message was sent
+# last_message_day: The day before of after expiry the last message was sent
 #
-# next_message_date:	The UTC date and time the next messages should be sent out.
+# next_message_date:    The UTC date and time the next messages should be sent out.
 #
-# date_added:		The UTC date and time the record was added.
-# last_updated:		The UTC date and time the record was last updated.
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last updated.
 #
 create table ciniki_fatt_cert_customers (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	cert_id int not null,
-	customer_id int not null,
-	offering_id int not null,
-	date_received date not null,
-	date_expiry date not null,
-	flags smallint not null,
-	last_message_day int not null,
-	next_message_date datetime not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-#	unique index (cert_id, customer_id, offering_id), # This would be good to add for the future once we have offering_id setup
-	index sync (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    cert_id int not null,
+    customer_id int not null,
+    offering_id int not null,
+    date_received date not null,
+    date_expiry date not null,
+    flags smallint not null,
+    last_message_day int not null,
+    next_message_date datetime not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+#   unique index (cert_id, customer_id, offering_id), # This would be good to add for the future once we have offering_id setup
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.02';

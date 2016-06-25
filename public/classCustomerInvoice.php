@@ -36,7 +36,7 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	$modules = $rc['modules'];
+    $modules = $rc['modules'];
 
     //
     // Check for parent_id on customer
@@ -101,6 +101,6 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
         $start_date = $rc['offering']['start_date'];
     }
 
-	return array('stat'=>'ok', 'invoice_id'=>$invoice_id, 'start_date'=>$start_date);
+    return array('stat'=>'ok', 'invoice_id'=>$invoice_id, 'start_date'=>$start_date);
 }
 ?>

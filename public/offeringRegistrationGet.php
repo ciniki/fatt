@@ -8,8 +8,8 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:			The ID of the business the offering is attached to.
-// registration_id:		The ID of the offering registration to get the details for.
+// business_id:         The ID of the business the offering is attached to.
+// registration_id:     The ID of the offering registration to get the details for.
 // 
 // Returns
 // -------
@@ -40,8 +40,8 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
         return $rc;
     }   
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationLoad');
-	$rc = ciniki_fatt_offeringRegistrationLoad($ciniki, $args['business_id'], $args['registration_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationLoad');
+    $rc = ciniki_fatt_offeringRegistrationLoad($ciniki, $args['business_id'], $args['registration_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

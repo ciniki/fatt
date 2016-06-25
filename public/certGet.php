@@ -8,8 +8,8 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business the cert is attached to.
-// cert_id:		The ID of the cert to get the details for.
+// business_id:     The ID of the business the cert is attached to.
+// cert_id:     The ID of the cert to get the details for.
 // 
 // Returns
 // -------
@@ -38,119 +38,119 @@ function ciniki_fatt_certGet($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	$modules = $rc['modules'];
+    $modules = $rc['modules'];
 
-	//
-	// Load the status maps for the text description of each status
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'maps');
-	$rc = ciniki_fatt_maps($ciniki);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$maps = $rc['maps'];
+    //
+    // Load the status maps for the text description of each status
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'maps');
+    $rc = ciniki_fatt_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 
-	if( $args['cert_id'] == 0 ) {	
-		//
-		// Return the default settings for a new cert
-		//
-		$rsp = array('stat'=>'ok', 'cert'=>array(
-			'name'=>'',
-			'grouping'=>'',
-			'status'=>'10',
-			'years_valid'=>'',
-			));
-	} else {
-		//
-		// Get the cert details
-		//
-		$strsql = "SELECT ciniki_fatt_certs.id, "
-			. "ciniki_fatt_certs.name, "
-			. "ciniki_fatt_certs.grouping, "
-			. "ciniki_fatt_certs.status, "
-			. "ciniki_fatt_certs.years_valid "
-			. "FROM ciniki_fatt_certs "
-			. "WHERE ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND ciniki_fatt_certs.id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
-			. "";
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.certs', array(
-			array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
-				'fields'=>array('id', 'name', 'grouping', 'status', 'years_valid')),
-		));
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( !isset($rc['certs']) || !isset($rc['certs'][0]) ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2307', 'msg'=>'Unable to find cert'));
-		}
-		$rsp = array('stat'=>'ok', 'cert'=>$rc['certs'][0]['cert']);
-	}
+    if( $args['cert_id'] == 0 ) {   
+        //
+        // Return the default settings for a new cert
+        //
+        $rsp = array('stat'=>'ok', 'cert'=>array(
+            'name'=>'',
+            'grouping'=>'',
+            'status'=>'10',
+            'years_valid'=>'',
+            ));
+    } else {
+        //
+        // Get the cert details
+        //
+        $strsql = "SELECT ciniki_fatt_certs.id, "
+            . "ciniki_fatt_certs.name, "
+            . "ciniki_fatt_certs.grouping, "
+            . "ciniki_fatt_certs.status, "
+            . "ciniki_fatt_certs.years_valid "
+            . "FROM ciniki_fatt_certs "
+            . "WHERE ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_certs.id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.certs', array(
+            array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
+                'fields'=>array('id', 'name', 'grouping', 'status', 'years_valid')),
+        ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( !isset($rc['certs']) || !isset($rc['certs'][0]) ) {
+            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2307', 'msg'=>'Unable to find cert'));
+        }
+        $rsp = array('stat'=>'ok', 'cert'=>$rc['certs'][0]['cert']);
+    }
 
-	//
-	// Get the courses for the certs and the business
-	//
-	$rsp['cert']['courses'] = '';
-	$strsql = "SELECT ciniki_fatt_courses.id, "
-		. "ciniki_fatt_courses.name, "
-		. "IFNULL(ciniki_fatt_course_certs.id, 0) AS link_id "
-		. "FROM ciniki_fatt_courses "
-		. "LEFT JOIN ciniki_fatt_course_certs ON ("
-			. "ciniki_fatt_courses.id = ciniki_fatt_course_certs.course_id "
-			. "AND ciniki_fatt_course_certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
-			. "AND ciniki_fatt_course_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "ORDER BY ciniki_fatt_courses.name "
-		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
-		array('container'=>'courses', 'fname'=>'id', 'name'=>'item',
-			'fields'=>array('id', 'name', 'link_id')),
-	));
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$rsp['courses'] = array();
-	if( isset($rc['courses']) ) {
-		$rsp['courses'] = $rc['courses'];
-		foreach($rsp['courses'] as $cid => $item) {
-			if( $item['item']['link_id'] > 0 ) {
-				$rsp['cert']['courses'] .= ($rsp['cert']['courses']!=''?',':'') . $item['item']['id'];
-			}
-			unset($rsp['courses'][$cid]['item']['link_id']);
-		}
-	}
+    //
+    // Get the courses for the certs and the business
+    //
+    $rsp['cert']['courses'] = '';
+    $strsql = "SELECT ciniki_fatt_courses.id, "
+        . "ciniki_fatt_courses.name, "
+        . "IFNULL(ciniki_fatt_course_certs.id, 0) AS link_id "
+        . "FROM ciniki_fatt_courses "
+        . "LEFT JOIN ciniki_fatt_course_certs ON ("
+            . "ciniki_fatt_courses.id = ciniki_fatt_course_certs.course_id "
+            . "AND ciniki_fatt_course_certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
+            . "AND ciniki_fatt_course_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . ") "
+        . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "ORDER BY ciniki_fatt_courses.name "
+        . "";
+    $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+        array('container'=>'courses', 'fname'=>'id', 'name'=>'item',
+            'fields'=>array('id', 'name', 'link_id')),
+    ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $rsp['courses'] = array();
+    if( isset($rc['courses']) ) {
+        $rsp['courses'] = $rc['courses'];
+        foreach($rsp['courses'] as $cid => $item) {
+            if( $item['item']['link_id'] > 0 ) {
+                $rsp['cert']['courses'] .= ($rsp['cert']['courses']!=''?',':'') . $item['item']['id'];
+            }
+            unset($rsp['courses'][$cid]['item']['link_id']);
+        }
+    }
 
-	//
-	// Get any messages about the cert
-	//
-	if( isset($args['messages']) && $args['messages'] == 'yes' 
-		&& ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x20) > 0 
-		) {
-		$strsql = "SELECT id, status, status AS status_text, "
-			. "days, subject, message, parent_subject, parent_message "
-			. "FROM ciniki_fatt_messages "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND object = 'ciniki.fatt.cert' "
-			. "AND object_id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
-			. "ORDER BY days "
-			. "";
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
-			array('container'=>'messages', 'fname'=>'id', 'name'=>'message',
-				'fields'=>array('id', 'status', 'status_text', 'days', 'subject', 'message', 'parent_subject', 'parent_message'),
-				'maps'=>array('status_text'=>$maps['message']['status'])),
-		));
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( isset($rc['messages']) ) {
-			$rsp['cert']['messages'] = $rc['messages'];
-		} else {
-			$rsp['cert']['messages'] = array();
-		}
-	}
+    //
+    // Get any messages about the cert
+    //
+    if( isset($args['messages']) && $args['messages'] == 'yes' 
+        && ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x20) > 0 
+        ) {
+        $strsql = "SELECT id, status, status AS status_text, "
+            . "days, subject, message, parent_subject, parent_message "
+            . "FROM ciniki_fatt_messages "
+            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND object = 'ciniki.fatt.cert' "
+            . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
+            . "ORDER BY days "
+            . "";
+        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+            array('container'=>'messages', 'fname'=>'id', 'name'=>'message',
+                'fields'=>array('id', 'status', 'status_text', 'days', 'subject', 'message', 'parent_subject', 'parent_message'),
+                'maps'=>array('status_text'=>$maps['message']['status'])),
+        ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['messages']) ) {
+            $rsp['cert']['messages'] = $rc['messages'];
+        } else {
+            $rsp['cert']['messages'] = array();
+        }
+    }
 
-	return $rsp;
+    return $rsp;
 }
 ?>

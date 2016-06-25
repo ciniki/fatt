@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business the offering is attached to.
+// business_id:     The ID of the business the offering is attached to.
 // 
 // Returns
 // -------
@@ -38,48 +38,48 @@ function ciniki_fatt_classUpdate(&$ciniki) {
         return $rc;
     }   
 
-	//
-	// Load the class details
-	//
-	$class = array();
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'classLoad');
-	$rc = ciniki_fatt_classLoad($ciniki, $args['business_id'], $args);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( !isset($rc['class']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2470', 'msg'=>'Unable to find class'));
-	}
-	$class = $rc['class'];
+    //
+    // Load the class details
+    //
+    $class = array();
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'classLoad');
+    $rc = ciniki_fatt_classLoad($ciniki, $args['business_id'], $args);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( !isset($rc['class']) ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2470', 'msg'=>'Unable to find class'));
+    }
+    $class = $rc['class'];
 
-	//
-	// Start transaction
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.fatt');
-	if( $rc['stat'] != 'ok' ) { 
-		return $rc;
-	}
+    //
+    // Start transaction
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+    $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.fatt');
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
 
-	//
-	// Check for new status for registrations
-	//
-	foreach($class['registrations'] as $rid => $registration) {
-		$arg_name = 'registration_' . $registration['registration']['id'] . '_status';
-		if( isset($ciniki['request']['args'][$arg_name]) && $ciniki['request']['args'][$arg_name] != $registration['registration']['status'] ) {
-			//
-			// Update the status
-			//
-			$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array(
-				'status'=>$ciniki['request']['args'][$arg_name]), 0x04);
-			if( $rc['stat'] != 'ok' ) {
-				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-				return $rc;
-			}
+    //
+    // Check for new status for registrations
+    //
+    foreach($class['registrations'] as $rid => $registration) {
+        $arg_name = 'registration_' . $registration['registration']['id'] . '_status';
+        if( isset($ciniki['request']['args'][$arg_name]) && $ciniki['request']['args'][$arg_name] != $registration['registration']['status'] ) {
+            //
+            // Update the status
+            //
+            $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array(
+                'status'=>$ciniki['request']['args'][$arg_name]), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                return $rc;
+            }
             
             //
             // Check if invoice item and possibly invoice should be removed
@@ -106,33 +106,33 @@ function ciniki_fatt_classUpdate(&$ciniki) {
                 }
             }
 
-			//
-			// Update the certification
-			//
-			ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationUpdateCerts');
-			$rc = ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $args['business_id'], $registration['registration']['id'], $registration['registration']);
-			if( $rc['stat'] != 'ok' ) {
-				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-				return $rc;
-			}
-		}
-	}
+            //
+            // Update the certification
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationUpdateCerts');
+            $rc = ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $args['business_id'], $registration['registration']['id'], $registration['registration']);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                return $rc;
+            }
+        }
+    }
 
-	//
-	// Commit the transaction
-	//
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.fatt');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    //
+    // Commit the transaction
+    //
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.fatt');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	//
-	// Update the last_change date in the business modules
-	// Ignore the result, as we don't want to stop user updates if this fails.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    //
+    // Update the last_change date in the business modules
+    // Ignore the result, as we don't want to stop user updates if this fails.
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
 
-	return array('stat'=>'ok');
+    return array('stat'=>'ok');
 }
 ?>

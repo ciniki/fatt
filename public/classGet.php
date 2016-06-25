@@ -8,8 +8,8 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business the offering is attached to.
-// offering_id:		The ID of the offering to get the details for.
+// business_id:     The ID of the business the offering is attached to.
+// offering_id:     The ID of the offering to get the details for.
 // 
 // Returns
 // -------
@@ -39,21 +39,21 @@ function ciniki_fatt_classGet($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	$modules = $rc['modules'];
+    $modules = $rc['modules'];
 
-	//
-	// Load the class details
-	//
-	$rsp = array('stat'=>'ok');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'classLoad');
-	$rc = ciniki_fatt_classLoad($ciniki, $args['business_id'], $args);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( isset($rc['class']) ) {
-		$rsp['class'] = $rc['class'];
-	}
+    //
+    // Load the class details
+    //
+    $rsp = array('stat'=>'ok');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'classLoad');
+    $rc = ciniki_fatt_classLoad($ciniki, $args['business_id'], $args);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['class']) ) {
+        $rsp['class'] = $rc['class'];
+    }
 
-	return $rsp;
+    return $rsp;
 }
 ?>

@@ -7,54 +7,54 @@
 #
 # Fields
 # ------
-# id:				The ID assigned to the course offering.
-# uuid:				The Universal Unique ID.
-# business_id:		The business the course offering is attached to.
-# offering_id:		The ID of the course offering the registration is for.
-# customer_id:		The ID of the customer who is paying for the course. This should be the same
-#					as the customer_id on the invoice for the registration.
+# id:               The ID assigned to the course offering.
+# uuid:             The Universal Unique ID.
+# business_id:      The business the course offering is attached to.
+# offering_id:      The ID of the course offering the registration is for.
+# customer_id:      The ID of the customer who is paying for the course. This should be the same
+#                   as the customer_id on the invoice for the registration.
 #
-# student_id:		The ID of the customer who is taking the course. This allows to keep track
-#					of employers paying for courses.  The customer_id is the employer and 
-#					the student_id is the employee taking the course. 
-#					The student_id is the same as customer_id if they are paying for themselves.
+# student_id:       The ID of the customer who is taking the course. This allows to keep track
+#                   of employers paying for courses.  The customer_id is the employer and 
+#                   the student_id is the employee taking the course. 
+#                   The student_id is the same as customer_id if they are paying for themselves.
 #
-# invoice_id:		The ID of the invoice in the POS module.  If the ID is zero then
-#					no invoice is attached to this registration.  The customer probably
-#					is a freebe and didn't need to pay.
+# invoice_id:       The ID of the invoice in the POS module.  If the ID is zero then
+#                   no invoice is attached to this registration.  The customer probably
+#                   is a freebe and didn't need to pay.
 #
-# status:			The status of the registrant with the course.
+# status:           The status of the registrant with the course.
 #
-#					0 - Incomplete
-#					10 - pass
-#					30 - cancelled
-#					40 - noshow
-#					50 - fail
-#					
-# customer_notes:	The notes left by the customer when they signed up online.
+#                   0 - Incomplete
+#                   10 - pass
+#                   30 - cancelled
+#                   40 - noshow
+#                   50 - fail
+#                   
+# customer_notes:   The notes left by the customer when they signed up online.
 #
-# notes:			The private notes for the business to use, customers won't see it.
+# notes:            The private notes for the business to use, customers won't see it.
 #
-# test_results:		The results from various tests, to be used when filling out PDF forms. 
-#					These are bit flags for each check for a test, everything is pass/fail.
+# test_results:     The results from various tests, to be used when filling out PDF forms. 
+#                   These are bit flags for each check for a test, everything is pass/fail.
 #
-# date_added:		The UTC date and time the record was added.
-# last_updated:		The UTC date and time the record was last updated.
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last updated.
 #
 create table ciniki_fatt_offering_registrations (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	offering_id int not null,
-	customer_id int not null,
-	student_id int not null,
-	invoice_id int not null,
-	status tinyint unsigned not null,
-	customer_notes varchar(6000) not null,
-	notes varchar(6000) not null,
-	test_results int not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index sync (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    offering_id int not null,
+    customer_id int not null,
+    student_id int not null,
+    invoice_id int not null,
+    status tinyint unsigned not null,
+    customer_notes varchar(6000) not null,
+    notes varchar(6000) not null,
+    test_results int not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

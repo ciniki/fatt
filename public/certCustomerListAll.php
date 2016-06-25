@@ -9,7 +9,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business the cert is attached to.
+// business_id:     The ID of the business the cert is attached to.
 // 
 // Returns
 // -------
@@ -37,22 +37,22 @@ function ciniki_fatt_certCustomerListAll($ciniki) {
         return $rc;
     }   
 
-	//
-	// Get the time information for business and user
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-	$rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$intl_timezone = $rc['settings']['intl-default-timezone'];
-	date_default_timezone_set($intl_timezone);
+    //
+    // Get the time information for business and user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    date_default_timezone_set($intl_timezone);
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
-	$mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
-	$php_date_format = ciniki_users_dateFormat($ciniki, 'php');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+    $mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
+    $php_date_format = ciniki_users_dateFormat($ciniki, 'php');
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 
     //
     // Get the cert customer details
@@ -76,6 +76,6 @@ function ciniki_fatt_certCustomerListAll($ciniki) {
         return $rc;
     }
 
-	return $rc;
+    return $rc;
 }
 ?>

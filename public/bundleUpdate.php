@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business the bundle is attached to.
+// business_id:     The ID of the business the bundle is attached to.
 // 
 // Returns
 // -------
@@ -22,8 +22,8 @@ function ciniki_fatt_bundleUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'bundle_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
-		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
-		'courses'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Courses'), 
+        'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
+        'courses'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Courses'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -40,55 +40,55 @@ function ciniki_fatt_bundleUpdate(&$ciniki) {
         return $rc;
     }   
 
-	//
-	// Start transaction
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.fatt');
-	if( $rc['stat'] != 'ok' ) { 
-		return $rc;
-	}   
+    //
+    // Start transaction
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+    $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.fatt');
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }   
 
-	//
-	// Update the bundle in the database
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.bundle', $args['bundle_id'], $args, 0x04);
-	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-		return $rc;
-	}
+    //
+    // Update the bundle in the database
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+    $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.bundle', $args['bundle_id'], $args, 0x04);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+        return $rc;
+    }
 
-	//
-	// Update the courses
-	//
-	if( isset($args['courses']) ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'bundleUpdateCourses');
-		$rc = ciniki_fatt_bundleUpdateCourses($ciniki, $args['business_id'], $args['bundle_id'], $args['courses']);
-		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-			return $rc;
-		}
-	}
+    //
+    // Update the courses
+    //
+    if( isset($args['courses']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'bundleUpdateCourses');
+        $rc = ciniki_fatt_bundleUpdateCourses($ciniki, $args['business_id'], $args['bundle_id'], $args['courses']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+            return $rc;
+        }
+    }
 
-	//
-	// Commit the transaction
-	//
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.fatt');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    //
+    // Commit the transaction
+    //
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.fatt');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	//
-	// Update the last_change date in the business modules
-	// Ignore the result, as we don't want to stop user updates if this fails.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    //
+    // Update the last_change date in the business modules
+    // Ignore the result, as we don't want to stop user updates if this fails.
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
 
-	return array('stat'=>'ok');
+    return array('stat'=>'ok');
 }
 ?>

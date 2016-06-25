@@ -5,19 +5,19 @@
 #
 # Fields
 # ------
-# id:				The ID assigned to the course.
-# uuid:				The Universal Unique ID.
-# business_id:		The business the course is attached to.
+# id:               The ID assigned to the course.
+# uuid:             The Universal Unique ID.
+# business_id:      The business the course is attached to.
 #
-# customer_id:		The ID of the customer or business that the device belongs to.
+# customer_id:      The ID of the customer or business that the device belongs to.
 #
-# location:			The location within the business the device is physically located.
+# location:         The location within the business the device is physically located.
 #
-# status:			The current status of the device.
+# status:           The current status of the device.
 #
-#					10 - Active
-#					40 - Out for service
-#					60 - Deleted
+#                   10 - Active
+#                   40 - Out for service
+#                   60 - Deleted
 #
 # flags:            Any options for the device.
 #
@@ -38,9 +38,9 @@
 #                   0x4000 -
 #                   0x8000 -
 #
-# make:				The make of the device.
-# model:			The model number of the device.
-# serial:			The serial number of the device.
+# make:             The make of the device.
+# model:            The model number of the device.
+# serial:           The serial number of the device.
 #
 # device_expiration:                The date the device expires.
 # primary_battery_expiration:       The date the primary battery expires.
@@ -54,32 +54,32 @@
 # 
 # notes:                Any private notes about the AED.
 #
-# date_added:		The UTC date and time the record was added.
-# last_updated:		The UTC date and time the record was last updated.
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last updated.
 #
 create table ciniki_fatt_aeds (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	customer_id int not null,
-	location varchar(250) not null,
-	status tinyint unsigned not null,
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    customer_id int not null,
+    location varchar(250) not null,
+    status tinyint unsigned not null,
     make varchar(150) not null,
-	model varchar(150) not null,
+    model varchar(150) not null,
     serial varchar(150) not null,
     flags smallint unsigned not null,
-	device_expiration date not null,
-	primary_battery_expiration date not null,
-	secondary_battery_expiration date not null,
-	primary_adult_pads_expiration date not null,
-	secondary_adult_pads_expiration date not null,
-	primary_child_pads_expiration date not null,
-	secondary_child_pads_expiration date not null,
+    device_expiration date not null,
+    primary_battery_expiration date not null,
+    secondary_battery_expiration date not null,
+    primary_adult_pads_expiration date not null,
+    secondary_adult_pads_expiration date not null,
+    primary_child_pads_expiration date not null,
+    secondary_child_pads_expiration date not null,
     primary_image_id int not null,
     notes varchar(10000) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index (customer_id),
-	index sync (business_id, uuid, last_updated)
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (customer_id),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

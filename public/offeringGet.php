@@ -8,8 +8,8 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business the offering is attached to.
-// offering_id:		The ID of the offering to get the details for.
+// business_id:     The ID of the business the offering is attached to.
+// offering_id:     The ID of the offering to get the details for.
 // 
 // Returns
 // -------
@@ -37,39 +37,39 @@ function ciniki_fatt_offeringGet($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	$modules = $rc['modules'];
+    $modules = $rc['modules'];
 
-	$rsp = array('stat'=>'ok');
+    $rsp = array('stat'=>'ok');
 
-	if( $args['offering_id'] == 0 ) {
-		//
-		// The defaults for starting a new offering
-		//
-		$rsp['offering'] = array(
-			'course_id'=>0,
-			'permalink'=>'',
-			'price'=>'',
-			'flags'=>0,
-			'instructors'=>array(),
-			'registrations'=>array(),
-			'date_display'=>'',
-			'dates'=>array(),
-			);
-	} else {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringLoad');
-		$rc = ciniki_fatt_offeringLoad($ciniki, $args['business_id'], $args['offering_id']);
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( isset($rc['offering']) ) {
-			$rsp['offering'] = $rc['offering'];
-		}
-	}
+    if( $args['offering_id'] == 0 ) {
+        //
+        // The defaults for starting a new offering
+        //
+        $rsp['offering'] = array(
+            'course_id'=>0,
+            'permalink'=>'',
+            'price'=>'',
+            'flags'=>0,
+            'instructors'=>array(),
+            'registrations'=>array(),
+            'date_display'=>'',
+            'dates'=>array(),
+            );
+    } else {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringLoad');
+        $rc = ciniki_fatt_offeringLoad($ciniki, $args['business_id'], $args['offering_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['offering']) ) {
+            $rsp['offering'] = $rc['offering'];
+        }
+    }
 
-	//
-	// Get the number of remaining seats
-	//
+    //
+    // Get the number of remaining seats
+    //
 
-	return $rsp;
+    return $rsp;
 }
 ?>

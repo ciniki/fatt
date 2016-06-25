@@ -4,57 +4,57 @@
 #
 # Fields
 # ------
-# id:				The ID of the instructor image.
-# uuid:				The Universal Unique ID.
-# business_id:		The ID of the business the instructor image is attached to.
+# id:               The ID of the instructor image.
+# uuid:             The Universal Unique ID.
+# business_id:      The ID of the business the instructor image is attached to.
 #
-# name:				The name of the instructor.
-# initials:			The initials for the instructor.
+# name:             The name of the instructor.
+# initials:         The initials for the instructor.
 #
-# permalink:		The permalink for the instructor webpage.
+# permalink:        The permalink for the instructor webpage.
 #
-# status:			The current status of the instructor.
+# status:           The current status of the instructor.
 #
-#					10 - Active
-#					50 - Archived
+#                   10 - Active
+#                   50 - Archived
 #
-# id_number:		The ID number assigned to them for first aid training
-# email:			Their email address for filling out forms.
-# phone:			Their phone address for filling out forms.
+# id_number:        The ID number assigned to them for first aid training
+# email:            Their email address for filling out forms.
+# phone:            Their phone address for filling out forms.
 #
-# primary_image_id:	The ID of the image for the instructor.
+# primary_image_id: The ID of the image for the instructor.
 #
-# flags:			The options for the instructor.
+# flags:            The options for the instructor.
 #
-#					0x01 - Visible, display this instructor on the website.
+#                   0x01 - Visible, display this instructor on the website.
 #
-# synopsis:			The short bio description for use on the listings page.
-# bio:				The full biography of the instructor, for use on their detail webpage.
+# synopsis:         The short bio description for use on the listings page.
+# bio:              The full biography of the instructor, for use on their detail webpage.
 #
-# url:				The URL to the instructors website.
+# url:              The URL to the instructors website.
 #
-# date_added:		The UTC date and time the record was added.
-# last_updated:		The UTC date and time the record was last changed;
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last changed;
 #
 CREATE TABLE ciniki_fatt_instructors ( 
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	name varchar(150) not null,
-	initials varchar(25) not null,
-	permalink varchar(150) not null,
-	status tinyint unsigned not null,
-	id_number varchar(50) not null,
-	email varchar(250) not null,
-	phone varchar(50) not null,
-	primary_image_id int not null,
-	flags tinyint unsigned not null,
-	synopsis varchar(6000) not null,
-	bio varchar(20000) not null,
-	url varchar(255) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index (business_id, permalink),
-	index sync (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    name varchar(150) not null,
+    initials varchar(25) not null,
+    permalink varchar(150) not null,
+    status tinyint unsigned not null,
+    id_number varchar(50) not null,
+    email varchar(250) not null,
+    phone varchar(50) not null,
+    primary_image_id int not null,
+    flags tinyint unsigned not null,
+    synopsis varchar(6000) not null,
+    bio varchar(20000) not null,
+    url varchar(255) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (business_id, permalink),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

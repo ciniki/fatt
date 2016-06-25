@@ -12,6 +12,6 @@
 //
 function ciniki_fatt_sapos_itemUpdate($ciniki, $business_id, $invoice_id, $item) {
 
-	return array('stat'=>'ok');
+    return array('stat'=>'ok');
 }
 ?>
