@@ -71,6 +71,7 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
         . "ciniki_fatt_offerings.course_id, "
         . "ciniki_fatt_courses.code AS course_codes, "
         . "ciniki_fatt_courses.name AS course_name, "
+        . "ciniki_fatt_courses.cert_form, "
         . "ciniki_fatt_courses.num_hours AS course_hours, "
         . "ciniki_fatt_courses.num_seats_per_instructor AS instructor_seats, "
         . "ciniki_fatt_locations.code AS location_code, "
@@ -119,7 +120,7 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
                 'date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                 )),
         array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering', 
-            'fields'=>array('id', 'course_code'=>'course_codes', 'course_hours', 'course_name', 'course_id', 'max_seats', 'seats_remaining')),
+            'fields'=>array('id', 'course_code'=>'course_codes', 'course_hours', 'course_name', 'course_id', 'cert_form', 'max_seats', 'seats_remaining')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

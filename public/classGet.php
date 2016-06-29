@@ -54,6 +54,37 @@ function ciniki_fatt_classGet($ciniki) {
         $rsp['class'] = $rc['class'];
     }
 
+    //
+    // Load forms
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'forms', 'list');
+    $rc = ciniki_fatt_forms_list($ciniki, $args['business_id'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $forms = $rc['forms'];
+
+    //
+    // Forms
+    //
+    /*
+    $class_forms = array();
+    if( isset($rsp['class']['offerings']) ) {
+        foreach($rsp['class']['offerings'] as $offering) {
+            $offering = $offering['offering'];
+            if( isset($forms[$offering['cert_form']]) ) {
+                if( !isset($class_forms[$offering['cert_form']]) ) {
+                    $class_forms[$offering['cert_form']] = $forms[$offering['cert_form']];
+                    $class_forms[$offering['cert_form']]['offering_ids'] = $offering['id'];
+                } else {
+                    $class_forms[$offering['cert_form']]['offering_ids'] .= ',' . $offering['id'];
+                }
+            }
+        }
+    }
+    $rsp['class']['forms'] = array_values($class_forms); 
+    */
+
     return $rsp;
 }
 ?>

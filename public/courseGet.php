@@ -249,6 +249,16 @@ function ciniki_fatt_courseGet($ciniki) {
         }
     }
 
+    //
+    // Get the list of available forms
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'forms', 'list');
+    $rc = ciniki_fatt_forms_list($ciniki, $args['business_id'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $rsp['forms'] = array_values($rc['forms']);
+
     return $rsp;
 }
 ?>
