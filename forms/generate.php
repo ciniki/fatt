@@ -187,7 +187,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             $reg_forms[$reg['cert_form']]['instructor_phone'] = '';
             if( isset($rc['instructor']) ) {
                 $reg_forms[$reg['cert_form']]['instructor_name'] = $rc['instructor']['name'];
-                $reg_forms[$reg['cert_form']]['instructor_id'] = $rc['instructor']['id_number'] . 'IDNUMBER';
+                $reg_forms[$reg['cert_form']]['instructor_id'] = $rc['instructor']['id_number'];
                 $reg_forms[$reg['cert_form']]['instructor_email'] = $rc['instructor']['email'];
                 if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $rc['instructor']['phone'], $matches) ) {
                     $reg_forms[$reg['cert_form']]['instructor_area_code'] = $matches[1];

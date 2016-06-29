@@ -464,7 +464,7 @@ function ciniki_fatt_settings() {
             'headerValues':['Name', 'Status'],
             'cellClasses':['multiline', ''],
             'addTxt':'Add Instructor',
-            'addFn':'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructorList();\',0);',
+            'addFn':'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructors.open();\',0);',
             },
     };
     this.instructors.sectionData = function(s) { return this.data[s]; }
@@ -475,9 +475,9 @@ function ciniki_fatt_settings() {
         }
     };
     this.instructors.rowFn = function(s, i, d) {
-        return 'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructorList();\',\'' + d.instructor.id + '\');';
+        return 'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructors.open();\',\'' + d.instructor.id + '\');';
     };
-    this.instructorList = function(cb) {
+    this.instructors.open = function(cb) {
         M.api.getJSONCb('ciniki.fatt.instructorList', {'business_id':M.curBusinessID, 'instructor_id':this.instructor_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -489,7 +489,7 @@ function ciniki_fatt_settings() {
             p.show(cb);
         });
     };
-    this.instructors.addButton('add', 'Add', 'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructorList();\',0);');
+    this.instructors.addButton('add', 'Add', 'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructors.open();\',0);');
     this.instructors.addClose('Back');
 
     //
@@ -1242,7 +1242,7 @@ function ciniki_fatt_settings() {
         if( args.manage != null ) {
             switch(args.manage) {
                 case 'courses': this.courses.open(cb); break;
-                case 'instructors': this.instructorList(cb); break;
+                case 'instructors': this.instructors.open(cb); break;
                 case 'locations': this.locations.open(cb); break;
                 case 'certs': this.certs.open(cb); break;
                 case 'message': this.messageList(cb); break;
