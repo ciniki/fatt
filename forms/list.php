@@ -26,6 +26,22 @@ function ciniki_fatt_forms_list($ciniki, $business_id, $args) {
             'processor'=>'CAONLSSCPR', 
             'options'=>array('level'=>'C'),
             ),
+        'CA-ON-LSS-EFA'=>array('id'=>'CA-ON-LSS-EFA', 'name'=>'Ontario LSS - EFA', 
+            'processor'=>'CAONLSSEFA', 
+            'options'=>array('recert'=>''),
+            ),
+        'CA-ON-LSS-EFA-R'=>array('id'=>'CA-ON-LSS-EFA-R', 'name'=>'Ontario LSS - EFA-R', 
+            'processor'=>'CAONLSSEFA', 
+            'options'=>array('recert'=>'yes'),
+            ),
+        'CA-ON-LSS-SFA'=>array('id'=>'CA-ON-LSS-SFA', 'name'=>'Ontario LSS - SFA', 
+            'processor'=>'CAONLSSSFA', 
+            'options'=>array('recert'=>''),
+            ),
+        'CA-ON-LSS-SFA-R'=>array('id'=>'CA-ON-LSS-SFA-R', 'name'=>'Ontario LSS - SFA-R', 
+            'processor'=>'CAONLSSSFA', 
+            'options'=>array('recert'=>'yes'),
+            ), 
         );
     
     return array('stat'=>'ok', 'forms'=>$forms);

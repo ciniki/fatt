@@ -111,11 +111,12 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             . ") "
         . "WHERE ciniki_fatt_offering_dates.offering_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['offering_ids']) . ") "
         . "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "ORDER BY ciniki_fatt_offering_dates.offering_id, ciniki_fatt_offering_dates.day_number "
+        . "ORDER BY ciniki_fatt_offering_dates.offering_id, ciniki_fatt_offering_dates.day_number DESC "
         . "";
     // Because query is sorted by day_number, automatically last item will be put in the result.
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
-        array('container'=>'offerings', 'fname'=>'offering_id', 'fields'=>array('day_number', 'start_date'), 
+        array('container'=>'offerings', 'fname'=>'offering_id', 
+            'fields'=>array('day_number', 'start_date', 'address1', 'address2', 'city', 'province', 'postal'), 
             'utctotz'=>array('start_date'=>array('format'=>'Y-m-d', 'timezone'=>$intl_timezone)),
             )
         ));
@@ -147,6 +148,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             $reg_forms[$reg['cert_form']] = $forms[$reg['cert_form']];
             $reg_forms[$reg['cert_form']]['registrations'] = array();
             $reg_forms[$reg['cert_form']]['exam_date'] = $sdt;
+            $reg_forms[$reg['cert_form']]['location'] = $dates[$reg['offering_id']]['city'] . ', ' . $dates[$reg['offering_id']]['province'];
             $reg_forms[$reg['cert_form']]['host_name'] = isset($business_details['name']) ? $business_details['name'] : '';
             if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $business_details['contact.phone.number'], $matches) ) {
                 $reg_forms[$reg['cert_form']]['host_area_code'] = $matches[1];
@@ -185,6 +187,11 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             $reg_forms[$reg['cert_form']]['instructor_email'] = '';
             $reg_forms[$reg['cert_form']]['instructor_area_code'] = '';
             $reg_forms[$reg['cert_form']]['instructor_phone'] = '';
+            $reg_forms[$reg['cert_form']]['examiner_name'] = '';
+            $reg_forms[$reg['cert_form']]['examiner_id'] = '';
+            $reg_forms[$reg['cert_form']]['examiner_email'] = '';
+            $reg_forms[$reg['cert_form']]['examiner_area_code'] = '';
+            $reg_forms[$reg['cert_form']]['examiner_phone'] = '';
             if( isset($rc['instructor']) ) {
                 $reg_forms[$reg['cert_form']]['instructor_name'] = $rc['instructor']['name'];
                 $reg_forms[$reg['cert_form']]['instructor_id'] = $rc['instructor']['id_number'];
@@ -194,12 +201,24 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
                     $reg_forms[$reg['cert_form']]['instructor_phone'] = $matches[2] . '-' . $matches[3];
                 }
             }
+            // 
+            // Duplicated for now, but when a separate examiner is required, it can be changed below
+            //
+            if( isset($rc['instructor']) ) {
+                $reg_forms[$reg['cert_form']]['examiner_name'] = $rc['instructor']['name'];
+                $reg_forms[$reg['cert_form']]['examiner_id'] = $rc['instructor']['id_number'];
+                $reg_forms[$reg['cert_form']]['examiner_email'] = $rc['instructor']['email'];
+                if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $rc['instructor']['phone'], $matches) ) {
+                    $reg_forms[$reg['cert_form']]['examiner_area_code'] = $matches[1];
+                    $reg_forms[$reg['cert_form']]['examiner_phone'] = $matches[2] . '-' . $matches[3];
+                }
+            }
         }
 
         //
         // Get the customer details
         //
-        $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['student_id']));
+        $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -208,16 +227,65 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
 
             $registrations[$reg_id]['age'] = '';
             $age = '';
+            $registrations[$reg_id]['birthyear'] = '';
+            $registrations[$reg_id]['birthmonth'] = '';
+            $registrations[$reg_id]['birthday'] = '';
             if( isset($rc['customer']['birthdate']) && $rc['customer']['birthdate'] != '0000-00-00' ) {
                 $bdt = new DateTime($rc['customer']['birthdate'] . ' 00:00:00', $ltz);
+                $registrations[$reg_id]['birthyear'] = $bdt->format('y');
+                $registrations[$reg_id]['birthmonth'] = $bdt->format('m');
+                $registrations[$reg_id]['birthday'] = $bdt->format('d');
                 $b = date_diff($sdt, $bdt);
                 if( $b->format('%y') > 0 ) {
                     $registrations[$reg_id]['age'] = $b->format('%y');
                 }
             }
+
+            //
+            // Setup address
+            //
+            $registrations[$reg_id]['address'] = '';
+            $registrations[$reg_id]['apt'] = '';
+            $registrations[$reg_id]['city'] = '';
+            $registrations[$reg_id]['postal'] = '';
+            $registrations[$reg_id]['email'] = '';
+            $registrations[$reg_id]['phone'] = '';
+            if( isset($rc['customer']['addresses']) ) {
+                foreach($rc['customer']['addresses'] as $address) {
+                    $address = $address['address'];
+                    if( ($address['flags']&0x04) > 0 ) {
+                        if( preg_match("/(.*)\s(apt|suite|unit|\#)[\s\.]*([a-zA-Z0-9]+)/i", $address['address1'], $matches) ) {
+                            $registrations[$reg_id]['address'] = $matches[1];
+                            $registrations[$reg_id]['apt'] = $matches[3];
+                        } else {
+                            $registrations[$reg_id]['address'] = $address['address1'];
+                            if( preg_match("/(apt|suite|unit|\#)[\s\.]*([a-zA-Z0-9]+)/i", $address['address2'], $matches) ) {
+                                $registrations[$reg_id]['apt'] = $matches[2];
+                            }
+                        }
+                        $registrations[$reg_id]['city'] = $address['city'];
+                        $registrations[$reg_id]['postal'] = $address['postal'];
+
+                        break;
+                    }
+                }
+            }
+            if( isset($rc['customer']['emails']) ) {
+                foreach($rc['customer']['emails'] as $email) {
+                    $email = $email['email'];
+                    $registrations[$reg_id]['email'] = $email['address'];
+                    break;
+                }
+            } 
+            if( isset($rc['customer']['phones']) ) {
+                foreach($rc['customer']['phones'] as $phone) {
+                    $registrations[$reg_id]['phone'] = $phone['phone_number'];
+                    break;
+                }
+            } 
         }
 
-
+        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
         $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
     }
 
