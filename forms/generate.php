@@ -225,7 +225,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
     //
     // Setup the PDF
     //
-    require_once('/Users/andrew/Projects/ciniki/site/ciniki-lib/tcpdf/tcpdf.php');
+    require_once($ciniki['config']['core']['lib_dir'] . '/tcpdf/tcpdf.php');
     class MYPDF extends TCPDF {
         public function Header() { }
         public function Footer() { }
