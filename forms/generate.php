@@ -85,10 +85,9 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         return $rc;
     }
     if( !isset($rc['rows']) || count($rc['rows']) == 0 ) {
-        return array('stat'=>'ok');
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3543', 'msg'=>'No registrations found'));
     }
     $registrations = $rc['rows'];
-
 
     //
     // Get the last date of the offering, and the location
@@ -285,6 +284,12 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             } 
         }
 
+        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
+        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
+        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
+        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
+        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
+        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
         $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
     }
 
