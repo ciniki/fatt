@@ -285,12 +285,6 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         }
 
         $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
-        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
-        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
-        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
-        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
-        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
-        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
     }
 
 
