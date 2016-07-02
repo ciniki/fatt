@@ -15,6 +15,7 @@
 //
 function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
 
+    error_log('Check for AED expirations');
     //
     // Load business settings
     //
@@ -209,6 +210,7 @@ function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
     // If there is expiring AEDs send the email
     //
     if( $text_content != '' ) {
+        error_log('emailing aed expirations');
         $text_content = "You have the following upcoming AED Expirations\n\n" . $text_content;
         ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'hooks', 'businessOwners');
         $rc = ciniki_businesses_hooks_businessOwners($ciniki, $business_id, array());
