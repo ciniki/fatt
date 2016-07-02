@@ -308,7 +308,6 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
                     return $rc;
                 }
                 if( isset($rc['customer']) && $rc['customer']['type'] == 2 ) {
-                    error_log('business');
                     if( !isset($reg_forms[$form_name]['businesses']) ) {
                         $reg_forms[$form_name]['businesses'] = array();
                     }

@@ -12,7 +12,6 @@
 // -------
 //
 function ciniki_fatt_forms_processCAONLSSWHIMS($ciniki, $business_id, &$pdf, $form) {
-    error_log('WHIMS');
     if( !isset($form['businesses']) || count($form['businesses']) == 0 ) {
         return array('stat'=>'ok');
     }
