@@ -46,6 +46,7 @@
 #                   0x40 - 
 #                   0x80 - 
 #
+# cover_letter:     The cover letter to include as part of the form package.
 # cert_form1:       The first form from Life Saving Society that is filled out at the end of the course.
 # cert_form2:       The second form from Life Saving Society that is filled out at the end of the course.
 #
@@ -70,6 +71,7 @@ create table ciniki_fatt_courses (
     num_hours decimal(5,2) not null,
     num_seats_per_instructor int not null,
     flags tinyint not null,
+    cover_letter varchar(50) not null,
     cert_form1 varchar(50) not null,
     cert_form2 varchar(50) not null,
     date_added datetime not null,

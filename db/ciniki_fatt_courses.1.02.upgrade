@@ -1,6 +1,7 @@
 #
 # Add parent message fields
 #
+ALTER TABLE ciniki_fatt_courses ADD COLUMN cover_letter varchar(50) not null AFTER flags;
 ALTER TABLE ciniki_fatt_courses CHANGE COLUMN cert_form cert_form1 varchar(50) not null;
 ALTER TABLE ciniki_fatt_courses ADD COLUMN cert_form2 varchar(50) not null AFTER cert_form1;
 ALTER TABLE ciniki_fatt_courses COMMENT='v1.02';

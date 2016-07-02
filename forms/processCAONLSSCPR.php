@@ -16,6 +16,7 @@ function ciniki_fatt_forms_processCAONLSSCPR($ciniki, $business_id, &$pdf, $form
     $reg_number = 0;
     while($reg_number < count($form['registrations']) ) {
         $pdf->AddPage();
+        $pdf->SetCellPaddings(1, 0, 1, 0);
         $pdf->Image($ciniki['config']['core']['modules_dir'] . '/fatt/forms/bgCAONLSSCPR.png', 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
         $pdf->setFont('', '', 22);
         if( $form['options']['level'] == 'A' ) {

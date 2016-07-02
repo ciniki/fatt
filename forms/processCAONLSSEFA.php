@@ -18,6 +18,7 @@ function ciniki_fatt_forms_processCAONLSSEFA($ciniki, $business_id, &$pdf, $form
     $total_pages = ceil(count($form['registrations']) / 5);
     while($reg_number < count($form['registrations']) ) {
         $pdf->AddPage();
+        $pdf->SetCellPaddings(1, 0, 1, 0);
         if( ($page_num%2) == 0 ) {
             $pdf->Image($ciniki['config']['core']['modules_dir'] . '/fatt/forms/bgCAONLSSEFA1.png', 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
         } else {

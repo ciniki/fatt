@@ -33,6 +33,7 @@ function ciniki_fatt_objects($ciniki) {
             'num_hours'=>array('name'=>'Number of Hours', 'default'=>'0'),
             'num_seats_per_instructor'=>array('name'=>'Number of Seats per Instructor', 'default'=>'0'),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
+            'cover_letter'=>array('name'=>'Cover Letter', 'default'=>''),
             'cert_form1'=>array('name'=>'1st Certification Form', 'default'=>''),
             'cert_form2'=>array('name'=>'2nd Certification Form', 'default'=>''),
             ),

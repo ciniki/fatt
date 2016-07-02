@@ -2,9 +2,6 @@
 // This file contains the UI panels to manage course information, instructors, certs, locations and messages
 //
 function ciniki_fatt_settings() {
-    this.courseForms = {
-        '':'None',
-        };
     this.toggleOptions = {'no':'Hide', 'yes':'Display'};
     this.positionOptions = {'left':'Left', 'center':'Center', 'right':'Right', 'off':'Off'};
 
@@ -112,8 +109,9 @@ function ciniki_fatt_settings() {
             'num_hours':{'label':'Hours', 'type':'text', 'size':'small'},
             'num_seats_per_instructor':{'label':'Seats/Instructor', 'type':'text', 'size':'tiny'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}}},
-            'cert_form1':{'label':'Form 1', 'type':'select', 'options':this.courseForms, 'complex_options':{'value':'id', 'name':'name'}},
-            'cert_form2':{'label':'Form 2', 'type':'select', 'options':this.courseForms, 'complex_options':{'value':'id', 'name':'name'}},
+            'cover_letter':{'label':'Cover Letter', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
+            'cert_form1':{'label':'Form 1', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
+            'cert_form2':{'label':'Form 2', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
             }},
         '_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
             'categories':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
@@ -147,22 +145,6 @@ function ciniki_fatt_settings() {
     this.course.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.fatt.courseHistory', 'args':{'business_id':M.curBusinessID, 'course_id':this.course_id, 'field':i}};
     }
-/*    this.course.messageEdit = function(mid) {
-        if( this.course_id == 0 ) {
-            // Save course first 
-            var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.courseAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                }
-                M.ciniki_fatt_settings.course.course_id = rsp.id;
-                M.ciniki_fatt_settings.message.open('M.ciniki_fatt_settings.course.messagesUpdate();','ciniki.fatt.course',rsp.id,mid);
-            });
-        } else {
-            M.ciniki_fatt_settings.message.open('M.ciniki_fatt_settings.course.messagesUpdate();','ciniki.fatt.course',this.course_id,mid);
-        }
-    } */
     this.course.messagesUpdate = function() {
         M.api.getJSONCb('ciniki.fatt.courseGet', {'business_id':M.curBusinessID, 'course_id':this.course_id, 'messages':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
@@ -190,7 +172,6 @@ function ciniki_fatt_settings() {
     }
     this.course.rowFn = function(s, i, d) {
         return 'M.ciniki_fatt_settings.course.save(\'M.ciniki_fatt_settings.message.open("M.ciniki_fatt_settings.course.messagesUpdate();","ciniki.fatt.course",M.ciniki_fatt_settings.course.course_id,"' + d.message.id + '");\');';
-//        return 'M.ciniki_fatt_settings.message.open(\'M.ciniki_fatt_settings.course.messagesUpdate();\',\'ciniki.fatt.course\',M.ciniki_fatt_settings.course.course_id,\'' + d.message.id + '\');';
     }
     this.course.addDropImage = function(iid) {
         M.ciniki_fatt_settings.course.setFieldValue('primary_image_id', iid, null, null);
@@ -213,6 +194,8 @@ function ciniki_fatt_settings() {
             p.sections._categories.fields.categories.list = (rsp.categories!=null?rsp.categories:{});
             p.sections._bundles.fields.bundles.list = (rsp.bundles!=null?rsp.bundles:{});
             p.sections._certs.fields.certs.list = (rsp.certs!=null?rsp.certs:{});
+            rsp.cover_letters.unshift({'value':'', 'name':'None'});
+            p.sections.details.fields.cover_letter.options = rsp.cover_letters;
             rsp.forms.unshift({'value':'', 'name':'None'});
             p.sections.details.fields.cert_form1.options = rsp.forms;
             p.sections.details.fields.cert_form2.options = rsp.forms;

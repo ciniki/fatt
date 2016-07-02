@@ -13,6 +13,12 @@
 //
 function ciniki_fatt_forms_list($ciniki, $business_id, $args) {
     
+    $cover_letters = array(
+        'CA-ON-LSS-WHIMS'=>array('id'=>'CA-ON-LSS-WHIMS', 'name'=>'Ontario LSS - WHIMS', 
+            'processor'=>'CAONLSSWHIMS', 
+            'options'=>array(),
+            ),
+        );
     $forms = array(
         'CA-ON-LSS-CPR-A'=>array('id'=>'CA-ON-LSS-CPR-A', 'name'=>'Ontario LSS - CPR-A', 
             'processor'=>'CAONLSSCPR', 
@@ -52,6 +58,6 @@ function ciniki_fatt_forms_list($ciniki, $business_id, $args) {
             ), 
         );
     
-    return array('stat'=>'ok', 'forms'=>$forms);
+    return array('stat'=>'ok', 'forms'=>$forms, 'cover_letters'=>$cover_letters);
 }
 ?>

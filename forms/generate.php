@@ -30,7 +30,11 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $forms = $rc['forms'];
+    if( isset($rc['cover_letters']) ) {
+        $forms = array_merge($rc['forms'], $rc['cover_letters']);
+    } else {
+        $forms = $rc['forms'];
+    }
 
     //
     // Load business details
@@ -65,6 +69,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         . "ciniki_fatt_offering_registrations.customer_id, "
         . "ciniki_fatt_offering_registrations.student_id, "
         . "ciniki_fatt_courses.name, "
+        . "ciniki_fatt_courses.cover_letter, "
         . "ciniki_fatt_courses.cert_form1, "
         . "ciniki_fatt_courses.cert_form2 "
         . "FROM ciniki_fatt_offerings "
@@ -79,7 +84,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             . ") "
         . "WHERE ciniki_fatt_offerings.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['offering_ids']) . ") "
         . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "ORDER BY cert_form1, cert_form2 "
+        . "ORDER BY cover_letter DESC, cert_form1, cert_form2 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
     if( $rc['stat'] != 'ok' ) {
@@ -132,12 +137,18 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
     // Setup the registration information
     //
     $reg_forms = array();
+
     //
     // Assign to a form
     //
     foreach($registrations as $reg_id => $reg) {
-        for($i = 1; $i <= 2; $i++) {
-            $cert_form_name = 'cert_form' . $i;
+        for($i = 0; $i <= 2; $i++) {
+            if( $i == 0 ) {
+                $cert_form_name = 'cover_letter';
+            } else {
+                $cert_form_name = 'cert_form' . $i;
+            }
+
             //
             // Skip if no form specified
             //
@@ -219,7 +230,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             }
 
             //
-            // Get the customer details
+            // Get the student details
             //
             $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
@@ -286,6 +297,49 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
                         break;
                     }
                 } 
+            }
+
+            //
+            // Get the business details
+            //
+            if( $reg['student_id'] != $reg['customer_id'] ) {
+                $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes'));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['customer']) && $rc['customer']['type'] == 2 ) {
+                    error_log('business');
+                    if( !isset($reg_forms[$form_name]['businesses']) ) {
+                        $reg_forms[$form_name]['businesses'] = array();
+                    }
+                    if( !isset($reg_forms[$form_name]['businesses'][$reg['customer_id']]) ) {
+                        $reg_forms[$form_name]['businesses'][$reg['customer_id']] = array(
+                            'id'=>$reg['customer_id'],
+                            'display_name'=>$rc['customer']['display_name'],
+                            'address1'=>'',
+                            'address1'=>'',
+                            'city'=>'',
+                            'province'=>'',
+                            'postal'=>'',
+                            'registrations'=>array(),
+                            );
+                        if( isset($rc['customer']['addresses']) ) {
+                            foreach($rc['customer']['addresses'] as $address) {
+                                $address = $address['address'];
+                                if( ($address['flags']&0x04) > 0 ) {
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['address1'] = $address['address1'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['address2'] = $address['address2'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['city'] = $address['city'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['province'] = $address['province'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['postal'] = $address['postal'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['country'] = $address['country'];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['registrations'][] = $registrations[$reg_id];
+                }
             }
 
             $reg_forms[$form_name]['registrations'][] = $registrations[$reg_id];
