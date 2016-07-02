@@ -112,7 +112,8 @@ function ciniki_fatt_settings() {
             'num_hours':{'label':'Hours', 'type':'text', 'size':'small'},
             'num_seats_per_instructor':{'label':'Seats/Instructor', 'type':'text', 'size':'tiny'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}}},
-            'cert_form':{'label':'Form', 'type':'select', 'options':this.courseForms, 'complex_options':{'value':'id', 'name':'name'}},
+            'cert_form1':{'label':'Form 1', 'type':'select', 'options':this.courseForms, 'complex_options':{'value':'id', 'name':'name'}},
+            'cert_form2':{'label':'Form 2', 'type':'select', 'options':this.courseForms, 'complex_options':{'value':'id', 'name':'name'}},
             }},
         '_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
             'categories':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
@@ -213,7 +214,8 @@ function ciniki_fatt_settings() {
             p.sections._bundles.fields.bundles.list = (rsp.bundles!=null?rsp.bundles:{});
             p.sections._certs.fields.certs.list = (rsp.certs!=null?rsp.certs:{});
             rsp.forms.unshift({'value':'', 'name':'None'});
-            p.sections.details.fields.cert_form.options = rsp.forms;
+            p.sections.details.fields.cert_form1.options = rsp.forms;
+            p.sections.details.fields.cert_form2.options = rsp.forms;
             p.refresh();
             p.show(cb);
         });

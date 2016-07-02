@@ -46,7 +46,8 @@
 #                   0x40 - 
 #                   0x80 - 
 #
-# cert_form:        The form from Life Saving Society that is filled out at the end of the course.
+# cert_form1:       The first form from Life Saving Society that is filled out at the end of the course.
+# cert_form2:       The second form from Life Saving Society that is filled out at the end of the course.
 #
 # date_added:       The UTC date and time the record was added.
 # last_updated:     The UTC date and time the record was last updated.
@@ -69,10 +70,11 @@ create table ciniki_fatt_courses (
     num_hours decimal(5,2) not null,
     num_seats_per_instructor int not null,
     flags tinyint not null,
-    cert_form varchar(50) not null,
+    cert_form1 varchar(50) not null,
+    cert_form2 varchar(50) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (business_id, permalink),
     index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

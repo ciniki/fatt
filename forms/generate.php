@@ -65,7 +65,8 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         . "ciniki_fatt_offering_registrations.customer_id, "
         . "ciniki_fatt_offering_registrations.student_id, "
         . "ciniki_fatt_courses.name, "
-        . "ciniki_fatt_courses.cert_form "
+        . "ciniki_fatt_courses.cert_form1, "
+        . "ciniki_fatt_courses.cert_form2 "
         . "FROM ciniki_fatt_offerings "
         . "INNER JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
@@ -78,7 +79,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             . ") "
         . "WHERE ciniki_fatt_offerings.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['offering_ids']) . ") "
         . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "ORDER BY cert_form "
+        . "ORDER BY cert_form1, cert_form2 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
     if( $rc['stat'] != 'ok' ) {
@@ -131,162 +132,165 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
     // Setup the registration information
     //
     $reg_forms = array();
+    //
+    // Assign to a form
+    //
     foreach($registrations as $reg_id => $reg) {
-        //
-        // Skip if no form specified
-        //
-        if( $reg['cert_form'] == '' || !isset($forms[$reg['cert_form']]) ) {
-            continue;
-        }
-        $sdt = new DateTime($dates[$reg['offering_id']]['start_date'] . ' 00:00:00', $ltz);
-
-        //
-        // Assign to a form
-        //
-        if( !isset($reg_forms[$reg['cert_form']]) ) {
-            $reg_forms[$reg['cert_form']] = $forms[$reg['cert_form']];
-            $reg_forms[$reg['cert_form']]['registrations'] = array();
-            $reg_forms[$reg['cert_form']]['exam_date'] = $sdt;
-            $reg_forms[$reg['cert_form']]['location'] = $dates[$reg['offering_id']]['city'] . ', ' . $dates[$reg['offering_id']]['province'];
-            $reg_forms[$reg['cert_form']]['host_name'] = isset($business_details['name']) ? $business_details['name'] : '';
-            if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $business_details['contact.phone.number'], $matches) ) {
-                $reg_forms[$reg['cert_form']]['host_area_code'] = $matches[1];
-                $reg_forms[$reg['cert_form']]['host_phone'] = $matches[2] . '-' . $matches[3];
-            } else {
-                $reg_forms[$reg['cert_form']]['host_area_code'] = '';
-                $reg_forms[$reg['cert_form']]['host_phone'] = '';
-            }
-            $reg_forms[$reg['cert_form']]['host_street'] = isset($business_details['contact.address.street1']) ? $business_details['contact.address.street1'] : '';
-            $reg_forms[$reg['cert_form']]['host_city'] = isset($business_details['contact.address.city']) ? $business_details['contact.address.city'] : '';
-            $reg_forms[$reg['cert_form']]['host_province'] = isset($business_details['contact.address.province']) ? $business_details['contact.address.province'] : '';
-            $reg_forms[$reg['cert_form']]['host_postal'] = isset($business_details['contact.address.postal']) ? $business_details['contact.address.postal'] : '';
-
+        for($i = 1; $i <= 2; $i++) {
+            $cert_form_name = 'cert_form' . $i;
             //
-            // Get the list of instructors for the course
+            // Skip if no form specified
             //
-            $strsql = "SELECT ciniki_fatt_instructors.name, "
-                . "ciniki_fatt_instructors.id_number, "
-                . "ciniki_fatt_instructors.email, "
-                . "ciniki_fatt_instructors.phone "
-                . "FROM ciniki_fatt_offering_instructors "
-                . "INNER JOIN ciniki_fatt_instructors ON ("
-                    . "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
-                    . "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-                    . ") "
-                . "WHERE ciniki_fatt_offering_instructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $reg['offering_id']) . "' "
-                . "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-                . "LIMIT 1 "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'instructor');
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
+            if( $reg[$cert_form_name] == '' || !isset($forms[$reg[$cert_form_name]]) ) {
+                continue;
             }
-            $reg_forms[$reg['cert_form']]['instructor_name'] = '';
-            $reg_forms[$reg['cert_form']]['instructor_id'] = '';
-            $reg_forms[$reg['cert_form']]['instructor_email'] = '';
-            $reg_forms[$reg['cert_form']]['instructor_area_code'] = '';
-            $reg_forms[$reg['cert_form']]['instructor_phone'] = '';
-            $reg_forms[$reg['cert_form']]['examiner_name'] = '';
-            $reg_forms[$reg['cert_form']]['examiner_id'] = '';
-            $reg_forms[$reg['cert_form']]['examiner_email'] = '';
-            $reg_forms[$reg['cert_form']]['examiner_area_code'] = '';
-            $reg_forms[$reg['cert_form']]['examiner_phone'] = '';
-            if( isset($rc['instructor']) ) {
-                $reg_forms[$reg['cert_form']]['instructor_name'] = $rc['instructor']['name'];
-                $reg_forms[$reg['cert_form']]['instructor_id'] = $rc['instructor']['id_number'];
-                $reg_forms[$reg['cert_form']]['instructor_email'] = $rc['instructor']['email'];
-                if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $rc['instructor']['phone'], $matches) ) {
-                    $reg_forms[$reg['cert_form']]['instructor_area_code'] = $matches[1];
-                    $reg_forms[$reg['cert_form']]['instructor_phone'] = $matches[2] . '-' . $matches[3];
+            $sdt = new DateTime($dates[$reg['offering_id']]['start_date'] . ' 00:00:00', $ltz);
+
+            $form_name = $reg[$cert_form_name];
+            if( !isset($reg_forms[$form_name]) ) {
+                $reg_forms[$form_name] = $forms[$form_name];
+                $reg_forms[$form_name]['registrations'] = array();
+                $reg_forms[$form_name]['exam_date'] = $sdt;
+                $reg_forms[$form_name]['location'] = $dates[$reg['offering_id']]['city'] . ', ' . $dates[$reg['offering_id']]['province'];
+                $reg_forms[$form_name]['host_name'] = isset($business_details['name']) ? $business_details['name'] : '';
+                if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $business_details['contact.phone.number'], $matches) ) {
+                    $reg_forms[$form_name]['host_area_code'] = $matches[1];
+                    $reg_forms[$form_name]['host_phone'] = $matches[2] . '-' . $matches[3];
+                } else {
+                    $reg_forms[$form_name]['host_area_code'] = '';
+                    $reg_forms[$form_name]['host_phone'] = '';
                 }
-            }
-            // 
-            // Duplicated for now, but when a separate examiner is required, it can be changed below
-            //
-            if( isset($rc['instructor']) ) {
-                $reg_forms[$reg['cert_form']]['examiner_name'] = $rc['instructor']['name'];
-                $reg_forms[$reg['cert_form']]['examiner_id'] = $rc['instructor']['id_number'];
-                $reg_forms[$reg['cert_form']]['examiner_email'] = $rc['instructor']['email'];
-                if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $rc['instructor']['phone'], $matches) ) {
-                    $reg_forms[$reg['cert_form']]['examiner_area_code'] = $matches[1];
-                    $reg_forms[$reg['cert_form']]['examiner_phone'] = $matches[2] . '-' . $matches[3];
+                $reg_forms[$form_name]['host_street'] = isset($business_details['contact.address.street1']) ? $business_details['contact.address.street1'] : '';
+                $reg_forms[$form_name]['host_city'] = isset($business_details['contact.address.city']) ? $business_details['contact.address.city'] : '';
+                $reg_forms[$form_name]['host_province'] = isset($business_details['contact.address.province']) ? $business_details['contact.address.province'] : '';
+                $reg_forms[$form_name]['host_postal'] = isset($business_details['contact.address.postal']) ? $business_details['contact.address.postal'] : '';
+
+                //
+                // Get the list of instructors for the course
+                //
+                $strsql = "SELECT ciniki_fatt_instructors.name, "
+                    . "ciniki_fatt_instructors.id_number, "
+                    . "ciniki_fatt_instructors.email, "
+                    . "ciniki_fatt_instructors.phone "
+                    . "FROM ciniki_fatt_offering_instructors "
+                    . "INNER JOIN ciniki_fatt_instructors ON ("
+                        . "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
+                        . "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                        . ") "
+                    . "WHERE ciniki_fatt_offering_instructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $reg['offering_id']) . "' "
+                    . "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                    . "LIMIT 1 "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'instructor');
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
                 }
-            }
-        }
-
-        //
-        // Get the customer details
-        //
-        $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes'));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( isset($rc['customer']) ) {
-            $registrations[$reg_id]['display_name'] = $rc['customer']['display_name'];
-
-            $registrations[$reg_id]['age'] = '';
-            $age = '';
-            $registrations[$reg_id]['birthyear'] = '';
-            $registrations[$reg_id]['birthmonth'] = '';
-            $registrations[$reg_id]['birthday'] = '';
-            if( isset($rc['customer']['birthdate']) && $rc['customer']['birthdate'] != '0000-00-00' ) {
-                $bdt = new DateTime($rc['customer']['birthdate'] . ' 00:00:00', $ltz);
-                $registrations[$reg_id]['birthyear'] = $bdt->format('y');
-                $registrations[$reg_id]['birthmonth'] = $bdt->format('m');
-                $registrations[$reg_id]['birthday'] = $bdt->format('d');
-                $b = date_diff($sdt, $bdt);
-                if( $b->format('%y') > 0 ) {
-                    $registrations[$reg_id]['age'] = $b->format('%y');
+                $reg_forms[$form_name]['instructor_name'] = '';
+                $reg_forms[$form_name]['instructor_id'] = '';
+                $reg_forms[$form_name]['instructor_email'] = '';
+                $reg_forms[$form_name]['instructor_area_code'] = '';
+                $reg_forms[$form_name]['instructor_phone'] = '';
+                $reg_forms[$form_name]['examiner_name'] = '';
+                $reg_forms[$form_name]['examiner_id'] = '';
+                $reg_forms[$form_name]['examiner_email'] = '';
+                $reg_forms[$form_name]['examiner_area_code'] = '';
+                $reg_forms[$form_name]['examiner_phone'] = '';
+                if( isset($rc['instructor']) ) {
+                    $reg_forms[$form_name]['instructor_name'] = $rc['instructor']['name'];
+                    $reg_forms[$form_name]['instructor_id'] = $rc['instructor']['id_number'];
+                    $reg_forms[$form_name]['instructor_email'] = $rc['instructor']['email'];
+                    if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $rc['instructor']['phone'], $matches) ) {
+                        $reg_forms[$form_name]['instructor_area_code'] = $matches[1];
+                        $reg_forms[$form_name]['instructor_phone'] = $matches[2] . '-' . $matches[3];
+                    }
                 }
-            }
-
-            //
-            // Setup address
-            //
-            $registrations[$reg_id]['address'] = '';
-            $registrations[$reg_id]['apt'] = '';
-            $registrations[$reg_id]['city'] = '';
-            $registrations[$reg_id]['postal'] = '';
-            $registrations[$reg_id]['email'] = '';
-            $registrations[$reg_id]['phone'] = '';
-            if( isset($rc['customer']['addresses']) ) {
-                foreach($rc['customer']['addresses'] as $address) {
-                    $address = $address['address'];
-                    if( ($address['flags']&0x04) > 0 ) {
-                        if( preg_match("/(.*)\s(apt|suite|unit|\#)[\s\.]*([a-zA-Z0-9]+)/i", $address['address1'], $matches) ) {
-                            $registrations[$reg_id]['address'] = $matches[1];
-                            $registrations[$reg_id]['apt'] = $matches[3];
-                        } else {
-                            $registrations[$reg_id]['address'] = $address['address1'];
-                            if( preg_match("/(apt|suite|unit|\#)[\s\.]*([a-zA-Z0-9]+)/i", $address['address2'], $matches) ) {
-                                $registrations[$reg_id]['apt'] = $matches[2];
-                            }
-                        }
-                        $registrations[$reg_id]['city'] = $address['city'];
-                        $registrations[$reg_id]['postal'] = $address['postal'];
-
-                        break;
+                // 
+                // Duplicated for now, but when a separate examiner is required, it can be changed below
+                //
+                if( isset($rc['instructor']) ) {
+                    $reg_forms[$form_name]['examiner_name'] = $rc['instructor']['name'];
+                    $reg_forms[$form_name]['examiner_id'] = $rc['instructor']['id_number'];
+                    $reg_forms[$form_name]['examiner_email'] = $rc['instructor']['email'];
+                    if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $rc['instructor']['phone'], $matches) ) {
+                        $reg_forms[$form_name]['examiner_area_code'] = $matches[1];
+                        $reg_forms[$form_name]['examiner_phone'] = $matches[2] . '-' . $matches[3];
                     }
                 }
             }
-            if( isset($rc['customer']['emails']) ) {
-                foreach($rc['customer']['emails'] as $email) {
-                    $email = $email['email'];
-                    $registrations[$reg_id]['email'] = $email['address'];
-                    break;
+
+            //
+            // Get the customer details
+            //
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes'));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['customer']) ) {
+                $registrations[$reg_id]['display_name'] = $rc['customer']['display_name'];
+
+                $registrations[$reg_id]['age'] = '';
+                $age = '';
+                $registrations[$reg_id]['birthyear'] = '';
+                $registrations[$reg_id]['birthmonth'] = '';
+                $registrations[$reg_id]['birthday'] = '';
+                if( isset($rc['customer']['birthdate']) && $rc['customer']['birthdate'] != '0000-00-00' ) {
+                    $bdt = new DateTime($rc['customer']['birthdate'] . ' 00:00:00', $ltz);
+                    $registrations[$reg_id]['birthyear'] = $bdt->format('y');
+                    $registrations[$reg_id]['birthmonth'] = $bdt->format('m');
+                    $registrations[$reg_id]['birthday'] = $bdt->format('d');
+                    $b = date_diff($sdt, $bdt);
+                    if( $b->format('%y') > 0 ) {
+                        $registrations[$reg_id]['age'] = $b->format('%y');
+                    }
                 }
-            } 
-            if( isset($rc['customer']['phones']) ) {
-                foreach($rc['customer']['phones'] as $phone) {
-                    $registrations[$reg_id]['phone'] = $phone['phone_number'];
-                    break;
+
+                //
+                // Setup address
+                //
+                $registrations[$reg_id]['address'] = '';
+                $registrations[$reg_id]['apt'] = '';
+                $registrations[$reg_id]['city'] = '';
+                $registrations[$reg_id]['postal'] = '';
+                $registrations[$reg_id]['email'] = '';
+                $registrations[$reg_id]['phone'] = '';
+                if( isset($rc['customer']['addresses']) ) {
+                    foreach($rc['customer']['addresses'] as $address) {
+                        $address = $address['address'];
+                        if( ($address['flags']&0x04) > 0 ) {
+                            if( preg_match("/(.*)\s(apt|suite|unit|\#)[\s\.]*([a-zA-Z0-9]+)/i", $address['address1'], $matches) ) {
+                                $registrations[$reg_id]['address'] = $matches[1];
+                                $registrations[$reg_id]['apt'] = $matches[3];
+                            } else {
+                                $registrations[$reg_id]['address'] = $address['address1'];
+                                if( preg_match("/(apt|suite|unit|\#)[\s\.]*([a-zA-Z0-9]+)/i", $address['address2'], $matches) ) {
+                                    $registrations[$reg_id]['apt'] = $matches[2];
+                                }
+                            }
+                            $registrations[$reg_id]['city'] = $address['city'];
+                            $registrations[$reg_id]['postal'] = $address['postal'];
+
+                            break;
+                        }
+                    }
                 }
-            } 
+                if( isset($rc['customer']['emails']) ) {
+                    foreach($rc['customer']['emails'] as $email) {
+                        $email = $email['email'];
+                        $registrations[$reg_id]['email'] = $email['address'];
+                        break;
+                    }
+                } 
+                if( isset($rc['customer']['phones']) ) {
+                    foreach($rc['customer']['phones'] as $phone) {
+                        $registrations[$reg_id]['phone'] = $phone['phone_number'];
+                        break;
+                    }
+                } 
+            }
+
+            $reg_forms[$form_name]['registrations'][] = $registrations[$reg_id];
         }
-
-        $reg_forms[$reg['cert_form']]['registrations'][] = $registrations[$reg_id];
     }
-
 
     //
     // Setup the PDF

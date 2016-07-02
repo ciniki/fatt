@@ -92,7 +92,8 @@ function ciniki_fatt_courseGet($ciniki) {
             . "ciniki_fatt_courses.num_hours, "
             . "ciniki_fatt_courses.num_seats_per_instructor, "
             . "ciniki_fatt_courses.flags, "
-            . "ciniki_fatt_courses.cert_form "
+            . "ciniki_fatt_courses.cert_form1, "
+            . "ciniki_fatt_courses.cert_form2 "
             . "FROM ciniki_fatt_courses "
             . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "AND ciniki_fatt_courses.id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
@@ -100,7 +101,7 @@ function ciniki_fatt_courseGet($ciniki) {
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
             array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
                 'fields'=>array('id', 'name', 'code', 'permalink', 'sequence', 'status', 'primary_image_id', 'synopsis', 'description', 
-                    'price', 'taxtype_id', 'num_days', 'num_hours', 'num_seats_per_instructor', 'flags', 'cert_form')),
+                    'price', 'taxtype_id', 'num_days', 'num_hours', 'num_seats_per_instructor', 'flags', 'cert_form1', 'cert_form2')),
         ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

@@ -64,27 +64,6 @@ function ciniki_fatt_classGet($ciniki) {
     }
     $forms = $rc['forms'];
 
-    //
-    // Forms
-    //
-    /*
-    $class_forms = array();
-    if( isset($rsp['class']['offerings']) ) {
-        foreach($rsp['class']['offerings'] as $offering) {
-            $offering = $offering['offering'];
-            if( isset($forms[$offering['cert_form']]) ) {
-                if( !isset($class_forms[$offering['cert_form']]) ) {
-                    $class_forms[$offering['cert_form']] = $forms[$offering['cert_form']];
-                    $class_forms[$offering['cert_form']]['offering_ids'] = $offering['id'];
-                } else {
-                    $class_forms[$offering['cert_form']]['offering_ids'] .= ',' . $offering['id'];
-                }
-            }
-        }
-    }
-    $rsp['class']['forms'] = array_values($class_forms); 
-    */
-
     return $rsp;
 }
 ?>
