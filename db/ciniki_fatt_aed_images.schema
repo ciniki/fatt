@@ -1,0 +1,35 @@
+#
+# Description
+# -----------
+# This table stores the additional images for an AED device.
+#
+# Fields
+# ------
+# id:               The ID of the aed image.
+# uuid:             The Universal Unique ID.
+# business_id:      The ID of the business the aed is attached to.
+#
+# aed_id:           The ID of the aed from the ciniki_events table.
+# 
+# image_id:         The ID of the image in the ciniki.images module.
+#
+# name:             The name for the image.
+#
+# description:      The description for the image.
+#
+# date_added:       The UTC date and time the image was added to the event.
+# last_updated:     The UTC date and time the image was last updated.
+#
+create table ciniki_fatt_aed_images (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    aed_id int not null,
+    image_id int not null,
+    image_date date not null,
+    description varchar(6000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

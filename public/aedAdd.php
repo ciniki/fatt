@@ -37,6 +37,7 @@ function ciniki_fatt_aedAdd(&$ciniki) {
         'secondary_child_pads_expiration'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Secondary Child Pads Expiration Date'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
+        'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Additional Image'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -93,6 +94,22 @@ function ciniki_fatt_aedAdd(&$ciniki) {
         return $rc;
     }
     $aed_id = $rc['id'];
+
+    //
+    // Add additional image if supplied
+    //
+    if( isset($args['image_id']) && $args['image_id'] > 0 ) {
+        //
+        // Add the aed image to the database
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+        $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.aedimage', $args, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+            return $rc;
+        }
+        $aedimage_id = $rc['id'];
+    }
 
     //
     // Commit the transaction

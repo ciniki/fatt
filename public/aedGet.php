@@ -112,6 +112,64 @@ function ciniki_fatt_aedGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3264', 'msg'=>'Unable to find AED'));
         }
         $aed = $rc['aed'];
+
+        //
+        // Get the images
+        //
+        $strsql = "SELECT id, image_id, "
+            . "IFNULL(DATE_FORMAT(image_date, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS name, "
+            . "description "
+            . "FROM ciniki_fatt_aed_images "
+            . "WHERE aed_id = '" . ciniki_core_dbQuote($ciniki, $args['aed_id']) . "' "
+            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "ORDER BY image_date DESC "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
+            array('container'=>'images', 'fname'=>'id', 'fields'=>array('id', 'image_id', 'name', 'description')),
+        ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['images']) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheThumbnail');
+            $aed['images'] = $rc['images'];
+            foreach($aed['images'] as $img_id => $img) {
+                if( isset($img['image_id']) && $img['image_id'] > 0 ) {
+                    $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['business_id'], $img['image_id'], 75);
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    $aed['images'][$img_id]['image_data'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
+                }
+            }
+        } else {
+            $aed['images'] = array();
+        }
+
+        //
+        // Get the list of notes
+        //
+        $strsql = "SELECT ciniki_fatt_aed_notes.id, "
+            . "ciniki_fatt_aed_notes.aed_id, "
+            . "DATE_FORMAT(ciniki_fatt_aed_notes.note_date, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') as note_date, "
+            . "ciniki_fatt_aed_notes.content "
+            . "FROM ciniki_fatt_aed_notes "
+            . "WHERE ciniki_fatt_aed_notes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "ORDER BY ciniki_fatt_aed_notes.note_date DESC "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
+            array('container'=>'notes', 'fname'=>'id', 'fields'=>array('id', 'aed_id', 'note_date', 'content')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['notes']) ) {
+            $aed['notes'] = $rc['notes'];
+        } else {
+            $aed['notes'] = array();
+        }
     }
 
     if( $aed['customer_id'] > 0 ) {

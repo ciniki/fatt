@@ -180,8 +180,18 @@ function ciniki_fatt_aeds() {
             'changeTxt':'Change customer',
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_aeds.edit.show();\',\'mc\',{\'next\':\'M.ciniki_fatt_aeds.edit.updateCustomer\',\'customer_id\':0});',
             },
-        'image':{'label':'', 'aside':'yes', 'fields':{
-            'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+        '_image':{'label':'Image', 'type':'imageform', 'aside':'yes', 'fields':{
+            'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_fatt_aeds.edit.setFieldValue('primary_image_id', iid, null, null);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                        M.ciniki_fatt_aeds.edit.setFieldValue(fid, 0, null, null);
+                        return true;
+                    },
+                },
             }},
         'details':{'label':'', 'aside':'yes', 'fields':{
             'location':{'label':'Location', 'type':'text'},
@@ -192,27 +202,49 @@ function ciniki_fatt_aeds() {
             'serial':{'label':'Serial', 'type':'text'},
             'flags1':{'label':'Options', 'type':'flagspiece', 'field':'flags', 'mask':0x3000, 'flags':{'13':{'name':'Wall Mount'}, '14':{'name':'Alarmed Cabinet'}}},
             }},
-        'options':{'label':'Battery', 'fields':{
-            'flags_1':{'label':'Secondary Battery', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'default':'no', 'on_fields':['secondary_battery_expiration']},
-            'flags_5':{'label':'Primary Adult Pads', 'type':'flagtoggle', 'bit':0x10, 'field':'flags', 'default':'yes', 'on_fields':['primary_adult_pads_expiration']},
-            'flags_6':{'label':'Secondary Adult Pads', 'type':'flagtoggle', 'bit':0x20, 'field':'flags', 'default':'no', 'on_fields':['secondary_adult_pads_expiration']},
-            'flags_9':{'label':'Primary Child Pads', 'type':'flagtoggle', 'bit':0x0100, 'field':'flags', 'default':'no', 'on_fields':['primary_child_pads_expiration']},
-            'flags_10':{'label':'Secondary Child Pads', 'type':'flagtoggle', 'bit':0x0200, 'field':'flags', 'default':'no', 'on_fields':['secondary_child_pads_expiration']},
+        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'expirations', 'tabs':{
+            'expirations':{'label':'Expirations', 'fn':'M.ciniki_fatt_aeds.edit.switchTab("expirations");'},
+            'images':{'label':'Images', 'fn':'M.ciniki_fatt_aeds.edit.switchTab("images");'},
+            'notes':{'label':'Notes', 'fn':'M.ciniki_fatt_aeds.edit.switchTab("notes");'},
             }},
-        'expirations':{'label':'Expiration Dates', 'fields':{
-            'device_expiration':{'label':'Device Warranty', 'type':'date'},
-            'primary_battery_expiration':{'label':'Primary Battery', 'type':'date'},
-            'secondary_battery_expiration':{'label':'Secondary Battery', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x01)>0?'yes':'no';}, 'type':'date'},
+        'options':{'label':'Battery', 
+            'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'flags_1':{'label':'Secondary Battery', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'default':'no', 'on_fields':['secondary_battery_expiration']},
+                'flags_5':{'label':'Primary Adult Pads', 'type':'flagtoggle', 'bit':0x10, 'field':'flags', 'default':'yes', 'on_fields':['primary_adult_pads_expiration']},
+                'flags_6':{'label':'Secondary Adult Pads', 'type':'flagtoggle', 'bit':0x20, 'field':'flags', 'default':'no', 'on_fields':['secondary_adult_pads_expiration']},
+                'flags_9':{'label':'Primary Child Pads', 'type':'flagtoggle', 'bit':0x0100, 'field':'flags', 'default':'no', 'on_fields':['primary_child_pads_expiration']},
+                'flags_10':{'label':'Secondary Child Pads', 'type':'flagtoggle', 'bit':0x0200, 'field':'flags', 'default':'no', 'on_fields':['secondary_child_pads_expiration']},
             }},
-        'pads':{'label':'', 'fields':{
-            'primary_adult_pads_expiration':{'label':'Primary Adult Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x10)>0?'yes':'no';}, 'type':'date'},
-            'secondary_adult_pads_expiration':{'label':'Secondary Adult Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x20)>0?'yes':'no';}, 'type':'date'},
-            'primary_child_pads_expiration':{'label':'Primary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0100)>0?'yes':'no';}, 'type':'date'},
-            'secondary_child_pads_expiration':{'label':'Secondary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0200)>0?'yes':'no';}, 'type':'date'},
+        'expirations':{'label':'Expiration Dates', 
+            'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'device_expiration':{'label':'Device Warranty', 'type':'date'},
+                'primary_battery_expiration':{'label':'Primary Battery', 'type':'date'},
+                'secondary_battery_expiration':{'label':'Secondary Battery', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x01)>0?'yes':'no';}, 'type':'date'},
             }},
-        '_notes':{'label':'Notes', 'fields':{
-            'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+        'pads':{'label':'', 
+            'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'primary_adult_pads_expiration':{'label':'Primary Adult Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x10)>0?'yes':'no';}, 'type':'date'},
+                'secondary_adult_pads_expiration':{'label':'Secondary Adult Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x20)>0?'yes':'no';}, 'type':'date'},
+                'primary_child_pads_expiration':{'label':'Primary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0100)>0?'yes':'no';}, 'type':'date'},
+                'secondary_child_pads_expiration':{'label':'Secondary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0200)>0?'yes':'no';}, 'type':'date'},
             }},
+        'images':{'label':'Additional Images', 'type':'simplethumbs',
+            'visible':function() { return (M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'images' ? 'yes':'hidden');},
+            },
+        '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'images' ? 'yes':'hidden');},
+            'addTxt':'Add Additional Image',
+            'addFn':'M.ciniki_fatt_aeds.edit.save("M.ciniki_fatt_aeds.aedimage.open(\'M.ciniki_fatt_aeds.edit.refreshImages();\',0,M.ciniki_fatt_aeds.edit.aed_id);");',
+            },
+        'notes':{'label':'Notes', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'; },
+            'cellClasses':['multiline'],
+            'addTxt':'Add Note',
+            'addFn':'M.ciniki_fatt_aeds.edit.save(\'M.ciniki_fatt_aeds.aednote.open("M.ciniki_fatt_aeds.edit.updateNotes();",0);\');',
+            },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_fatt_aeds.edit.save();'},
             'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_aeds.edit.remove(M.ciniki_fatt_aeds.edit.aed_id);'},
@@ -226,6 +258,9 @@ function ciniki_fatt_aeds() {
         return {'method':'ciniki.fatt.aedHistory', 'args':{'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'field':i}};
     };
     this.edit.cellValue = function(s, i, j, d) {
+        if( s == 'notes' ) {
+            return '<span class="maintext">' + d.note_date + '</span><span class="subtext">' + d.content + '</span>';
+        }
         if( s == 'customer_details' && j == 0 ) { return d.detail.label; }
         if( s == 'customer_details' && j == 1 ) {
             if( d.detail.label == 'Email' ) {
@@ -236,14 +271,49 @@ function ciniki_fatt_aeds() {
             return d.detail.value;
         }
     };
-    this.edit.rowFn = function(s, i, d) { return ''; }
+    this.edit.rowFn = function(s, i, d) { 
+        if( s == 'notes' ) {
+            return 'M.ciniki_fatt_aeds.aednote.open(\'M.ciniki_fatt_aeds.edit.updateNotes();\',\'' + d.id + '\');';
+        }
+        return ''; 
+    }
     this.edit.addDropImage = function(iid) {
-        M.ciniki_fatt_aeds.edit.setFieldValue('primary_image_id', iid, null, null);
+        if( this.aed_id == 0 ) {
+            var c = this.serializeForm('yes');
+            c += '&customer_id=' + this.data.customer_id;
+            M.api.postJSONCb('ciniki.fatt.aedAdd', {'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'image_id':iid}, c,
+                function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    } 
+                    M.ciniki_fatt_aeds.edit.aed_id = rsp.id;
+                    M.ciniki_fatt_aeds.edit.refreshImages();
+                });
+        } else {
+            M.api.getJSONCb('ciniki.fatt.aedImageAdd', {'business_id':M.curBusinessID, 'image_id':iid, 'name':'', 'aed_id':this.aed_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_fatt_aeds.edit.refreshImages();
+            });
+        }
         return true;
     };
-    this.edit.deleteImage = function(fid) {
-        this.setFieldValue(fid, 0, null, null);
-        return true;
+    this.edit.thumbFn = function(s, i, d) {
+        return 'M.ciniki_fatt_aeds.aedimage.open(\'M.ciniki_fatt_aeds.edit.refreshImages();\',\'' + d.id + '\');';
+    };
+    this.edit.switchTab = function(tab) {
+        var p = M.ciniki_fatt_aeds.edit;
+        p.sections._tabs.selected = tab;
+        p.refreshSection('_tabs');
+        p.showHideSection('options');
+        p.showHideSection('expirations');
+        p.showHideSection('pads');
+        p.showHideSection('images');
+        p.showHideSection('_images');
+        p.showHideSection('notes');
     };
     this.edit.addAED = function(cb, cid) {
         this.cb = cb;
@@ -265,7 +335,6 @@ function ciniki_fatt_aeds() {
             p.refreshSection('customer_details');
             p.show();
         });
-        
     };
     this.edit.open = function(cb, aid, cid) {
         if( aid != null ) { this.aed_id = aid; }
@@ -283,7 +352,8 @@ function ciniki_fatt_aeds() {
             p.show(cb);
         });
     };
-    this.edit.save = function() {
+    this.edit.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_fatt_aeds.edit.close();'; }
         if( this.aed_id > 0 ) {
             var c = this.serializeForm('no');
             if( this.customer_id != this.data.customer_id ) {
@@ -295,10 +365,10 @@ function ciniki_fatt_aeds() {
                         M.api.err(rsp);
                         return false;
                     }
-                    M.ciniki_fatt_aeds.edit.close();
+                    eval(cb);
                 });
             } else {
-                this.close();
+                eval(cb);
             }
         } else {
             var c = this.serializeForm('yes');
@@ -308,7 +378,7 @@ function ciniki_fatt_aeds() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_fatt_aeds.edit.close();
+                eval(cb);
             });
         }
     };
@@ -323,8 +393,204 @@ function ciniki_fatt_aeds() {
             });
         }
     };
+    this.edit.refreshImages = function() {
+        if( M.ciniki_fatt_aeds.edit.aed_id > 0 ) {
+            M.api.getJSONCb('ciniki.fatt.aedGet', {'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'images':'yes'}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_fatt_aeds.edit;
+                p.data.images = rsp.aed.images;
+                p.refreshSection('images');
+                p.show();
+            });
+        }
+    }
+    this.edit.updateNotes = function() {
+        M.api.getJSONCb('ciniki.fatt.aedGet', {'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'notes':'yes'}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_aeds.edit;
+            p.data.notes = rsp.aed.notes;
+            p.refreshSection('notes');
+            p.show();
+        });
+    }
     this.edit.addButton('save', 'Save', 'M.ciniki_fatt_aeds.edit.save();');
     this.edit.addClose('Cancel');
+
+    //
+    // The panel to aed image edit form
+    //
+    this.aedimage = new M.panel('Edit Image', 'ciniki_fatt_aeds', 'aedimage', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.fatt.aeds.aedimage');
+    this.aedimage.data = {};
+    this.aedimage.aedimage_id = 0;
+    this.aedimage.aed_id = 0;
+    this.aedimage.sections = {
+        '_image':{'label':'Image', 'type':'imageform', 'aside':'yes', 'fields':{
+            'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+            }},
+        'info':{'label':'Information', 'type':'simpleform', 'fields':{
+            'image_date':{'label':'Date', 'type':'date'},
+            }},
+        '_description':{'label':'Description', 'type':'simpleform', 'fields':{
+            'description':{'label':'', 'type':'textarea', 'size':'medium', 'hidelabel':'yes'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_fatt_aeds.aedimage.save();'},
+            'delete':{'label':'Delete', 'visible':function() {return M.ciniki_fatt_aeds.aedimage.aedimage_id > 0 ? 'yes' : 'no';}, 'fn':'M.ciniki_fatt_aeds.aedimage.remove();'},
+            }},
+    };
+    this.aedimage.fieldValue = function(s, i, d) { 
+        if( this.data[i] != null ) { return this.data[i]; } 
+        return ''; 
+    };
+    this.aedimage.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.fatt.aedImageHistory', 'args':{'business_id':M.curBusinessID, 'aedimage_id':this.aedimage_id, 'field':i}};
+    };
+    this.aedimage.addDropImage = function(iid) {
+        M.ciniki_fatt_aeds.aedimage.setFieldValue('image_id', iid, null, null);
+        return true;
+    };
+    this.aedimage.open = function(cb, iid, aid) {
+        if( iid != null ) { this.aedimage_id = iid; }
+        if( aid != null ) { this.aed_id = aid; }
+        this.reset();
+        M.api.getJSONCb('ciniki.fatt.aedImageGet', {'business_id':M.curBusinessID, 'aedimage_id':this.aedimage_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_aeds.aedimage;
+            p.data = rsp.aedimage;
+            p.refresh();
+            p.show(cb);
+        });
+    };
+    this.aedimage.save = function() {
+        if( this.aedimage_id > 0 ) {
+            var c = this.serializeFormData('no');
+            if( c != '' ) {
+                M.api.postJSONFormData('ciniki.fatt.aedImageUpdate', {'business_id':M.curBusinessID, 
+                    'aedimage_id':this.aedimage_id}, c, function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        } else {
+                            M.ciniki_fatt_aeds.aedimage.close();
+                        }
+                    });
+            } else {
+                this.close();
+            }
+        } else {
+            var c = this.serializeFormData('yes');
+            M.api.postJSONFormData('ciniki.fatt.aedImageAdd', {'business_id':M.curBusinessID, 'aed_id':this.aed_id}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                } 
+                M.ciniki_fatt_aeds.aedimage.aedimage_id = rsp.id;
+                M.ciniki_fatt_aeds.aedimage.close();
+            });
+        }
+    };
+    this.aedimage.remove = function() {
+        if( confirm('Are you sure you want to delete this image?') ) {
+            M.api.getJSONCb('ciniki.fatt.aedImageDelete', {'business_id':M.curBusinessID, 
+                'aedimage_id':this.aedimage_id}, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_fatt_aeds.aedimage.close();
+                });
+        }
+    };
+    this.aedimage.addButton('save', 'Save', 'M.ciniki_fatt_aeds.aedimage.save();');
+    this.aedimage.addClose('Cancel');
+
+    //
+    // The panel for editing notes
+    //
+    this.aednote = new M.panel('Note', 'ciniki_fatt_aeds', 'aednote', 'mc', 'medium', 'sectioned', 'ciniki.fatt.aeds.aednote');
+    this.aednote.data = {};
+    this.aednote.note_id = 0;
+    this.aednote.sections = { 
+        'general':{'label':'', 'aside':'yes', 'fields':{
+            'note_date':{'label':'Date', 'type':'date'},
+            }}, 
+        '_content':{'label':'Note', 'aside':'yes', 'fields':{
+            'content':{'label':'', 'hidelabel':'yes', 'hint':'', 'size':'large', 'type':'textarea'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_fatt_aeds.aednote.save();'},
+            'delete':{'label':'Delete', 'visible':function() {return M.ciniki_fatt_aeds.aednote.note_id>0?'yes':'no';}, 'fn':'M.ciniki_fatt_aeds.aednote.remove();'},
+            }},
+        };  
+    this.aednote.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.aednote.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.fatt.aedNoteHistory', 'args':{'business_id':M.curBusinessID, 'note_id':this.note_id, 'field':i}};
+    }
+    this.aednote.open = function(cb, id, aid) {
+        this.reset();
+        if( id != null ) { this.note_id = id; }
+        if( aid != null ) { this.aed_id = aid; }
+        M.api.getJSONCb('ciniki.fatt.aedNoteGet', {'business_id':M.curBusinessID, 'note_id':this.note_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_aeds.aednote;
+            p.data = rsp.note;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.aednote.save = function() {
+        if( this.note_id > 0 ) {
+            var c = this.serializeForm('no');
+            if( c != '' ) {
+                M.api.postJSONCb('ciniki.fatt.aedNoteUpdate', {'business_id':M.curBusinessID, 'note_id':this.note_id}, c,
+                    function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        } 
+                    M.ciniki_fatt_aeds.aednote.close();
+                    });
+            } else {
+                this.close();
+            }
+        } else {
+            var c = this.serializeForm('yes');
+            M.api.postJSONCb('ciniki.fatt.aedNoteAdd', {'business_id':M.curBusinessID, 'note_id':this.note_id, 'aed_id':this.aed_id}, c,
+                function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    } 
+                    M.ciniki_fatt_aeds.aednote.note_id = rsp.id;
+                    M.ciniki_fatt_aeds.aednote.close();
+                });
+        }
+    };
+    this.aednote.remove = function() {
+        if( confirm('Are you sure you want to remove this note?') ) {
+            M.api.getJSONCb('ciniki.fatt.aedNoteDelete', {'business_id':M.curBusinessID, 'note_id':this.note_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                } 
+                M.ciniki_fatt_aeds.aednote.close();
+            });
+        }
+    };
+    this.aednote.addButton('save', 'Save', 'M.ciniki_fatt_aeds.aednote.save();');
+    this.aednote.addClose('Cancel');
 
     this.start = function(cb, appPrefix, aG) {
         args = {};

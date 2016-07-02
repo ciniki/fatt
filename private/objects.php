@@ -298,6 +298,33 @@ function ciniki_fatt_objects($ciniki) {
             ),
         'history_table'=>'ciniki_fatt_history',
         );
+    $objects['aedimage'] = array(
+        'name'=>'AED Image',
+        'o_name'=>'aedimage',
+        'o_container'=>'aedimages',
+        'sync'=>'yes',
+        'table'=>'ciniki_fatt_aed_images',
+        'fields'=>array(
+            'aed_id'=>array('name'=>'AED', 'ref'=>'ciniki.fatt.aed'),
+            'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image'),
+            'image_date'=>array('name'=>'Date', 'default'=>''),
+            'description'=>array('name'=>'Description', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_fatt_history',
+        );
+    $objects['aednote'] = array(
+        'name'=>'AED Note',
+        'o_name'=>'aednote',
+        'o_container'=>'aednotes',
+        'sync'=>'yes',
+        'table'=>'ciniki_fatt_aed_notes',
+        'fields'=>array(
+            'aed_id'=>array('name'=>'AED', 'ref'=>'ciniki.fatt.aed'),
+            'note_date'=>array('name'=>'Date'),
+            'content'=>array('name'=>'Note'),
+            ),
+        'history_table'=>'ciniki_fatt_history',
+        );
     
     return array('stat'=>'ok', 'objects'=>$objects);
 }

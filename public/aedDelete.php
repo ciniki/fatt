@@ -56,6 +56,40 @@ function ciniki_fatt_aedDelete(&$ciniki) {
     $aed = $rc['aed'];
 
     //
+    // Check for notes
+    //
+    $strsql = "SELECT COUNT(*) AS notes "
+        . "FROM ciniki_fatt_aed_notes "
+        . "WHERE aed_id = '" . ciniki_core_dbQuote($ciniki, $args['aed_id']) . "' "
+        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.fatt', 'num');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( $rc['num'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3549', 'msg'=>'You still have ' . $rc['num'] . ' note' . ($rc['num']>1?'s':'') . ' for this AED.'));
+    }
+
+    //
+    // Check for images
+    //
+    $strsql = "SELECT COUNT(*) AS images "
+        . "FROM ciniki_fatt_aed_images "
+        . "WHERE aed_id = '" . ciniki_core_dbQuote($ciniki, $args['aed_id']) . "' "
+        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.fatt', 'num');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( $rc['num'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3550', 'msg'=>'You still have ' . $rc['num'] . ' image' . ($rc['num']>1?'s':'') . ' for this AED.'));
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
