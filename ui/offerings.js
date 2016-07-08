@@ -235,7 +235,7 @@ function ciniki_fatt_offerings() {
         'dates':{'label':'Dates', 'type':'simplegrid', 'num_cols':1,
             'cellClasses':['multiline'],
             'addTxt':'Add Date',
-            'addFn':'M.ciniki_fatt_offerings.edit.save(\'M.ciniki_fatt_offerings.odate.open("M.ciniki_fatt_offerings.edit.open();",0,M.ciniki_fatt_offerings.edit.offering_id);\');',
+            'addFn':'M.ciniki_fatt_offerings.edit.save(\'M.ciniki_fatt_offerings.odate.open("M.ciniki_fatt_offerings.edit.updateDates();",0,M.ciniki_fatt_offerings.edit.offering_id);\');',
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_fatt_offerings.edit.save();'},
@@ -270,21 +270,6 @@ function ciniki_fatt_offerings() {
             }
         }
     };
-/*    this.edit.dateOpen = function(did) {
-        if( this.offering_id == 0 ) {
-            var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.offeringAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                }
-                M.ciniki_fatt_offerings.edit.offering_id = rsp.id;
-                M.ciniki_fatt_offerings.odate.open('M.ciniki_fatt_offerings.edit.datesUpdate();',did,rsp.id);
-            });
-        } else {
-            M.ciniki_fatt_offerings.odate.open('M.ciniki_fatt_offerings.edit.datesUpdate();',did,this.offering_id);
-        }
-    }; */
     this.edit.open = function(cb, oid) {
         if( oid != null ) { this.offering_id = oid; }
         this.sections._buttons.buttons.delete.visible = (this.offering_id>0?'yes':'no');
@@ -298,6 +283,18 @@ function ciniki_fatt_offerings() {
             p.refresh();
             p.show(cb);
             p.courseChange('details', 'course_id');
+        });
+    };
+    this.edit.updateDates = function() {
+        M.api.getJSONCb('ciniki.fatt.offeringGet', {'business_id':M.curBusinessID, 'offering_id':this.offering_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_offerings.edit;
+            p.data.dates = rsp.offering.dates;
+            p.refreshSection('dates');
+            p.show();
         });
     };
     this.edit.save = function(cb) {
@@ -322,11 +319,12 @@ function ciniki_fatt_offerings() {
                     M.api.err(rsp);
                     return false;
                 }
-                if( rsp.offering != null ) {
-                    M.ciniki_fatt_offerings.offering.openFinish(rsp);
-                } else {
+                M.ciniki_fatt_offerings.edit.offering_id = rsp.id;
+//                if( rsp.offering != null ) {
+//                    M.ciniki_fatt_offerings.offering.openFinish(rsp);
+//                } else {
                     eval(cb);
-                }
+//                }
             });
         }
     };
