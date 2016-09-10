@@ -144,6 +144,62 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
         }
     }
 
-    return array('stat'=>'ok', 'settings'=>$settings);  
+    $rsp = array('stat'=>'ok', 'settings'=>$settings, 'menu_items'=>array());  
+
+    //
+    // Certifications menu item
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.fatt', 0x10)
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>5503,
+            'label'=>'Certifications', 
+            'edit'=>array('app'=>'ciniki.fatt.certs'),
+            );
+        $rsp['menu_items'][] = $menu_item;
+    } 
+
+    //
+    // Course Offerings
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.fatt', 0x01)
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>5502,
+            'label'=>'Courses', 
+            'edit'=>array('app'=>'ciniki.fatt.offerings'),
+            );
+        $rsp['menu_items'][] = $menu_item;
+    } 
+
+    //
+    // AEDs
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.fatt', 0x0100)
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>5501,
+            'label'=>'AEDs', 
+            'edit'=>array('app'=>'ciniki.fatt.aeds'),
+            );
+        $rsp['menu_items'][] = $menu_item;
+    } 
+
+    return $rsp;
 }
 ?>
