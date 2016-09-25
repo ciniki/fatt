@@ -144,7 +144,7 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
         }
     }
 
-    $rsp = array('stat'=>'ok', 'settings'=>$settings, 'menu_items'=>array());  
+    $rsp = array('stat'=>'ok', 'settings'=>$settings, 'menu_items'=>array(), 'settings_menu_items'=>array());  
 
     //
     // Certifications menu item
@@ -199,6 +199,15 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
             );
         $rsp['menu_items'][] = $menu_item;
     } 
+
+    if( isset($ciniki['business']['modules']['ciniki.fatt']) 
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $rsp['settings_menu_items'][] = array('priority'=>5500, 'label'=>'First Aid', 'edit'=>array('app'=>'ciniki.fatt.settings'));
+    }
 
     return $rsp;
 }
