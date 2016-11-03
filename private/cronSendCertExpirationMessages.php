@@ -164,7 +164,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
                 //
                 $rc = ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, 
                     array('certcustomer'=>$cc, 'message'=>$cur_message_to_send, 'message_status'=>$message_status), $tmsupdate);
-                if( isset($rc['err']['code']) && $rc['err']['code'] == '2587' ) {
+                if( isset($rc['err']['code']) && $rc['err']['code'] == 'ciniki.fatt.33' ) {
                     //
                     // No emails for customer, mark as finished
                     //
