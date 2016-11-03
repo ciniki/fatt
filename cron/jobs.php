@@ -50,7 +50,7 @@ function ciniki_fatt_cron_jobs(&$ciniki) {
         //
         $rc = ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, 0x07);
         if( $rc['stat'] != 'ok' ) {
-            ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2629', 'msg'=>'Unable to send certification expiration messages', 
+            ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'ciniki.fatt.145', 'msg'=>'Unable to send certification expiration messages', 
                 'severity'=>50, 'err'=>$rc['err']));
             continue;
         }
@@ -92,7 +92,7 @@ function ciniki_fatt_cron_jobs(&$ciniki) {
         //
         $rc = ciniki_fatt_cronSendAEDExpirations($ciniki, $business['business_id']);
         if( $rc['stat'] != 'ok' ) {
-            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'3473', 'msg'=>'Unable to send AED expiration message', 
+            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'ciniki.fatt.146', 'msg'=>'Unable to send AED expiration message', 
                 'severity'=>50, 'err'=>$rc['err']));
             continue;
         } else {
@@ -108,7 +108,7 @@ function ciniki_fatt_cron_jobs(&$ciniki) {
                 . "";
             $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.fatt');
             if( $rc['stat'] != 'ok' ) {
-                ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'3474', 'msg'=>'Unable to send AED expiration message', 
+                ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'ciniki.fatt.147', 'msg'=>'Unable to send AED expiration message', 
                     'severity'=>50, 'err'=>$rc['err']));
                 continue;
             }
