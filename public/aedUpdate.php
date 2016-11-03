@@ -62,7 +62,7 @@ function ciniki_fatt_aedUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['item']) ) {  
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3265', 'msg'=>'Unable to find AED'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.55', 'msg'=>'Unable to find AED'));
     }
     $item = $rc['item'];
 
@@ -73,27 +73,27 @@ function ciniki_fatt_aedUpdate(&$ciniki) {
     if( ($flags&0x01) == 0x01 && ((isset($args['secondary_battery_expiration']) && $args['secondary_battery_expiration'] == '') 
         || (!isset($args['secondary_battery_expiration']) && $item['secondary_battery_expiration'] == '0000-00-00')) 
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3266', 'msg'=>'Secondary Battery Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.56', 'msg'=>'Secondary Battery Expiration must be specified.'));
     }
     if( ($flags&0x10) == 0x10 && ((isset($args['primary_adult_pads_expiration']) && $args['primary_adult_pads_expiration'] == '') 
         || (!isset($args['primary_adult_pads_expiration']) && $item['primary_adult_pads_expiration'] == '0000-00-00')) 
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3267', 'msg'=>'Primary Adult Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.57', 'msg'=>'Primary Adult Pads Expiration must be specified.'));
     }
     if( ($flags&0x20) == 0x20 && ((isset($args['secondary_adult_pads_expiration']) && $args['secondary_adult_pads_expiration'] == '') 
         || (!isset($args['secondary_adult_pads_expiration']) && $item['secondary_adult_pads_expiration'] == '0000-00-00')) 
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3268', 'msg'=>'Secondary Adult Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.58', 'msg'=>'Secondary Adult Pads Expiration must be specified.'));
     }
     if( ($flags&0x0100) == 0x0100 && ((isset($args['primary_child_pads_expiration']) && $args['primary_child_pads_expiration'] == '') 
         || (!isset($args['primary_child_pads_expiration']) && $item['primary_child_pads_expiration'] == '0000-00-00')) 
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3269', 'msg'=>'Primary Child Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.59', 'msg'=>'Primary Child Pads Expiration must be specified.'));
     }
     if( ($flags&0x0200) == 0x0200 && ((isset($args['secondary_child_pads_expiration']) && $args['secondary_child_pads_expiration'] == '') 
         || (!isset($args['secondary_child_pads_expiration']) && $item['secondary_child_pads_expiration'] == '0000-00-00')) 
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3270', 'msg'=>'Secondary Child Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.60', 'msg'=>'Secondary Child Pads Expiration must be specified.'));
     }
 
     //

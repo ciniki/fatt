@@ -14,7 +14,7 @@
 function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
 
     if( !isset($args['offering_ids']) || !is_array($args['offering_ids']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3537', 'msg'=>'No offering(s) specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.6', 'msg'=>'No offering(s) specified'));
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
@@ -91,7 +91,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         return $rc;
     }
     if( !isset($rc['rows']) || count($rc['rows']) == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3543', 'msg'=>'No registrations found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.7', 'msg'=>'No registrations found'));
     }
     $registrations = $rc['rows'];
 
@@ -129,7 +129,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         return $rc;
     }
     if( !isset($rc['offerings']) || count($rc['offerings']) == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3539', 'msg'=>'No dates available for offerings.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.8', 'msg'=>'No dates available for offerings.'));
     }
     $dates = $rc['offerings'];
 

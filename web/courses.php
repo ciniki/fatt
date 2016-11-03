@@ -19,7 +19,7 @@
 function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
     
     if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2648', 'msg'=>"I'm sorry, the file you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.133', 'msg'=>"I'm sorry, the file you requested does not exist."));
     }
 
     if( isset($args['category_id']) && $args['category_id'] > 0 ) {

@@ -51,7 +51,7 @@ function ciniki_fatt_aedDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['aed']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3262', 'msg'=>'AED does not exist.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.44', 'msg'=>'AED does not exist.'));
     }
     $aed = $rc['aed'];
 
@@ -69,7 +69,7 @@ function ciniki_fatt_aedDelete(&$ciniki) {
         return $rc;
     }
     if( $rc['num'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3549', 'msg'=>'You still have ' . $rc['num'] . ' note' . ($rc['num']>1?'s':'') . ' for this AED.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.45', 'msg'=>'You still have ' . $rc['num'] . ' note' . ($rc['num']>1?'s':'') . ' for this AED.'));
     }
 
     //
@@ -86,7 +86,7 @@ function ciniki_fatt_aedDelete(&$ciniki) {
         return $rc;
     }
     if( $rc['num'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3550', 'msg'=>'You still have ' . $rc['num'] . ' image' . ($rc['num']>1?'s':'') . ' for this AED.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.46', 'msg'=>'You still have ' . $rc['num'] . ' image' . ($rc['num']>1?'s':'') . ' for this AED.'));
     }
 
     //

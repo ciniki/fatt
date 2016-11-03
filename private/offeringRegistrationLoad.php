@@ -91,7 +91,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
         return $rc;
     }
     if( !isset($rc['registrations']) || !isset($rc['registrations'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2332', 'msg'=>'Unable to find registration'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.21', 'msg'=>'Unable to find registration'));
     }
     $rsp['registration'] = $rc['registrations'][0]['registration'];
     $rsp['registration']['price'] = numfmt_format_currency($intl_currency_fmt, $rsp['registration']['price'], $intl_currency);

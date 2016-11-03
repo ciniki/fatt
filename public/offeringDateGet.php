@@ -142,7 +142,7 @@ function ciniki_fatt_offeringDateGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['dates']) || !isset($rc['dates'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2347', 'msg'=>'Unable to find date'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.102', 'msg'=>'Unable to find date'));
     }
     $date = $rc['dates'][0]['date'];
     $date['num_hours'] = (float)$date['num_hours'];

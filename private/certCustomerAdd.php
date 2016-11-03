@@ -40,7 +40,7 @@ function ciniki_fatt__certCustomerAdd(&$ciniki, $business_id, $args) {
             return $rc;
         }
         if( !isset($rc['cert']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2321', 'msg'=>'The certification does not exist'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.10', 'msg'=>'The certification does not exist'));
         }
         $cert = $rc['cert'];
 

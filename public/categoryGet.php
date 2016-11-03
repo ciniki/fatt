@@ -83,7 +83,7 @@ function ciniki_fatt_categoryGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['categories']) || !isset($rc['categories'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2293', 'msg'=>'Unable to find category'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.67', 'msg'=>'Unable to find category'));
     }
     $rsp = array('stat'=>'ok', 'category'=>$rc['categories'][0]['category']);
 

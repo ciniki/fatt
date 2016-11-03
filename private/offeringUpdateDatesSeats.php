@@ -83,7 +83,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
         return $rc;
     }
     if( !isset($rc['offerings']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2343', 'msg'=>'Offering not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.27', 'msg'=>'Offering not found'));
     }
     $offering = array_pop($rc['offerings']);
 
@@ -350,7 +350,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
 //      error_log(print_r($offering_update_args, true));
         $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.offering', $offering_id, $offering_update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2344', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.28', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
         }
     }
 
@@ -361,7 +361,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
         foreach($other_offerings as $oid => $offering) {
             $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering['id'], 'no');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2345', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.29', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
             }
         }
     }

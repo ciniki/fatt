@@ -63,7 +63,7 @@ function ciniki_fatt_instructorUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['instructor']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2300', 'msg'=>'Instructor not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.91', 'msg'=>'Instructor not found'));
     }
     $instructor = $rc['instructor'];
 
@@ -84,7 +84,7 @@ function ciniki_fatt_instructorUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2301', 'msg'=>'You already have a instructor with this name, please choose another name'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.92', 'msg'=>'You already have a instructor with this name, please choose another name'));
         }
     }
 

@@ -48,7 +48,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['class']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2470', 'msg'=>'Unable to find class'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.81', 'msg'=>'Unable to find class'));
     }
     $class = $rc['class'];
 

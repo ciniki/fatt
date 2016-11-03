@@ -145,7 +145,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2429', 'msg'=>'You already have a offering with this name, please choose another name.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.77', 'msg'=>'You already have a offering with this name, please choose another name.'));
         }
 
         //

@@ -81,7 +81,7 @@ function ciniki_fatt_locationGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['locations']) || !isset($rc['locations'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2306', 'msg'=>'Unable to find location'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.96', 'msg'=>'Unable to find location'));
     }
     $location = $rc['locations'][0]['location'];
 

@@ -81,10 +81,10 @@ function ciniki_fatt_aedNoteGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'note');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3544', 'msg'=>'AED Note not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.53', 'msg'=>'AED Note not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['note']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3545', 'msg'=>'Unable to find AED Note'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.54', 'msg'=>'Unable to find AED Note'));
         }
         $note = $rc['note'];
     }

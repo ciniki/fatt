@@ -111,7 +111,7 @@ function ciniki_fatt_courseGet($ciniki) {
             return $rc;
         }
         if( !isset($rc['courses']) || !isset($rc['courses'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2320', 'msg'=>'Unable to find course'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.85', 'msg'=>'Unable to find course'));
         }
         $rsp = array('stat'=>'ok', 'course'=>$rc['courses'][0]['course']);
         $rsp['course']['price'] = numfmt_format_currency($intl_currency_fmt, $rsp['course']['price'], $intl_currency);

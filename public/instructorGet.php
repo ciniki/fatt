@@ -81,7 +81,7 @@ function ciniki_fatt_instructorGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['instructors']) || !isset($rc['instructors'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2296', 'msg'=>'Unable to find instructor'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.90', 'msg'=>'Unable to find instructor'));
     }
     $instructor = $rc['instructors'][0]['instructor'];
 

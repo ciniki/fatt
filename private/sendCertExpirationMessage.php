@@ -18,14 +18,14 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
     // FIXME: Setup default for status
     //
     if( !isset($args['certcustomer']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2584', 'msg'=>'No certification customer specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.30', 'msg'=>'No certification customer specified'));
     }
     if( !isset($args['message']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2585', 'msg'=>'No message specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.31', 'msg'=>'No message specified'));
     }
 
     if( $args['certcustomer']['last_message_day'] == $args['message']['days'] ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2588', 'msg'=>'Message has already been sent.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.32', 'msg'=>'Message has already been sent.'));
     }
     if( !isset($args['message_status']) ) {
         $args['message_status'] = '10'; // Default to mail queue
@@ -40,7 +40,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
         return $rc;
     }
     if( !isset($rc['customer']['emails']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2587', 'msg'=>'Customer does not have any emails.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.33', 'msg'=>'Customer does not have any emails.'));
     }
     $customer = $rc['customer'];
 
@@ -108,7 +108,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
     }
     if( $rc['num_affected_rows'] < 1 ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2597', 'msg'=>'Unable to lock the cert customer.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.34', 'msg'=>'Unable to lock the cert customer.'));
     }
 
     //
@@ -133,7 +133,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
         //
         $rc = ciniki_mail_hooks_addMessage($ciniki, $business_id, $email_args);
         if( $rc['stat'] != 'ok' ) {
-            $rsp = array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2594', 'msg'=>'Unable to send customer message', 'err'=>$rc['err']));
+            $rsp = array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.35', 'msg'=>'Unable to send customer message', 'err'=>$rc['err']));
             // Remove "lock" and reset the last_message_day so can try again
             $strsql = "UPDATE ciniki_fatt_cert_customers "  
                 . "SET last_message_day = '" . ciniki_core_dbQuote($ciniki, $args['certcustomer']['last_message_day']) . "' "
@@ -149,7 +149,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
             }
             if( $rc['num_affected_rows'] < 1 ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2589', 'msg'=>'Unable to unlock the cert customer.'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.36', 'msg'=>'Unable to unlock the cert customer.'));
             }
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
             return $rsp;
@@ -176,7 +176,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
             //
             $rc = ciniki_mail_hooks_addMessage($ciniki, $business_id, $email_args);
             if( $rc['stat'] != 'ok' ) {
-                $rsp = array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2593', 'msg'=>'Unable to send parent message', 'err'=>$rc['err']));
+                $rsp = array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.37', 'msg'=>'Unable to send parent message', 'err'=>$rc['err']));
                 // Remove "lock" and reset the last_message_day so can try again
                 $strsql = "UPDATE ciniki_fatt_cert_customers "  
                     . "SET last_message_day = '" . ciniki_core_dbQuote($ciniki, $args['certcustomer']['last_message_day']) . "' "
@@ -192,7 +192,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
                 }
                 if( $rc['num_affected_rows'] < 1 ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-                    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2595', 'msg'=>'Unable to unlock the cert customer.'));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.38', 'msg'=>'Unable to unlock the cert customer.'));
                 }
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
                 return $rsp;

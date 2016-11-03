@@ -52,7 +52,7 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['offering']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2339', 'msg'=>'The offering does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.104', 'msg'=>'The offering does not exist'));
     }
     $offering_uuid = $rc['offering']['uuid'];
 
@@ -71,7 +71,7 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2338', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' registration' . ($count==1?'':'s') . ' assigned to that course offering.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.105', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' registration' . ($count==1?'':'s') . ' assigned to that course offering.'));
     }
 
     //
@@ -108,7 +108,7 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2438', 'msg'=>'Unable to remove offering date', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.106', 'msg'=>'Unable to remove offering date', 'err'=>$rc['err']));
             }
         }
     }
@@ -133,7 +133,7 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2439', 'msg'=>'Unable to remove offering instructor', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.107', 'msg'=>'Unable to remove offering instructor', 'err'=>$rc['err']));
             }
         }
     }
@@ -145,7 +145,7 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
         $args['offering_id'], $offering_uuid, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2440', 'msg'=>'Unable to remove offering', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.108', 'msg'=>'Unable to remove offering', 'err'=>$rc['err']));
     }
 
     //

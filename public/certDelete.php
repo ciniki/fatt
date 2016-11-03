@@ -52,7 +52,7 @@ function ciniki_fatt_certDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['cert']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2308', 'msg'=>'The cert does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.73', 'msg'=>'The cert does not exist'));
     }
     $cert_uuid = $rc['cert']['uuid'];
 
@@ -71,7 +71,7 @@ function ciniki_fatt_certDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2309', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' customer' . ($count==1?'':'s') . ' assigned to that cert.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.74', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' customer' . ($count==1?'':'s') . ' assigned to that cert.'));
     }
 
     //
@@ -88,7 +88,7 @@ function ciniki_fatt_certDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2310', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' with to that cert.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.75', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' with to that cert.'));
     }
 
     //

@@ -52,7 +52,7 @@ function ciniki_fatt_locationDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['location']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2311', 'msg'=>'The location does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.94', 'msg'=>'The location does not exist'));
     }
     $location_uuid = $rc['location']['uuid'];
 
@@ -71,7 +71,7 @@ function ciniki_fatt_locationDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2312', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' assigned to that location.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.95', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' assigned to that location.'));
     }
 
     //

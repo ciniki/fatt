@@ -61,7 +61,7 @@ function ciniki_fatt_offeringUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2335', 'msg'=>'You already have a offering with this name, please choose another name'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.118', 'msg'=>'You already have a offering with this name, please choose another name'));
         }
     }
 

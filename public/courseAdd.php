@@ -77,7 +77,7 @@ function ciniki_fatt_courseAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2316', 'msg'=>'You already have a course with this name, please choose another name.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.82', 'msg'=>'You already have a course with this name, please choose another name.'));
     }
 
     //

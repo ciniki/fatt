@@ -51,7 +51,7 @@ function ciniki_fatt_aedImageDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['aedimage']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3546', 'msg'=>'AED Image does not exist.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.49', 'msg'=>'AED Image does not exist.'));
     }
     $aedimage = $rc['aedimage'];
 

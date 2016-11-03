@@ -52,7 +52,7 @@ function ciniki_fatt_offeringRegistrationDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2373', 'msg'=>'The registration does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.109', 'msg'=>'The registration does not exist'));
     }
     $registration = $rc['registration'];
 

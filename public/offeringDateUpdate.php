@@ -62,7 +62,7 @@ function ciniki_fatt_offeringDateUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['date']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2346', 'msg'=>'Offering Date not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.103', 'msg'=>'Offering Date not found'));
     }
     $offeringdate = $rc['date'];
 

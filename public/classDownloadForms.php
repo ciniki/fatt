@@ -43,7 +43,7 @@ function ciniki_fatt_classDownloadForms($ciniki) {
     //
     $sp = explode('-', $args['class_id']);
     if( count($sp) < 2 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3541', 'msg'=>'Invalid appointment'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.79', 'msg'=>'Invalid appointment'));
     }
     $args['start_ts'] = $sp[0];
     $args['location_id'] = $sp[1];
@@ -60,7 +60,7 @@ function ciniki_fatt_classDownloadForms($ciniki) {
         return $rc;
     }
     if( !isset($rc['rows']) || count($rc['rows']) == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3542', 'msg'=>'No offerings for this class'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.80', 'msg'=>'No offerings for this class'));
     }
     $offering_ids = array();
     foreach($rc['rows'] as $row) {

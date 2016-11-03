@@ -29,7 +29,7 @@ function ciniki_fatt_sapos_invoiceUpdate($ciniki, $business_id, $invoice_id, $it
             return $rc;
         }
         if( !isset($rc['registration']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2352', 'msg'=>'Unable to find course registration'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.119', 'msg'=>'Unable to find course registration'));
         }
         $registration = $rc['registration'];
 
@@ -46,7 +46,7 @@ function ciniki_fatt_sapos_invoiceUpdate($ciniki, $business_id, $invoice_id, $it
             return $rc;
         }
         if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2354', 'msg'=>'Unable to find invoice'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.120', 'msg'=>'Unable to find invoice'));
         }
         $invoice = $rc['invoice'];
         

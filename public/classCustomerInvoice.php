@@ -51,7 +51,7 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
         return $rc;
     }
     if( !isset($rc['customer']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3301', 'msg'=>'Customer does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.78', 'msg'=>'Customer does not exist'));
     }
     if( $rc['customer']['parent_id'] > 0 ) {
         $args['customer_id'] = $rc['customer']['parent_id'];

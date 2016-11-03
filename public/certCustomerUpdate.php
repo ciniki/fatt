@@ -62,7 +62,7 @@ function ciniki_fatt_certCustomerUpdate(&$ciniki) {
         return $rc;
     }   
     if( !isset($rc['certcustomer']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2325', 'msg'=>'Certfication not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.71', 'msg'=>'Certfication not found'));
     }
     $certcustomer = $rc['certcustomer'];
 
@@ -86,7 +86,7 @@ function ciniki_fatt_certCustomerUpdate(&$ciniki) {
             return $rc;
         }
         if( !isset($rc['cert']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2324', 'msg'=>'The certification does not exist'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.72', 'msg'=>'The certification does not exist'));
         }
         $cert = $rc['cert'];
         

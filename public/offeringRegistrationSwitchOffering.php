@@ -54,7 +54,7 @@ function ciniki_fatt_offeringRegistrationSwitchOffering(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2679', 'msg'=>'Registration not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.111', 'msg'=>'Registration not found'));
     }
     $registration = $rc['registration'];
 
@@ -67,7 +67,7 @@ function ciniki_fatt_offeringRegistrationSwitchOffering(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['offering']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3310', 'msg'=>'Offering not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.112', 'msg'=>'Offering not found'));
     }
     $current_offering = $rc['offering'];
 
@@ -79,7 +79,7 @@ function ciniki_fatt_offeringRegistrationSwitchOffering(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['offering']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3311', 'msg'=>'Offering not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.113', 'msg'=>'Offering not found'));
     }
     $new_offering = $rc['offering'];
 
@@ -92,7 +92,7 @@ function ciniki_fatt_offeringRegistrationSwitchOffering(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['class']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3312', 'msg'=>'Class not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.114', 'msg'=>'Class not found'));
     }
     $current_class = $rc['class'];
 
@@ -104,7 +104,7 @@ function ciniki_fatt_offeringRegistrationSwitchOffering(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['class']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3313', 'msg'=>'Class not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.115', 'msg'=>'Class not found'));
     }
     $new_class = $rc['class'];
 
@@ -162,7 +162,7 @@ function ciniki_fatt_offeringRegistrationSwitchOffering(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['course']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2678', 'msg'=>'Course not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.116', 'msg'=>'Course not found'));
     }
     $course = $rc['course'];
 

@@ -19,7 +19,7 @@
 function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args) {
 
     if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2637', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.135', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
     $page = array(
         'title'=>$args['page_title'],
@@ -45,7 +45,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
         //
         // If there was an error locating the files, display generic error
         //
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2606', 'msg'=>'The file you requested does not exist.'));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.136', 'msg'=>'The file you requested does not exist.'));
     }
 */
 
@@ -116,14 +116,14 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courses');
         $rc = ciniki_fatt_web_courses($ciniki, $settings, $business_id, array());
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2640', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested.", 'err'=>$rc['err']));
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.137', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested.", 'err'=>$rc['err']));
         }
         //
         // If categories are enabled, then show the default list by category
         //
         if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 ) {
             if( !isset($rc['categories']) ) {
-                return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2665', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested."));
+                return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.138', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested."));
             }
             $page['blocks'][] = array('type'=>'cilist', 'base_url'=>$base_url, 'noimage'=>'yes', 'categories'=>$rc['categories'],
                 'image_version'=>'thumbnail',
@@ -135,7 +135,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
         //
         else {
             if( !isset($rc['courses']) ) {
-                return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2642', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested."));
+                return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.139', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested."));
             }
             $page['blocks'][] = array('type'=>'imagelist', 'base_url'=>$base_url, 'noimage'=>'yes', 'list'=>$rc['courses'],
                 'image_version'=>'thumbnail',
@@ -155,10 +155,10 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courses');
         $rc = ciniki_fatt_web_courses($ciniki, $settings, $business_id, array('category_id'=>(isset($category['id'])?$category['id']:0)));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2643', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested.", 'err'=>$rc['err']));
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.140', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested.", 'err'=>$rc['err']));
         }
         if( !isset($rc['courses']) ) {
-            return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2644', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested."));
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.141', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested."));
         }
         $page['blocks'][] = array('type'=>'imagelist', 'base_url'=>$base_url, 'noimage'=>'yes', 'list'=>$rc['courses'],
             'image_version'=>'thumbnail',
@@ -170,10 +170,10 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courseDetails');
         $rc = ciniki_fatt_web_courseDetails($ciniki, $settings, $business_id, $course_permalink);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2666', 'msg'=>"I'm sorry, but we can't seem to find the course you requested.", 'err'=>$rc['err']));
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.142', 'msg'=>"I'm sorry, but we can't seem to find the course you requested.", 'err'=>$rc['err']));
         }
         if( !isset($rc['course']) ) {
-            return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2667', 'msg'=>"I'm sorry, but we can't seem to find the course you requested."));
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.143', 'msg'=>"I'm sorry, but we can't seem to find the course you requested."));
         }
         $course = $rc['course'];
         $page['breadcrumbs'][] = array('name'=>$course['name'], 'url'=>$course['permalink']);
@@ -210,7 +210,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
     // Return error if nothing found to display
     //
     else {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2592', 'msg'=>"We're sorry, the page you requested."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.144', 'msg'=>"We're sorry, the page you requested."));
     }
 
     //

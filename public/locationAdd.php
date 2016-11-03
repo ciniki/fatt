@@ -70,7 +70,7 @@ function ciniki_fatt_locationAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2286', 'msg'=>'You already have a location with this name, please choose another name.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.93', 'msg'=>'You already have a location with this name, please choose another name.'));
     }
 
     //

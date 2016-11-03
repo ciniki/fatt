@@ -56,7 +56,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             'fields'=>array('id', 'days', 'subject', 'message', 'parent_subject', 'parent_message')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2581', 'msg'=>'Unable to get messages', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.18', 'msg'=>'Unable to get messages', 'err'=>$rc['err']));
     }
     if( !isset($rc['certs']) ) {
         return array('stat'=>'ok');
@@ -83,7 +83,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2582', 'msg'=>'Unable to get cert customer expirations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.19', 'msg'=>'Unable to get cert customer expirations', 'err'=>$rc['err']));
     }
     if( !isset($rc['rows']) || count($rc['rows']) == 0 ) {
         return array('stat'=>'ok');

@@ -56,7 +56,7 @@ function ciniki_fatt_offeringRegistrationAdd(&$ciniki) {
     // Get the registration_id, should be the first one we just created this invoice
     //
     if( !isset($invoice['items']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2374', 'msg'=>'Internal error creating invoice'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.3', 'msg'=>'Internal error creating invoice'));
     }
 
     foreach($invoice['items'] as $item) {
@@ -66,7 +66,7 @@ function ciniki_fatt_offeringRegistrationAdd(&$ciniki) {
     }
 
     if( !isset($registration_id) || $registration_id === NULL || $registration_id == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2375', 'msg'=>'Internal error creating invoice'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.4', 'msg'=>'Internal error creating invoice'));
     }
 
     //
@@ -76,7 +76,7 @@ function ciniki_fatt_offeringRegistrationAdd(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration_id, array('student_id'=>$args['student_id']), 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2376', 'msg'=>'Unable to update student', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.5', 'msg'=>'Unable to update student', 'err'=>$rc['err']));
         }
     }
     

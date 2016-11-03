@@ -52,7 +52,7 @@ function ciniki_fatt_certCustomerDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['cert']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2323', 'msg'=>'The certification does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.69', 'msg'=>'The certification does not exist'));
     }
     $cert_uuid = $rc['cert']['uuid'];
 

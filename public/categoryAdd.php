@@ -64,7 +64,7 @@ function ciniki_fatt_categoryAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2317', 'msg'=>'You already have a category with this name, please choose another name.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.64', 'msg'=>'You already have a category with this name, please choose another name.'));
     }
 
     //

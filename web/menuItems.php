@@ -19,7 +19,7 @@
 function ciniki_fatt_web_menuItems(&$ciniki, $settings, $business_id, $args) {
     
     if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2638', 'msg'=>"I'm sorry, the file you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.134', 'msg'=>"I'm sorry, the file you requested does not exist."));
     }
 
     //

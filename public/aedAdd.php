@@ -57,19 +57,19 @@ function ciniki_fatt_aedAdd(&$ciniki) {
     // Check expiration fields if specified in flags
     //
     if( ($args['flags']&0x01) == 0x01 && (!isset($args['secondary_battery_expiration']) || $args['secondary_battery_expiration'] == '') ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3255', 'msg'=>'Secondary Battery Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.39', 'msg'=>'Secondary Battery Expiration must be specified.'));
     }
     if( ($args['flags']&0x10) == 0x10 && (!isset($args['primary_adult_pads_expiration']) || $args['primary_adult_pads_expiration'] == '') ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3256', 'msg'=>'Primary Adult Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.40', 'msg'=>'Primary Adult Pads Expiration must be specified.'));
     }
     if( ($args['flags']&0x20) == 0x20 && (!isset($args['primary_adult_pads_expiration']) || $args['primary_adult_pads_expiration'] == '') ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3257', 'msg'=>'Secondary Adult Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.41', 'msg'=>'Secondary Adult Pads Expiration must be specified.'));
     }
     if( ($args['flags']&0x0100) == 0x0100 && (!isset($args['primary_child_pads_expiration']) || $args['primary_child_pads_expiration'] == '') ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3258', 'msg'=>'Primary Child Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.42', 'msg'=>'Primary Child Pads Expiration must be specified.'));
     }
     if( ($args['flags']&0x0200) == 0x0200 && (!isset($args['secondary_child_pads_expiration']) || $args['secondary_child_pads_expiration'] == '') ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3259', 'msg'=>'Secondary Child Pads Expiration must be specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.43', 'msg'=>'Secondary Child Pads Expiration must be specified.'));
     }
 
     //

@@ -77,7 +77,7 @@ function ciniki_fatt_messageGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['messages']) || !isset($rc['messages'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2302', 'msg'=>'Unable to find message'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.99', 'msg'=>'Unable to find message'));
     }
     $message = $rc['messages'][0]['message'];
 

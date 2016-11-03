@@ -67,7 +67,7 @@ function ciniki_fatt_locationUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['location']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2287', 'msg'=>'Location not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.97', 'msg'=>'Location not found'));
     }
     $location = $rc['location'];
 
@@ -88,7 +88,7 @@ function ciniki_fatt_locationUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2288', 'msg'=>'You already have a location with this name, please choose another name'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.98', 'msg'=>'You already have a location with this name, please choose another name'));
         }
     }
 

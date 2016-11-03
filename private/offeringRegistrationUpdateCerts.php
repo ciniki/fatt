@@ -60,7 +60,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
         return $rc;
     }
     if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2443', 'msg'=>'Registration not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.22', 'msg'=>'Registration not found'));
     }
     $registration = $rc['registration'];
 
@@ -77,7 +77,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
         return $rc;
     }
     if( !isset($rc['date']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2447', 'msg'=>'There are no dates associated with the offering, we are unable to add the certification.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.23', 'msg'=>'There are no dates associated with the offering, we are unable to add the certification.'));
     }
     $date_received = $rc['date']['date_received'];
     
@@ -105,7 +105,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
         return $rc;
     }
     if( !isset($rc['certs']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2444', 'msg'=>'Registration not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.24', 'msg'=>'Registration not found'));
     }
     $course_certs = $rc['certs'];
 
@@ -150,7 +150,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
                     'date_received'=>$date_received,
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2445', 'msg'=>'Unable to add certification', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.25', 'msg'=>'Unable to add certification', 'err'=>$rc['err']));
                 }
             }
         }
@@ -168,7 +168,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
                 $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.certcustomer', 
                     $customer_certs[$cert_id]['id'], $customer_certs[$cert_id]['uuid'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2446', 'msg'=>'Unable to remove certification', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.26', 'msg'=>'Unable to remove certification', 'err'=>$rc['err']));
                 }
             }
         }

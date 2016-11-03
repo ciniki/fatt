@@ -83,7 +83,7 @@ function ciniki_fatt_certGet($ciniki) {
             return $rc;
         }
         if( !isset($rc['certs']) || !isset($rc['certs'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2307', 'msg'=>'Unable to find cert'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.76', 'msg'=>'Unable to find cert'));
         }
         $rsp = array('stat'=>'ok', 'cert'=>$rc['certs'][0]['cert']);
     }

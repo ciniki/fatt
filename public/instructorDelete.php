@@ -52,7 +52,7 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['instructor']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2298', 'msg'=>'The instructor does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.88', 'msg'=>'The instructor does not exist'));
     }
     $instructor_uuid = $rc['instructor']['uuid'];
 
@@ -71,7 +71,7 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2299', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' assigned to that instructor.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.89', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' course' . ($count==1?'':'s') . ' assigned to that instructor.'));
     }
 
     //

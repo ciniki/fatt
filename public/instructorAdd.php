@@ -69,7 +69,7 @@ function ciniki_fatt_instructorAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2297', 'msg'=>'You already have a instructor with this name, please choose another name.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.87', 'msg'=>'You already have a instructor with this name, please choose another name.'));
     }
 
     //

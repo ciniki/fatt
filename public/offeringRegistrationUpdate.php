@@ -63,7 +63,7 @@ function ciniki_fatt_offeringRegistrationUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2359', 'msg'=>'Registration not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.117', 'msg'=>'Registration not found'));
     }
     $registration = $rc['registration'];
 

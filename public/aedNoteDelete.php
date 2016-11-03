@@ -51,7 +51,7 @@ function ciniki_fatt_aedNoteDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['note']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3543', 'msg'=>'AED Note does not exist.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.52', 'msg'=>'AED Note does not exist.'));
     }
     $note = $rc['note'];
 

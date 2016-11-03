@@ -23,7 +23,7 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $business_id, $class
         return $rc;
     }
     if( !isset($rc['class']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2423', 'msg'=>'Unable to find requested class'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.127', 'msg'=>'Unable to find requested class'));
     }
     $class = $rc['class'];
 

@@ -30,7 +30,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
             return $rc;
         }
         if( !isset($rc['offering']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2348', 'msg'=>'Unable to find item'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.121', 'msg'=>'Unable to find item'));
         }
         $offering = $rc['offering'];
 
@@ -47,7 +47,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
             return $rc;
         }
         if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2349', 'msg'=>'Unable to find invoice'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.122', 'msg'=>'Unable to find invoice'));
         }
         $invoice = $rc['invoice'];
         
@@ -71,7 +71,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
         $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $item['object_id'], 'yes');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2358', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.123', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
         }
 
         return array('stat'=>'ok', 'object'=>'ciniki.fatt.offeringregistration', 'object_id'=>$reg_id);
@@ -95,7 +95,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
             return $rc;
         }
         if( !isset($rc['registration']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2353', 'msg'=>'Unable to find offering registration'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.124', 'msg'=>'Unable to find offering registration'));
         }
         $registration = $rc['registration'];
     

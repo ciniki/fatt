@@ -29,7 +29,7 @@ function ciniki_fatt_cron_jobs(&$ciniki) {
         . "";
     $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.fatt', 'businesses', 'business_id');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2628', 'msg'=>'Unable to get list of businesses with FATT certifications', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.1', 'msg'=>'Unable to get list of businesses with FATT certifications', 'err'=>$rc['err']));
     }
     if( !isset($rc['businesses']) || count($rc['businesses']) == 0 ) {
         $businesses = array();
@@ -69,7 +69,7 @@ function ciniki_fatt_cron_jobs(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'business');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3472', 'msg'=>'Unable to get list of businesses with AED expiration messages', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.2', 'msg'=>'Unable to get list of businesses with AED expiration messages', 'err'=>$rc['err']));
         return $rc;
     }
     if( isset($rc['rows']) ) {

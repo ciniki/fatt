@@ -19,7 +19,7 @@
 function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $business_id, $permalink) {
     
     if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2639', 'msg'=>"I'm sorry, the file you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.131', 'msg'=>"I'm sorry, the file you requested does not exist."));
     }
 
     //
@@ -57,7 +57,7 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $business_id, $perma
         return $rc;
     }
     if( !isset($rc['course']) ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2641', 'msg'=>"I'm sorry, the course you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.132', 'msg'=>"I'm sorry, the course you requested does not exist."));
     }
     $course = $rc['course'];
 
