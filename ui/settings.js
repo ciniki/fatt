@@ -886,10 +886,10 @@ function ciniki_fatt_settings() {
                         M.api.err(rsp);
                         return false;
                     }
-                    M.ciniki_fatt_settings.cert.close();
+                    eval(cb);
                 });
             } else {
-                this.close();
+                eval(cb);
             }
         } else {
             var c = this.serializeForm('yes');
@@ -898,7 +898,7 @@ function ciniki_fatt_settings() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_fatt_settings.cert.close();
+                eval(cb);
             });
         }
     };
