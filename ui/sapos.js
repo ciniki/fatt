@@ -13,191 +13,229 @@ function ciniki_fatt_sapos() {
         '50':'Fail',
     };
 
-    this.init = function() {
-        //
-        // The registration panel
-        //
-        this.registration = new M.panel('Registration',
-            'ciniki_fatt_sapos', 'registration',
-            'mc', 'medium mediumaside', 'sectioned', 'ciniki.fatt.sapos.registration');
-        this.registration.cbStacked = 'yes';
-        this.registration.offering_id = 0;
-        this.registration.registration_id = 0;
-        this.registration.student_id = 0;
-        this.registration.item_id = 0;
-        this.registration._source = '';
-        this.registration.data = {};
-        this.registration.sections = {
-            'course':{'label':'Course', 'aside':'yes', 'list':{
-                'course_name':{'label':'Course'},
-                'price':{'label':'Price'},
-                'date_string':{'label':'When'},
-                'location':{'label':'Location'},
-                }},
-            'customer_details':{'label':'Bill To', 'visible':'no', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
-                'cellClasses':['label',''],
-                },
-            'student_details':{'label':'Student', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
-                'cellClasses':['label',''],
-                'addTxt':'Edit',
-                'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':M.ciniki_fatt_sapos.registration.student_id});',
-                'changeTxt':'Edit',
-                'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':0,\'parent_id\':M.ciniki_fatt_sapos.registration.data.customer_id,\'parent_name\':escape(M.ciniki_fatt_sapos.registration.data.customer_name)});',
-                },
-            'invoice_details':{'label':'Invoice', 'type':'simplegrid', 'num_cols':2,
-                'visible':function() { return (M.ciniki_fatt_sapos.registration.data.invoice_id > 0 ? 'yes' : 'no'); },
-                'cellClasses':['label',''],
-                },
-            'details':{'label':'', 
-                'visible':function() { return (M.ciniki_fatt_sapos.registration.data.invoice_id > 0 ? 'yes' : 'no'); },
-                'fields':{
-                    'unit_amount':{'label':'Price', 'type':'text', 'size':'small'},
-                    'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
-                    'unit_discount_percentage':{'label':'Discount %', 'type':'text', 'size':'small'},
-                    'taxtype_id':{'label':'Taxes', 'type':'select', 'options':{}},
-                }},
-            '_status':{'label':'Registration Status', 'fields':{
-                'status':{'label':'Status', 'type':'toggle', 'toggles':M.ciniki_fatt_sapos.regStatus},
-                }},
+    //
+    // The registration panel
+    //
+    this.registration = new M.panel('Registration',
+        'ciniki_fatt_sapos', 'registration',
+        'mc', 'medium mediumaside', 'sectioned', 'ciniki.fatt.sapos.registration');
+    this.registration.cbStacked = 'yes';
+    this.registration.offering_id = 0;
+    this.registration.registration_id = 0;
+    this.registration.student_id = 0;
+    this.registration.item_id = 0;
+    this.registration._source = '';
+    this.registration.data = {};
+    this.registration.sections = {
+        'course':{'label':'Course', 'aside':'yes', 'list':{
+            'course_name':{'label':'Course'},
+            'price':{'label':'Price'},
+            'date_string':{'label':'When'},
+            'location':{'label':'Location'},
+            }},
+        'customer_details':{'label':'Bill To', 'visible':'no', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+            'cellClasses':['label',''],
+            },
+        'student_details':{'label':'Student', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+            'cellClasses':['label',''],
+            'addTxt':'Edit',
+            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':M.ciniki_fatt_sapos.registration.student_id});',
+            'changeTxt':'Edit',
+            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':0,\'parent_id\':M.ciniki_fatt_sapos.registration.data.customer_id,\'parent_name\':escape(M.ciniki_fatt_sapos.registration.data.customer_name)});',
+            },
+        'invoice_details':{'label':'Invoice', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return (M.ciniki_fatt_sapos.registration.data.invoice_id > 0 ? 'yes' : 'no'); },
+            'cellClasses':['label',''],
+            },
+        'details':{'label':'', 
+            'visible':function() { return (M.ciniki_fatt_sapos.registration.data.invoice_id > 0 ? 'yes' : 'no'); },
+            'fields':{
+                'unit_amount':{'label':'Price', 'type':'text', 'size':'small'},
+                'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
+                'unit_discount_percentage':{'label':'Discount %', 'type':'text', 'size':'small'},
+                'taxtype_id':{'label':'Taxes', 'type':'select', 'options':{}},
+            }},
+        '_status':{'label':'Registration Status', 'fields':{
+            'status':{'label':'Status', 'type':'toggle', 'toggles':this.regStatus},
+            }},
 //          '_test_results':{'label':'Test Results', 'fields':{
 //              }},
-            '_notes':{'label':'Notes', 'fields':{
-                'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
-                }},
-            'alternate_courses':{'label':'Switch Course', 'visible':'hidden', 'type':'simplegrid', 'num_cols':1, 
-                },
-            'alternate_dates':{'label':'Switch Date', 'visible':'hidden', 'type':'simplegrid', 'num_cols':1, 
-                'cellClasses':['multiline'],
-                },
-            '_switch':{'label':'', 'buttons':{
-                'switchcourse':{'label':'Switch Course', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateCourses();'},
-                'switchdate':{'label':'Switch Date', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateDates();'},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save', 'fn':'M.ciniki_fatt_sapos.registrationSave();'},
-                'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_sapos.registrationDelete();'},
-                }},
-        };
-        this.registration.sectionData = function(s) { 
-            if( s == 'course' ) { return this.sections[s].list; }
-            return this.data[s];
-        };
-        this.registration.fieldValue = function(s, i, d) {
-            if( s == 'invoice' ) { return this.data[s]!=null?{'invoice':this.data[s]}:{}; }
-            if( this.data[i] == null ) { return ''; }
-            return this.data[i];
-        };
-        this.registration.listLabel = function(s, i, d) {
-            return d.label;
-        };
-        this.registration.listValue = function(s, i, d) {
+        '_notes':{'label':'Notes', 'fields':{
+            'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
+            }},
+        'alternate_courses':{'label':'Switch Course', 'visible':'hidden', 'type':'simplegrid', 'num_cols':1, 
+            },
+        'alternate_dates':{'label':'Switch Date', 'visible':'hidden', 'type':'simplegrid', 'num_cols':1, 
+            'cellClasses':['multiline'],
+            },
+        '_switch':{'label':'', 'buttons':{
+            'switchcourse':{'label':'Switch Course', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateCourses();'},
+            'switchdate':{'label':'Switch Date', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateDates();'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_fatt_sapos.registrationSave();'},
+            'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_sapos.registrationDelete();'},
+            }},
+    };
+    this.registration.sectionData = function(s) { 
+        if( s == 'course' ) { return this.sections[s].list; }
+        return this.data[s];
+    };
+    this.registration.fieldValue = function(s, i, d) {
+        if( s == 'invoice' ) { return this.data[s]!=null?{'invoice':this.data[s]}:{}; }
+        if( this.data[i] == null ) { return ''; }
+        return this.data[i];
+    };
+    this.registration.listLabel = function(s, i, d) {
+        return d.label;
+    };
+    this.registration.listValue = function(s, i, d) {
 //            if( i == 'course_name' && this.data.alternate_courses != null ) { 
 //                return this.data[i] + '  <button onclick="event.stopPropagation();M.ciniki_fatt_sapos.registration.showAlternateCourses();">Switch Course</button>'; 
 //            }
-            return this.data[i];
-        };
-        this.registration.listFn = function(s, i, d) {
-            if( s == 'course' && this._source != 'offering' ) {
-                return 'M.startApp(\'ciniki.fatt.offerings\',null,\'M.ciniki_fatt_sapos.registrationEdit();\',\'mc\',{\'offering_id\':\'' + this.data.offering_id + '\'});'; 
-            }
-            return '';
-        };
-        this.registration.fieldHistoryArgs = function(s, i) {
-            if( s == 'details' ) {
-                return {'method':'ciniki.sapos.history', 'args':{'business_id':M.curBusinessID, 'object':'ciniki.sapos.invoice_item', 'object_id':this.item_id, 'field':i}};
-            }
-            return {'method':'ciniki.fatt.offeringRegistrationHistory', 'args':{'business_id':M.curBusinessID, 'registration_id':this.registration_id, 'field':i}};
-        };
-        this.registration.cellValue = function(s, i, j, d) {
-            if( s == 'customer_details' || s == 'student_details' || s == 'invoice_details' ) {
-                switch(j) {
-                    case 0: return d.detail.label;
-                    case 1: return d.detail.value.replace(/\n/, '<br/>');
-                }
-            } 
-            else if( s == 'alternate_courses' ) {
-                return M.curBusiness.modules['ciniki.fatt'].settings.courses[d.course_id].name;
-            }
-            else if( s == 'alternate_dates' ) {
-                var sr = '';
-                if( d.seats_remaining > 0 ) { sr = d.seats_remaining + ' available'; }
-                if( d.seats_remaining == 0 ) { sr = 'Sold Out'; }
-                if( d.seats_remaining < 0 ) { sr = Math.abs(d.seats_remaining) + ' over sold'; }
-                return '<span class="maintext">' + d.date_string + ' <span class="subdue">' + sr + '</span></span><span class="subtext">' + d.location + '</span>';
-            }
-        };
-        this.registration.rowStyle = function(s, i, d) {
-            if( s == 'alternate_dates' ) {
-                return 'background: ' + d.colour + ';';
-            }
-            return '';
-        };
-        this.registration.rowFn = function(s, i, d) {
-            if( s == 'invoice_details' && this._source != 'invoice' ) { 
-                return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_fatt_sapos.registrationEdit();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
-            }
-            if( s == 'student_details' ) {
-                return '';
-            }
-            if( s == 'alternate_courses' ) {
-                return 'M.ciniki_fatt_sapos.registrationSwitchCourse(\'' + d.id + '\');';
-            }
-            if( s == 'alternate_dates' ) {
-                return 'M.ciniki_fatt_sapos.registrationSwitchDate(\'' + d.id + '\');';
-            }
-        };
-        this.registration.showAlternateCourses = function() {
-            document.getElementById(this.panelUID + '_section_alternate_courses').style.display = '';
-            document.getElementById(this.panelUID + '_section_alternate_dates').style.display = 'none';
-        };
-        this.registration.showAlternateDates = function() {
-            document.getElementById(this.panelUID + '_section_alternate_courses').style.display = 'none';
-            document.getElementById(this.panelUID + '_section_alternate_dates').style.display = '';
-        };
-        this.registration.updateStudent = function(cid) {
-            if( cid != null && cid != this.student_id ) {
-                this.student_id = cid;
-            }
-            if( this.student_id > 0 ) {
-                M.api.getJSONCb('ciniki.customers.customerDetails', {'business_id':M.curBusinessID, 'customer_id':this.student_id, 'phones':'yes', 'emails':'yes', 'addresses':'yes'}, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    var p = M.ciniki_fatt_sapos.registration;
-                    p.data.student_details = rsp.details;
-                    p.updateCustomers();
-                    p.refreshSection('student_details');
-                    p.refreshSection('customer_details');
-                    p.show();
-                });
-            } else {
-                this.data.student_details = {};
-                this.updateCustomers();
-                this.refreshSection('student_details');
-                this.refreshSection('customer_details');
-                this.show();
-            }
-        };
-        this.registration.updateCustomers = function() {
-            if( this.data.customer_id == this.student_id ) {
-                this.data.student_details = this.data.customer_details;
-                this.sections.customer_details.visible = 'hidden';
-                this.sections.customer_details.visible = 'yes';
-            } else {
-                this.sections.customer_details.visible = 'yes';
-            }
-            if( this.student_id == 0 ) {
-                this.sections.student_details.addTxt = '';
-                this.sections.student_details.changeTxt = 'Add';
-            } else {
-                this.sections.student_details.addTxt = 'Edit';
-                this.sections.student_details.changeTxt = 'Change';
-            }
-        };
-        this.registration.addButton('save', 'Save', 'M.ciniki_fatt_sapos.registrationSave();');
-        this.registration.addClose('Cancel');
+        return this.data[i];
     };
+    this.registration.listFn = function(s, i, d) {
+        if( s == 'course' && this._source != 'offering' ) {
+            return 'M.startApp(\'ciniki.fatt.offerings\',null,\'M.ciniki_fatt_sapos.registrationEdit();\',\'mc\',{\'offering_id\':\'' + this.data.offering_id + '\'});'; 
+        }
+        return '';
+    };
+    this.registration.fieldHistoryArgs = function(s, i) {
+        if( s == 'details' ) {
+            return {'method':'ciniki.sapos.history', 'args':{'business_id':M.curBusinessID, 'object':'ciniki.sapos.invoice_item', 'object_id':this.item_id, 'field':i}};
+        }
+        return {'method':'ciniki.fatt.offeringRegistrationHistory', 'args':{'business_id':M.curBusinessID, 'registration_id':this.registration_id, 'field':i}};
+    };
+    this.registration.cellValue = function(s, i, j, d) {
+        if( s == 'customer_details' || s == 'student_details' || s == 'invoice_details' ) {
+            switch(j) {
+                case 0: return d.detail.label;
+                case 1: return d.detail.value.replace(/\n/, '<br/>');
+            }
+        } 
+        else if( s == 'alternate_courses' ) {
+            return M.curBusiness.modules['ciniki.fatt'].settings.courses[d.course_id].name;
+        }
+        else if( s == 'alternate_dates' ) {
+            var sr = '';
+            if( d.seats_remaining > 0 ) { sr = d.seats_remaining + ' available'; }
+            if( d.seats_remaining == 0 ) { sr = 'Sold Out'; }
+            if( d.seats_remaining < 0 ) { sr = Math.abs(d.seats_remaining) + ' over sold'; }
+            return '<span class="maintext">' + d.date_string + ' <span class="subdue">' + sr + '</span></span><span class="subtext">' + d.location + '</span>';
+        }
+    };
+    this.registration.rowStyle = function(s, i, d) {
+        if( s == 'alternate_dates' ) {
+            return 'background: ' + d.colour + ';';
+        }
+        return '';
+    };
+    this.registration.rowFn = function(s, i, d) {
+        if( s == 'invoice_details' && this._source != 'invoice' ) { 
+            return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_fatt_sapos.registrationEdit();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
+        }
+        if( s == 'student_details' ) {
+            return '';
+        }
+        if( s == 'alternate_courses' ) {
+            return 'M.ciniki_fatt_sapos.registrationSwitchCourse(\'' + d.id + '\');';
+        }
+        if( s == 'alternate_dates' ) {
+            return 'M.ciniki_fatt_sapos.registrationSwitchDate(\'' + d.id + '\');';
+        }
+    };
+    this.registration.showAlternateCourses = function() {
+        document.getElementById(this.panelUID + '_section_alternate_courses').style.display = '';
+        document.getElementById(this.panelUID + '_section_alternate_dates').style.display = 'none';
+    };
+    this.registration.showAlternateDates = function() {
+        document.getElementById(this.panelUID + '_section_alternate_courses').style.display = 'none';
+        document.getElementById(this.panelUID + '_section_alternate_dates').style.display = '';
+    };
+    this.registration.updateStudent = function(cid) {
+        if( cid != null && cid != this.student_id ) {
+            this.student_id = cid;
+        }
+        if( this.student_id > 0 ) {
+            M.api.getJSONCb('ciniki.customers.customerDetails', {'business_id':M.curBusinessID, 'customer_id':this.student_id, 'phones':'yes', 'emails':'yes', 'addresses':'yes'}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_fatt_sapos.registration;
+                p.data.student_details = rsp.details;
+                p.updateCustomers();
+                p.refreshSection('student_details');
+                p.refreshSection('customer_details');
+                p.show();
+            });
+        } else {
+            this.data.student_details = {};
+            this.updateCustomers();
+            this.refreshSection('student_details');
+            this.refreshSection('customer_details');
+            this.show();
+        }
+    };
+    this.registration.updateCustomers = function() {
+        if( this.data.customer_id == this.student_id ) {
+            this.data.student_details = this.data.customer_details;
+            this.sections.customer_details.visible = 'hidden';
+            this.sections.customer_details.visible = 'yes';
+        } else {
+            this.sections.customer_details.visible = 'yes';
+        }
+        if( this.student_id == 0 ) {
+            this.sections.student_details.addTxt = '';
+            this.sections.student_details.changeTxt = 'Add';
+        } else {
+            this.sections.student_details.addTxt = 'Edit';
+            this.sections.student_details.changeTxt = 'Change';
+        }
+    };
+    this.registration.addButton('save', 'Save', 'M.ciniki_fatt_sapos.registrationSave();');
+    this.registration.addClose('Cancel');
+
+    //
+    // The search for saving seats
+    //
+    this.reserve = new M.panel('Registration', 'ciniki_fatt_sapos', 'reserve', 'mc', 'medium', 'sectioned', 'ciniki.fatt.sapos.reserve');
+    this.reserve.sections = {
+        'search':{'label':'Search Customers', 'type':'livesearchgrid', 'livesearchcols':1},
+        'buttons':{'label':'', 'buttons':{
+            'add':{'label':'New Customer', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
+            }},
+    }
+    this.reserve.addcustomer = function() {
+        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0});
+    }
+    this.reserve.liveSearchCb = function(s, i, value) {
+        if( s == 'search' && value != '' ) {
+            M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':encodeURIComponent(value), 'limit':'25'}, 
+                function(rsp) { 
+                    M.ciniki_fatt_sapos.reserve.liveSearchShow('search', null, M.gE(M.ciniki_fatt_sapos.reserve.panelUID + '_' + s), rsp.customers); 
+                });
+            return true;
+        }
+    };
+    this.reserve.liveSearchResultValue = function(s, f, i, j, d) {
+        if( d.customer.parent_name != null && d.customer.parent_name != '' ) {
+            return d.customer.display_name + ' <span class="subdue">(' + d.customer.parent_name + ')</span>';
+        } else {
+            return d.customer.display_name;
+        }
+        return '';
+    }
+    this.reserve.liveSearchResultRowFn = function(s, f, i, j, d) { 
+        return 'M.ciniki_fatt_sapos.saveSeats(\'' + d.customer.id + '\');'; 
+    };
+    this.reserve.open = function(cb, next) {
+        this.nextFn = next;
+        this.refresh();
+        this.show(cb);
+    }
+    this.reserve.addClose('Cancel');
 
     this.start = function(cb, appPrefix, aG) {
         args = {};
@@ -250,7 +288,8 @@ function ciniki_fatt_sapos() {
         this.regadd.offering_id = oid;
         this.regadd.cb = cb;
         if( ss == 'yes' ) {
-            M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0});
+            this.reserve.open(cb, 'M.ciniki_fatt_sapos.saveSeats');
+//            M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0});
         } else {
             M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.invoiceCheck', 'customer_id':0});
         }
