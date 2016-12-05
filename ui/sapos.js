@@ -204,11 +204,16 @@ function ciniki_fatt_sapos() {
     this.reserve.sections = {
         'search':{'label':'Search Customers', 'type':'livesearchgrid', 'livesearchcols':1},
         'buttons':{'label':'', 'buttons':{
-            'add':{'label':'New Customer', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
+            'add1':{'label':'New Customer', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
+//            'add2':{'label':'New Employee', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
+            'add3':{'label':'New Business', 'fn':'M.ciniki_fatt_sapos.reserve.addbusiness();'},
             }},
     }
     this.reserve.addcustomer = function() {
-        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0});
+        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':1});
+    }
+    this.reserve.addbusiness = function() {
+        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':2});
     }
     this.reserve.liveSearchCb = function(s, i, value) {
         if( s == 'search' && value != '' ) {
