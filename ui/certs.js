@@ -380,7 +380,7 @@ function ciniki_fatt_certs() {
             p.show(cb);
         });
     };
-    this.businesses.addClose('Back');
+    this.attendance.addClose('Back');
 
     //
     // Arguments:
