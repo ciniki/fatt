@@ -28,7 +28,7 @@ function ciniki_fatt_aedAdd(&$ciniki) {
         'make'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Make'),
         'model'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Model Number'),
         'serial'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Serial Number'),
-        'device_expiration'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Device Expiration Date'),
+        'device_expiration'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Device Expiration Date'),
         'primary_battery_expiration'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Primary Battery Expiration Date'),
         'secondary_battery_expiration'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Secondary Battery Expiration Date'),
         'primary_adult_pads_expiration'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Primary Adult Pads Expiration Date'),
@@ -56,7 +56,10 @@ function ciniki_fatt_aedAdd(&$ciniki) {
     //
     // Check expiration fields if specified in flags
     //
-    if( ($args['flags']&0x01) == 0x01 && (!isset($args['secondary_battery_expiration']) || $args['secondary_battery_expiration'] == '') ) {
+    if( ($args['flags']&0x01) == 0x01 && (!isset($args['device_expiration']) || $args['device_expiration'] == '') ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.149', 'msg'=>'Device Expiration must be specified.'));
+    }
+    if( ($args['flags']&0x04) == 0x04 && (!isset($args['secondary_battery_expiration']) || $args['secondary_battery_expiration'] == '') ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.39', 'msg'=>'Secondary Battery Expiration must be specified.'));
     }
     if( ($args['flags']&0x10) == 0x10 && (!isset($args['primary_adult_pads_expiration']) || $args['primary_adult_pads_expiration'] == '') ) {

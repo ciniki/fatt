@@ -70,7 +70,12 @@ function ciniki_fatt_aedUpdate(&$ciniki) {
     // Check expiration fields if specified in flags
     //
     $flags = isset($args['flags']) ? $args['flags'] : $item['flags'];
-    if( ($flags&0x01) == 0x01 && ((isset($args['secondary_battery_expiration']) && $args['secondary_battery_expiration'] == '') 
+    if( ($flags&0x01) == 0x01 && ((isset($args['device_expiration']) && $args['device_expiration'] == '') 
+        || (!isset($args['device_expiration']) && $item['device_expiration'] == '0000-00-00')) 
+        ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.148', 'msg'=>'Device Expiration must be specified.'));
+    }
+    if( ($flags&0x04) == 0x04 && ((isset($args['secondary_battery_expiration']) && $args['secondary_battery_expiration'] == '') 
         || (!isset($args['secondary_battery_expiration']) && $item['secondary_battery_expiration'] == '0000-00-00')) 
         ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.56', 'msg'=>'Secondary Battery Expiration must be specified.'));

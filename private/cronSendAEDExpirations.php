@@ -85,7 +85,7 @@ function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
             $aeds[$aid]['expiring_pieces'] = '';
             $lowest_expiration = 999999;                    // Number of days until the first piece of equipment expires
             $lowest_expiration_date = '';
-            if( $aed['device_expiration_days'] <= $lowest_expiration ) {
+            if( ($aed['flags']&0x01) == 0x01 && $aed['device_expiration_days'] <= $lowest_expiration ) {
                 if( strstr($aeds[$aid]['expiring_pieces'], 'device') === false ) {
                     $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'device';
                 }
@@ -101,7 +101,7 @@ function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
                 $lowest_expiration = $aed['primary_battery_expiration_days'];
                 $lowest_expiration_date = $aed['primary_battery_expiration'];
             }
-            if( ($aed['flags']&0x01) == 0x01 && $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
+            if( ($aed['flags']&0x04) == 0x04 && $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
                 if( $aed['secondary_battery_expiration_days'] < $lowest_expiration ) {
                     $aeds[$aid]['expiring_pieces'] = 'battery';
                 } elseif( strstr($aeds[$aid]['expiring_pieces'], 'batter') === false ) {

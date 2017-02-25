@@ -207,10 +207,11 @@ function ciniki_fatt_aeds() {
             'images':{'label':'Images', 'fn':'M.ciniki_fatt_aeds.edit.switchTab("images");'},
             'notes':{'label':'Notes', 'fn':'M.ciniki_fatt_aeds.edit.switchTab("notes");'},
             }},
-        'options':{'label':'Battery', 
+        'options':{'label':'Tracking Options', 
             'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
             'fields':{
-                'flags_1':{'label':'Secondary Battery', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'default':'no', 'on_fields':['secondary_battery_expiration']},
+                'flags_1':{'label':'Device Warranty', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'default':'no', 'on_fields':['device_expiration']},
+                'flags_3':{'label':'Secondary Battery', 'type':'flagtoggle', 'bit':0x04, 'field':'flags', 'default':'no', 'on_fields':['secondary_battery_expiration']},
                 'flags_5':{'label':'Primary Adult Pads', 'type':'flagtoggle', 'bit':0x10, 'field':'flags', 'default':'yes', 'on_fields':['primary_adult_pads_expiration']},
                 'flags_6':{'label':'Secondary Adult Pads', 'type':'flagtoggle', 'bit':0x20, 'field':'flags', 'default':'no', 'on_fields':['secondary_adult_pads_expiration']},
                 'flags_9':{'label':'Primary Child Pads', 'type':'flagtoggle', 'bit':0x0100, 'field':'flags', 'default':'no', 'on_fields':['primary_child_pads_expiration']},
@@ -219,9 +220,9 @@ function ciniki_fatt_aeds() {
         'expirations':{'label':'Expiration Dates', 
             'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
             'fields':{
-                'device_expiration':{'label':'Device Warranty', 'type':'date'},
+                'device_expiration':{'label':'Device Warranty', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x01)>0?'yes':'no';},'type':'date'},
                 'primary_battery_expiration':{'label':'Primary Battery', 'type':'date'},
-                'secondary_battery_expiration':{'label':'Secondary Battery', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x01)>0?'yes':'no';}, 'type':'date'},
+                'secondary_battery_expiration':{'label':'Secondary Battery', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x04)>0?'yes':'no';}, 'type':'date'},
             }},
         'pads':{'label':'', 
             'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
@@ -243,7 +244,7 @@ function ciniki_fatt_aeds() {
             'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'; },
             'cellClasses':['multiline'],
             'addTxt':'Add Note',
-            'addFn':'M.ciniki_fatt_aeds.edit.save(\'M.ciniki_fatt_aeds.aednote.open("M.ciniki_fatt_aeds.edit.updateNotes();",0);\');',
+            'addFn':'M.ciniki_fatt_aeds.edit.save(\'M.ciniki_fatt_aeds.aednote.open("M.ciniki_fatt_aeds.edit.updateNotes();",0,M.ciniki_fatt_aeds.edit.aed_id);\');',
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_fatt_aeds.edit.save();'},
@@ -273,7 +274,7 @@ function ciniki_fatt_aeds() {
     };
     this.edit.rowFn = function(s, i, d) { 
         if( s == 'notes' ) {
-            return 'M.ciniki_fatt_aeds.aednote.open(\'M.ciniki_fatt_aeds.edit.updateNotes();\',\'' + d.id + '\');';
+            return 'M.ciniki_fatt_aeds.aednote.open(\'M.ciniki_fatt_aeds.edit.updateNotes();\',\'' + d.id + '\',M.ciniki_fatt_aeds.edit.aed_id);';
         }
         return ''; 
     }
@@ -519,6 +520,7 @@ function ciniki_fatt_aeds() {
     this.aednote = new M.panel('Note', 'ciniki_fatt_aeds', 'aednote', 'mc', 'medium', 'sectioned', 'ciniki.fatt.aeds.aednote');
     this.aednote.data = {};
     this.aednote.note_id = 0;
+    this.aednote.aed_id = 0;
     this.aednote.sections = { 
         'general':{'label':'', 'aside':'yes', 'fields':{
             'note_date':{'label':'Date', 'type':'date'},

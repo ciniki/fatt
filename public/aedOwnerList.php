@@ -111,7 +111,7 @@ function ciniki_fatt_aedOwnerList($ciniki) {
             if( isset($customer['aeds']) ) {
                 foreach($customer['aeds'] as $aid => $aed) {
                     $aeds[$aid]['expiring_pieces'] = '';
-                    if( $aed['device_expiration_days'] <= $lowest_expiration ) {
+                    if( ($aed['flags']&0x01) == 0x01 && $aed['device_expiration_days'] <= $lowest_expiration ) {
                         $lowest_expiration = $aed['device_expiration_days'];
                         if( strstr($aeds[$aid]['expiring_pieces'], 'device') === false ) {
                             $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'device';
@@ -125,7 +125,7 @@ function ciniki_fatt_aedOwnerList($ciniki) {
                         }
                         $lowest_expiration = $aed['primary_battery_expiration_days'];
                     }
-                    if( ($aed['flags']&0x01) == 0x01 && $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
+                    if( ($aed['flags']&0x04) == 0x04 && $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
                         if( $aed['secondary_battery_expiration_days'] < $lowest_expiration ) {
                             $aeds[$aid]['expiring_pieces'] = 'battery';
                         } elseif( strstr($aeds[$aid]['expiring_pieces'], 'batter') === false ) {

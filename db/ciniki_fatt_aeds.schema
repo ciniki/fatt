@@ -21,9 +21,9 @@
 #
 # flags:            Any options for the device.
 #
-#                   0x01 - Secondary Battery
-#                   0x02 - 
-#                   0x04 - 
+#                   0x01 - Device Warranty
+#                   0x02 - Primary Battery **future, not implemented**
+#                   0x04 - Secondary Battery
 #                   0x08 - 
 #                   0x10 - Primary Adult Pads
 #                   0x20 - Secondary Adult Pads

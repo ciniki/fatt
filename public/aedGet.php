@@ -62,7 +62,7 @@ function ciniki_fatt_aedGet($ciniki) {
             'customer_id'=>(isset($args['customer_id'])?$args['customer_id']:0),
             'location'=>'',
             'status'=>'10',
-            'flags'=>0x10,
+            'flags'=>0x11,
             'make'=>'',
             'model'=>'',
             'serial'=>'',
@@ -155,7 +155,8 @@ function ciniki_fatt_aedGet($ciniki) {
             . "DATE_FORMAT(ciniki_fatt_aed_notes.note_date, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') as note_date, "
             . "ciniki_fatt_aed_notes.content "
             . "FROM ciniki_fatt_aed_notes "
-            . "WHERE ciniki_fatt_aed_notes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE aed_id = '" . ciniki_core_dbQuote($ciniki, $args['aed_id']) . "' "
+            . "AND ciniki_fatt_aed_notes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "ORDER BY ciniki_fatt_aed_notes.note_date DESC "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
