@@ -139,6 +139,35 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
             return $rc;
         }
     }
+    
+    //
+    // Update the future courses is
+    //
+    if( isset($args['price']) ) {
+        $strsql = "SELECT id, price "
+            . "FROM ciniki_fatt_offerings "
+            . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
+            . "AND start_date > UTC_TIMESTAMP() "
+            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+            return $rc;
+        }
+        if( isset($rc['rows']) ) {
+            $offerings = $rc['rows'];
+            foreach($offerings as $offering) {
+                if( $offering['price'] != $args['price'] ) {
+                    $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offering', $offering['id'], array('price'=>$args['price']), 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                        return $rc;
+                    }
+                }
+            }
+        }
+    }
 
     //
     // Commit the transaction
