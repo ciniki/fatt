@@ -11,6 +11,7 @@ function ciniki_fatt_aeds() {
         'tabs':{'label':'', 'type':'paneltabs', 'selected':'aeds', 'tabs':{
             'aeds':{'label':'Devices', 'fn':'M.ciniki_fatt_aeds.menu.open(null,"aeds");'},
             'owners':{'label':'Owners', 'fn':'M.ciniki_fatt_aeds.menu.open(null,"owners");'},
+            'expirations':{'label':'Expirations', 'fn':'M.ciniki_fatt_aeds.menu.open(null,"expirations");'},
             }},
         'aeds':{'label':'Devices', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_fatt_aeds.menu.sections.tabs.selected=='aeds'?'yes':'no'; },
@@ -28,6 +29,14 @@ function ciniki_fatt_aeds() {
             'cellClasses':['', ''],
             'noData':'No companies/owners',
             },
+        'expirations':{'label':'Expirations', 'type':'simplegrid', 'num_cols':10,
+            'visible':function() { return M.ciniki_fatt_aeds.menu.sections.tabs.selected=='expirations'?'yes':'no'; },
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'text', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber'],
+            'headerValues':['Company', 'Make', 'Model', 'Device', 'Battery(A)', 'Battery(B)', 'Adult(A)', 'Adult(B)', 'Child(A)', 'Child(B)'],
+            'cellClasses':['', '', '', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline'],
+            'noData':'No devices',
+            },
     };
     this.menu.cellValue = function(s, i, j, d) {
         var lstr = '';
@@ -44,19 +53,55 @@ function ciniki_fatt_aeds() {
                 case 0: return d.display_name;
                 case 1: return d.expiration_days_text;
             }
+        } else if( s == 'expirations' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return d.make;
+                case 2: return d.model;
+                case 3: return '<span class="maintext">' + d.device_expiration_text + '</span>'
+                    + '<span class="subtext">' + d.device_expiration_days_text + '</span>';
+                case 4: return '<span class="maintext">' + d.primary_battery_expiration_text + '</span>'
+                    + '<span class="subtext">' + d.primary_battery_expiration_days_text + '</span>';
+                case 5: return '<span class="maintext">' + d.secondary_battery_expiration_text + '</span>'
+                    + '<span class="subtext">' + d.secondary_battery_expiration_days_text + '</span>';
+                case 6: return '<span class="maintext">' + d.primary_adult_pads_expiration_text + '</span>'
+                    + '<span class="subtext">' + d.primary_adult_pads_expiration_days_text + '</span>';
+                case 7: return '<span class="maintext">' + d.secondary_adult_pads_expiration_text + '</span>'
+                    + '<span class="subtext">' + d.secondary_adult_pads_expiration_days_text + '</span>';
+                case 6: return '<span class="maintext">' + d.primary_child_pads_expiration_text + '</span>'
+                    + '<span class="subtext">' + d.primary_child_pads_expiration_days_text + '</span>';
+                case 7: return '<span class="maintext">' + d.secondary_child_pads_expiration_text + '</span>'
+                    + '<span class="subtext">' + d.secondary_child_pads_expiration_days_text + '</span>';
+            }
         }
     };
     this.menu.cellSortValue = function(s, i, j, d) {
-        switch(j) {
-            case 0: return d.display_name;
-            case 1: return d.expiration_days;
+        if( s == 'aeds' || s == 'owners' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return d.expiration_days;
+            }
+        }
+        if( s == 'expirations' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return d.make;
+                case 2: return d.model;
+                case 3: return d.device_expiration_days;
+                case 4: return d.primary_battery_expiration_days;
+                case 5: return d.secondary_battery_expiration_days;
+                case 6: return d.primary_adult_pads_expiration;
+                case 7: return d.secondary_adult_pads_expiration;
+                case 8: return d.primary_child_pads_expiration;
+                case 9: return d.secondary_child_pads_expiration;
+            }
         }
     };
     this.menu.rowClass = function(s, i, d) {
         return 'status' + d.alert_level;
     };
     this.menu.rowFn = function(s, i, d) {
-        if( s == 'aeds' ) { 
+        if( s == 'aeds' || s == 'expirations' ) { 
             return 'M.ciniki_fatt_aeds.edit.open(\'M.ciniki_fatt_aeds.menu.open();\',\'' + d.id + '\');';
         } 
         if( s == 'owners' ) {
@@ -74,22 +119,36 @@ function ciniki_fatt_aeds() {
                     return false;
                 }
                 var p = M.ciniki_fatt_aeds.menu;
+                p.size = 'medium';
                 p.data = rsp;
                 p.refresh();
                 p.show(cb);
             });
-       } else {
+        } else if( this.sections.tabs.selected == 'owners' ) {
             M.api.getJSONCb('ciniki.fatt.aedOwnerList', {'business_id':M.curBusinessID}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 var p = M.ciniki_fatt_aeds.menu;
+                p.size = 'medium';
                 p.data = rsp;
                 p.refresh();
                 p.show(cb);
             });
-       }
+        } else {
+            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_fatt_aeds.menu;
+                p.size = 'full';
+                p.data.expirations = rsp.aeds;
+                p.refresh();
+                p.show(cb);
+            });
+        }
     };
     this.menu.addButton('add', 'Add', 'M.ciniki_fatt_aeds.edit.addAED(\'M.ciniki_fatt_aeds.menu.open();\', 0);');
     this.menu.addClose('Back');

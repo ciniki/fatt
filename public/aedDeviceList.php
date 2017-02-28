@@ -36,6 +36,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         return $rc;
     }
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+    $date_format = ciniki_users_dateFormat($ciniki, 'mysql');
+
     //
     // Load business settings
     //
@@ -47,6 +50,8 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     $dt = new DateTime('now', new DateTimeZone($intl_timezone));
     $today = $dt->format('Y-m-d');
+
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'aedFormatExpirationAge');
 
     //
     // Get the list of aeds
@@ -62,18 +67,25 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         . "ciniki_fatt_aeds.serial, "
         . "ciniki_fatt_aeds.device_expiration, "
         . "DATEDIFF(ciniki_fatt_aeds.device_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS device_expiration_days, "
+        . "IFNULL(DATE_FORMAT(ciniki_fatt_aeds.device_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS device_expiration_text, "
         . "ciniki_fatt_aeds.primary_battery_expiration, "
         . "DATEDIFF(ciniki_fatt_aeds.primary_battery_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS primary_battery_expiration_days, "
+        . "IFNULL(DATE_FORMAT(ciniki_fatt_aeds.primary_battery_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS primary_battery_expiration_text, "
         . "ciniki_fatt_aeds.secondary_battery_expiration, "
         . "DATEDIFF(ciniki_fatt_aeds.secondary_battery_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS secondary_battery_expiration_days, "
+        . "IFNULL(DATE_FORMAT(ciniki_fatt_aeds.secondary_battery_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS secondary_battery_expiration_text, "
         . "ciniki_fatt_aeds.primary_adult_pads_expiration, "
         . "DATEDIFF(ciniki_fatt_aeds.primary_adult_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS primary_adult_pads_expiration_days, "
+        . "IFNULL(DATE_FORMAT(ciniki_fatt_aeds.primary_adult_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS primary_adult_pads_expiration_text, "
         . "ciniki_fatt_aeds.secondary_adult_pads_expiration, "
         . "DATEDIFF(ciniki_fatt_aeds.secondary_adult_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS secondary_adult_pads_expiration_days, "
+        . "IFNULL(DATE_FORMAT(ciniki_fatt_aeds.secondary_adult_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS secondary_adult_pads_expiration_text, "
         . "ciniki_fatt_aeds.primary_child_pads_expiration, "
         . "DATEDIFF(ciniki_fatt_aeds.primary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS primary_child_pads_expiration_days, "
+        . "IFNULL(DATE_FORMAT(ciniki_fatt_aeds.primary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS primary_child_pads_expiration_text, "
         . "ciniki_fatt_aeds.secondary_child_pads_expiration, "
-        . "DATEDIFF(ciniki_fatt_aeds.secondary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS secondary_child_pads_expiration_days "
+        . "DATEDIFF(ciniki_fatt_aeds.secondary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $today) . "') AS secondary_child_pads_expiration_days, "
+        . "IFNULL(DATE_FORMAT(ciniki_fatt_aeds.secondary_child_pads_expiration, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS secondary_child_pads_expiration_text "
         . "FROM ciniki_fatt_aeds "
         . "LEFT JOIN ciniki_customers ON ("
             . "ciniki_fatt_aeds.customer_id = ciniki_customers.id "
@@ -89,13 +101,13 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'aeds', 'fname'=>'id', 
             'fields'=>array('id', 'customer_id', 'display_name', 'location', 'status', 'flags', 'make', 'model', 'serial', 
-                'device_expiration', 'device_expiration_days', 
-                'primary_battery_expiration', 'primary_battery_expiration_days', 
-                'secondary_battery_expiration', 'secondary_battery_expiration_days', 
-                'primary_adult_pads_expiration', 'primary_adult_pads_expiration_days', 
-                'secondary_adult_pads_expiration', 'secondary_adult_pads_expiration_days', 
-                'primary_child_pads_expiration', 'primary_child_pads_expiration_days', 
-                'secondary_child_pads_expiration', 'secondary_child_pads_expiration_days',
+                'device_expiration', 'device_expiration_text', 'device_expiration_days', 
+                'primary_battery_expiration', 'primary_battery_expiration_text', 'primary_battery_expiration_days', 
+                'secondary_battery_expiration', 'secondary_battery_expiration_text', 'secondary_battery_expiration_days', 
+                'primary_adult_pads_expiration', 'primary_adult_pads_expiration_text', 'primary_adult_pads_expiration_days', 
+                'secondary_adult_pads_expiration', 'secondary_adult_pads_expiration_text', 'secondary_adult_pads_expiration_days', 
+                'primary_child_pads_expiration', 'primary_child_pads_expiration_text', 'primary_child_pads_expiration_days', 
+                'secondary_child_pads_expiration', 'secondary_child_pads_expiration_text', 'secondary_child_pads_expiration_days',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -107,11 +119,21 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             $aeds[$aid]['alert_level'] = 'green';       // Default to everything ok
             $aeds[$aid]['expiring_pieces'] = '';
             $lowest_expiration = 999999;                    // Number of days until the first piece of equipment expires
-            if( ($aed['flags']&0x01) == 0x01 && $aed['device_expiration_days'] <= $lowest_expiration ) {
-                if( strstr($aeds[$aid]['expiring_pieces'], 'device') === false ) {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'device';
+            $aeds[$aid]['device_expiration_days_text'] = '';
+            $aeds[$aid]['primary_battery_expiration_days_text'] = '';
+            $aeds[$aid]['secondary_battery_expiration_days_text'] = '';
+            $aeds[$aid]['primary_adult_pads_expiration_days_text'] = '';
+            $aeds[$aid]['secondary_adult_pads_expiration_days_text'] = '';
+            $aeds[$aid]['primary_child_pads_expiration_days_text'] = '';
+            $aeds[$aid]['secondary_child_pads_expiration_days_text'] = '';
+            if( ($aed['flags']&0x01) == 0x01 ) {
+                if( $aed['device_expiration_days'] <= $lowest_expiration ) {
+                    if( strstr($aeds[$aid]['expiring_pieces'], 'device') === false ) {
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'device';
+                    }
+                    $lowest_expiration = $aed['device_expiration_days'];
                 }
-                $lowest_expiration = $aed['device_expiration_days'];
+                $aeds[$aid]['device_expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $aed['device_expiration_days']);
             }
             if( $aed['primary_battery_expiration_days'] <= $lowest_expiration ) {
                 if( $aed['primary_battery_expiration_days'] < $lowest_expiration ) {
@@ -121,47 +143,63 @@ function ciniki_fatt_aedDeviceList($ciniki) {
                 }
                 $lowest_expiration = $aed['primary_battery_expiration_days'];
             }
-            if( ($aed['flags']&0x04) == 0x04 && $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
-                if( $aed['secondary_battery_expiration_days'] < $lowest_expiration ) {
-                    $aeds[$aid]['expiring_pieces'] = 'battery';
-                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'batter') === false ) {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'battery';
-                } else {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . str_replace($aeds[$aid]['expiring_pieces'], 'batteries', 'battery');
+            $aeds[$aid]['primary_battery_expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $aed['primary_battery_expiration_days']);
+            if( ($aed['flags']&0x04) == 0x04 ) {
+                if( $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
+                    if( $aed['secondary_battery_expiration_days'] < $lowest_expiration ) {
+                        $aeds[$aid]['expiring_pieces'] = 'battery';
+                    } elseif( strstr($aeds[$aid]['expiring_pieces'], 'batter') === false ) {
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'battery';
+                    } else {
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . str_replace($aeds[$aid]['expiring_pieces'], 'batteries', 'battery');
+                    }
+                    $lowest_expiration = $aed['secondary_battery_expiration_days'];
                 }
-                $lowest_expiration = $aed['secondary_battery_expiration_days'];
+                $aeds[$aid]['secondary_battery_expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $aed['secondary_battery_expiration_days']);
             }
-            if( ($aed['flags']&0x10) == 0x10 && $aed['primary_adult_pads_expiration_days'] <= $lowest_expiration ) {
-                if( $aed['primary_adult_pads_expiration_days'] < $lowest_expiration ) {
-                    $aeds[$aid]['expiring_pieces'] = 'pads';
-                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+            if( ($aed['flags']&0x10) == 0x10 ) {
+                if( $aed['primary_adult_pads_expiration_days'] <= $lowest_expiration ) {
+                    if( $aed['primary_adult_pads_expiration_days'] < $lowest_expiration ) {
+                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                    } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                    }
+                    $lowest_expiration = $aed['primary_adult_pads_expiration_days'];
                 }
-                $lowest_expiration = $aed['primary_adult_pads_expiration_days'];
+                $aeds[$aid]['primary_adult_pads_expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $aed['primary_adult_pads_expiration_days']);
             }
-            if( ($aed['flags']&0x20) == 0x20 && $aed['secondary_adult_pads_expiration_days'] <= $lowest_expiration ) {
-                if( $aed['secondary_adult_pads_expiration_days'] < $lowest_expiration ) {
-                    $aeds[$aid]['expiring_pieces'] = 'pads';
-                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+            if( ($aed['flags']&0x20) == 0x20 ) {
+                if( $aed['secondary_adult_pads_expiration_days'] <= $lowest_expiration ) {
+                    if( $aed['secondary_adult_pads_expiration_days'] < $lowest_expiration ) {
+                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                    } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                    }
+                    $lowest_expiration = $aed['secondary_adult_pads_expiration_days'];
                 }
-                $lowest_expiration = $aed['secondary_adult_pads_expiration_days'];
+                $aeds[$aid]['secondary_adult_pads_expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $aed['secondary_adult_pads_expiration_days']);
             }
-            if( ($aed['flags']&0x0100) == 0x0100 && $aed['primary_child_pads_expiration_days'] <= $lowest_expiration ) {
-                if( $aed['primary_child_pads_expiration_days'] < $lowest_expiration ) {
-                    $aeds[$aid]['expiring_pieces'] = 'pads';
-                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+            if( ($aed['flags']&0x0100) == 0x0100 ) {
+                if( $aed['primary_child_pads_expiration_days'] <= $lowest_expiration ) {
+                    if( $aed['primary_child_pads_expiration_days'] < $lowest_expiration ) {
+                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                    } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                    }
+                    $lowest_expiration = $aed['primary_child_pads_expiration_days'];
                 }
-                $lowest_expiration = $aed['primary_child_pads_expiration_days'];
+                $aeds[$aid]['primary_child_pads_expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $aed['primary_child_pads_expiration_days']);
             }
-            if( ($aed['flags']&0x0200) == 0x0200 && $aed['secondary_child_pads_expiration_days'] < $lowest_expiration ) {
+            if( ($aed['flags']&0x0200) == 0x0200 ) {
                 if( $aed['secondary_child_pads_expiration_days'] < $lowest_expiration ) {
-                    $aeds[$aid]['expiring_pieces'] = 'pads';
-                } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                    if( $aed['secondary_child_pads_expiration_days'] < $lowest_expiration ) {
+                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                    } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                    }
+                    $lowest_expiration = $aed['secondary_child_pads_expiration_days'];
                 }
-                $lowest_expiration = $aed['secondary_child_pads_expiration_days'];
+                $aeds[$aid]['secondary_child_pads_expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $aed['secondary_child_pads_expiration_days']);
             }
 
             //
@@ -174,7 +212,8 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             }
 
             $aeds[$aid]['expiration_days'] = $lowest_expiration;
-            if( $lowest_expiration > 1 ) {
+            $aeds[$aid]['expiration_days_text'] = ciniki_fatt_aedFormatExpirationAge($ciniki, $lowest_expiration);
+/*            if( $lowest_expiration > 1 ) {
                 $aeds[$aid]['expiration_days_text'] = $lowest_expiration . ' days';
             } elseif( $lowest_expiration == 1 ) {
                 $aeds[$aid]['expiration_days_text'] = 'tomorrow';
@@ -182,7 +221,7 @@ function ciniki_fatt_aedDeviceList($ciniki) {
                 $aeds[$aid]['expiration_days_text'] = 'today';
             } elseif( $lowest_expiration < 0 ) {
                 $aeds[$aid]['expiration_days_text'] = abs($lowest_expiration) . ' days ago';
-            }
+            } */
         }
         //
         // Sort aeds based on expiration_days then company

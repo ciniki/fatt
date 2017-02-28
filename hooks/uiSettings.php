@@ -158,8 +158,8 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
         ) {
         $menu_item = array(
             'priority'=>5503,
-            'label'=>'Certifications', 
-            'edit'=>array('app'=>'ciniki.fatt.certs'),
+            'label'=>'Reports', 
+            'edit'=>array('app'=>'ciniki.fatt.reports'),
             );
         $rsp['menu_items'][] = $menu_item;
     } 

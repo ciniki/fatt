@@ -1,22 +1,20 @@
 //
 // This file contains the UI panels to manage customer certs and their expirations
 //
-function ciniki_fatt_certs() {
+function ciniki_fatt_reports() {
     //
     // The menu panel
     //
-    this.menu = new M.panel('Certifications',
-        'ciniki_fatt_certs', 'menu',
-        'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.menu');
+    this.menu = new M.panel('Reports', 'ciniki_fatt_reports', 'menu', 'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.menu');
     this.menu.sections = {  
         '_a':{'label':'', 'type':'simplelist', 'list':{
-            'expirations':{'label':'Certificate Expirations', 'fn':'M.ciniki_fatt_certs.expirations.open(\'M.ciniki_fatt_certs.menu.open();\',\'\',\'\');'},
+            'expirations':{'label':'Certificate Expirations', 'fn':'M.ciniki_fatt_reports.expirations.open(\'M.ciniki_fatt_reports.menu.open();\',\'\',\'\');'},
             }},
         '_b':{'label':'', 'type':'simplelist', 'list':{
-            'businesses':{'label':'Business Report', 'fn':'M.ciniki_fatt_certs.businesses.open(\'M.ciniki_fatt_certs.menu.open();\');'},
+            'businesses':{'label':'Business Report', 'fn':'M.ciniki_fatt_reports.businesses.open(\'M.ciniki_fatt_reports.menu.open();\');'},
             }},
         '_c':{'label':'', 'type':'simplelist', 'list':{
-            'businesses':{'label':'Attendance Report', 'fn':'M.ciniki_fatt_certs.attendance.open(\'M.ciniki_fatt_certs.menu.open();\');'},
+            'businesses':{'label':'Attendance Report', 'fn':'M.ciniki_fatt_reports.attendance.open(\'M.ciniki_fatt_reports.menu.open();\');'},
             }},
         };
     this.menu.open = function(cb) {
@@ -29,7 +27,7 @@ function ciniki_fatt_certs() {
     // The cert expirations panel
     //
     this.expirations = new M.panel('Certication Expirations',
-        'ciniki_fatt_certs', 'expirations',
+        'ciniki_fatt_reports', 'expirations',
         'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.expirations');
     this.expirations.data = {};
     this.expirations.sections = {
@@ -70,13 +68,13 @@ function ciniki_fatt_certs() {
     this.expirations.cellFn = function(s, i, j, d) {
         if( s == 'stats' ) {
             switch (j) {
-                case 0: return 'M.ciniki_fatt_certs.expirations.open(null,\'' + escape(d.group.name) + '\',\'\');';
-                case 1: return 'M.ciniki_fatt_certs.expirations.open(null,\'' + escape(d.group.name) + '\',0);';
-                case 2: return 'M.ciniki_fatt_certs.expirations.open(null,\'' + escape(d.group.name) + '\',1);';
-                case 3: return 'M.ciniki_fatt_certs.expirations.open(null,\'' + escape(d.group.name) + '\',2);';
-                case 4: return 'M.ciniki_fatt_certs.expirations.open(null,\'' + escape(d.group.name) + '\',3);';
-                case 5: return 'M.ciniki_fatt_certs.expirations.open(null,\'' + escape(d.group.name) + '\',4);';
-                case 6: return 'M.ciniki_fatt_certs.expirations.open(null,\'' + escape(d.group.name) + '\',5);';
+                case 0: return 'M.ciniki_fatt_reports.expirations.open(null,\'' + escape(d.group.name) + '\',\'\');';
+                case 1: return 'M.ciniki_fatt_reports.expirations.open(null,\'' + escape(d.group.name) + '\',0);';
+                case 2: return 'M.ciniki_fatt_reports.expirations.open(null,\'' + escape(d.group.name) + '\',1);';
+                case 3: return 'M.ciniki_fatt_reports.expirations.open(null,\'' + escape(d.group.name) + '\',2);';
+                case 4: return 'M.ciniki_fatt_reports.expirations.open(null,\'' + escape(d.group.name) + '\',3);';
+                case 5: return 'M.ciniki_fatt_reports.expirations.open(null,\'' + escape(d.group.name) + '\',4);';
+                case 6: return 'M.ciniki_fatt_reports.expirations.open(null,\'' + escape(d.group.name) + '\',5);';
             }
         } 
         return '';
@@ -92,7 +90,7 @@ function ciniki_fatt_certs() {
         if( s == 'stats' ) {
             return '';
         } else if( s == 'certs' ) {
-            return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_certs.expirations.open();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
+            return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_reports.expirations.open();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
         }
     }
     this.expirations.open = function(cb, grouping, timespan) {
@@ -112,7 +110,7 @@ function ciniki_fatt_certs() {
                     M.api.err(rsp);
                     return false;
                 }
-                var p = M.ciniki_fatt_certs.expirations;
+                var p = M.ciniki_fatt_reports.expirations;
                 p.data = rsp;
                 p.sections.certs.visible = (rsp.certs!=null?'yes':'no');
                 p.refresh();
@@ -125,7 +123,7 @@ function ciniki_fatt_certs() {
     // The cert customer edit panel
     //
     this.certcustomer = new M.panel('Customer Certification',
-        'ciniki_fatt_certs', 'certcustomer',
+        'ciniki_fatt_reports', 'certcustomer',
         'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.certcustomer');
     this.certcustomer.certcustomer_id = 0;
     this.certcustomer.data = {};
@@ -133,7 +131,7 @@ function ciniki_fatt_certs() {
         'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2,
             'cellClasses':['label', ''],
             'addTxt':'Edit',
-            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_certs.certcustomerShow();\',\'mc\',{\'next\':\'M.ciniki_fatt_certs.certcustomer.updateCustomer\',\'customer_id\':M.ciniki_fatt_certs.certcustomer.data.customer_id});',
+            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_reports.certcustomerShow();\',\'mc\',{\'next\':\'M.ciniki_fatt_reports.certcustomer.updateCustomer\',\'customer_id\':M.ciniki_fatt_reports.certcustomer.data.customer_id});',
             },
         'cert':{'label':'', 'fields':{
             'cert_id':{'label':'Certification', 'type':'select'},
@@ -141,8 +139,8 @@ function ciniki_fatt_certs() {
             'flags':{'label':'Options', 'type':'flags', 'default':'1', 'flags':{}},
             }},
         '_buttons':{'label':'', 'buttons':{
-            'save':{'label':'Save', 'fn':'M.ciniki_fatt_certs.certcustomer.save();'},
-            'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_certs.certcustomer.remove(M.ciniki_fatt_certs.certcustomer.certcustomer_id);'},
+            'save':{'label':'Save', 'fn':'M.ciniki_fatt_reports.certcustomer.save();'},
+            'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_reports.certcustomer.remove(M.ciniki_fatt_reports.certcustomer.certcustomer_id);'},
             }},
     };
     this.certcustomer.sectionData = function(s) { return this.data[s]; }
@@ -172,7 +170,7 @@ function ciniki_fatt_certs() {
                     M.api.err(rsp);
                     return false;
                 }
-                var p = M.ciniki_fatt_certs.certcustomer;
+                var p = M.ciniki_fatt_reports.certcustomer;
                 p.data.customer_details = rsp.certcustomer.customer_details;
                 p.refreshSection('customer_details');
                 p.show();
@@ -189,7 +187,7 @@ function ciniki_fatt_certs() {
                     M.api.err(rsp);
                     return false;
                 }
-                var p = M.ciniki_fatt_certs.certcustomer;
+                var p = M.ciniki_fatt_reports.certcustomer;
                 p.data = rsp.certcustomer;
                 p.customer_id = rsp.certcustomer.customer_id;
                 p.sections.customer_details.addTxt = (p.data.customer_id>0?'Edit Customer':'Select Customer');
@@ -210,7 +208,7 @@ function ciniki_fatt_certs() {
                         M.api.err(rsp);
                         return false;
                     }
-                    M.ciniki_fatt_certs.certcustomer.close();
+                    M.ciniki_fatt_reports.certcustomer.close();
                 });
             } else {
                 this.close();
@@ -223,7 +221,7 @@ function ciniki_fatt_certs() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_fatt_certs.certcustomer.close();
+                M.ciniki_fatt_reports.certcustomer.close();
             });
         }
     };
@@ -234,18 +232,18 @@ function ciniki_fatt_certs() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_fatt_certs.certcustomer.close();
+                M.ciniki_fatt_reports.certcustomer.close();
             });
         }
     };
-    this.certcustomer.addButton('save', 'Save', 'M.ciniki_fatt_certs.certcustomer.save();');
+    this.certcustomer.addButton('save', 'Save', 'M.ciniki_fatt_reports.certcustomer.save();');
     this.certcustomer.addClose('Cancel');
 
     //
     // The panel to display the business list
     //
     this.businesses = new M.panel('Businesses',
-        'ciniki_fatt_certs', 'businesses',
+        'ciniki_fatt_reports', 'businesses',
         'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.businesses');
     this.businesses.data = {};
     this.businesses.sections = {
@@ -260,7 +258,7 @@ function ciniki_fatt_certs() {
         }
     }
     this.businesses.rowFn = function(s, i, d) {
-        return 'M.ciniki_fatt_certs.businesscerts.open(\'M.ciniki_fatt_certs.businesses.open();\',\'' + d.customer.id + '\');';
+        return 'M.ciniki_fatt_reports.businesscerts.open(\'M.ciniki_fatt_reports.businesses.open();\',\'' + d.customer.id + '\');';
     }
     this.businesses.open = function(cb) {
         M.api.getJSONCb('ciniki.fatt.certBusinessList', {'business_id':M.curBusinessID}, function(rsp) {
@@ -268,7 +266,7 @@ function ciniki_fatt_certs() {
                 M.api.err(rsp);
                 return false;
             }
-            var p = M.ciniki_fatt_certs.businesses;
+            var p = M.ciniki_fatt_reports.businesses;
             p.data = rsp;
             p.refresh();
             p.show(cb);
@@ -280,7 +278,7 @@ function ciniki_fatt_certs() {
     // The panel to list the business employee certifications
     //
     this.businesscerts = new M.panel('Businesses Certifications',
-        'ciniki_fatt_certs', 'businesscerts',
+        'ciniki_fatt_reports', 'businesscerts',
         'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.businesscerts');
     this.businesscerts.customer_id = 0;
     this.businesscerts.data = {};
@@ -300,7 +298,7 @@ function ciniki_fatt_certs() {
             'noData':'No certifications',
             },
         '_buttons':{'label':'', 'buttons':{
-            'print':{'label':'Print Report', 'fn':'M.ciniki_fatt_certs.downloadBusinessCerts();'},
+            'print':{'label':'Print Report', 'fn':'M.ciniki_fatt_reports.downloadBusinessCerts();'},
             }},
         };
     this.businesscerts.sectionData = function(s) { return this.data[s]; }
@@ -328,7 +326,7 @@ function ciniki_fatt_certs() {
     };
     this.businesscerts.rowFn = function(s, i, d) {
         if( s == 'certs' ) {
-            return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_certs.businesscerts.open();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
+            return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_reports.businesscerts.open();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
         }
         return '';
     }
@@ -339,7 +337,7 @@ function ciniki_fatt_certs() {
                 M.api.err(rsp);
                 return false;
             }
-            var p = M.ciniki_fatt_certs.businesscerts;
+            var p = M.ciniki_fatt_reports.businesscerts;
             p.data = rsp;
             p.refresh();
             p.show(cb);
@@ -347,7 +345,7 @@ function ciniki_fatt_certs() {
     };
     this.businesscerts.addClose('Back');
 
-    this.attendance = new M.panel('Attendance', 'ciniki_fatt_certs', 'attendance', 'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.attendance');
+    this.attendance = new M.panel('Attendance', 'ciniki_fatt_reports', 'attendance', 'mc', 'medium', 'sectioned', 'ciniki.fatt.certs.attendance');
     this.attendance.data = {};
     this.attendance.sections = {
         'months':{'label':'', 'type':'simplegrid', 'num_cols':6,
@@ -374,7 +372,7 @@ function ciniki_fatt_certs() {
                 M.api.err(rsp);
                 return false;
             }
-            var p = M.ciniki_fatt_certs.attendance;
+            var p = M.ciniki_fatt_reports.attendance;
             p.data = rsp;
             p.refresh();
             p.show(cb);
@@ -394,7 +392,7 @@ function ciniki_fatt_certs() {
         // Create the app container if it doesn't exist, and clear it out
         // if it does exist.
         //
-        var appContainer = M.createContainer(appPrefix, 'ciniki_fatt_certs', 'yes');
+        var appContainer = M.createContainer(appPrefix, 'ciniki_fatt_reports', 'yes');
         if( appContainer == null ) {
             alert('App Error');
             return false;
