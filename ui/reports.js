@@ -16,6 +16,9 @@ function ciniki_fatt_reports() {
         '_c':{'label':'', 'type':'simplelist', 'list':{
             'businesses':{'label':'Attendance Report', 'fn':'M.ciniki_fatt_reports.attendance.open(\'M.ciniki_fatt_reports.menu.open();\');'},
             }},
+        '_d':{'label':'', 'type':'simplelist', 'list':{
+            'passes':{'label':'Passes Report', 'fn':'M.ciniki_fatt_reports.passes.open(\'M.ciniki_fatt_reports.menu.open();\');'},
+            }},
         };
     this.menu.open = function(cb) {
         this.refresh();
@@ -367,7 +370,7 @@ function ciniki_fatt_reports() {
         }
     }
     this.attendance.open = function(cb) {
-        M.api.getJSONCb('ciniki.fatt.attendanceReport', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.reportAttendance', {'business_id':M.curBusinessID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -379,6 +382,97 @@ function ciniki_fatt_reports() {
         });
     };
     this.attendance.addClose('Back');
+
+    //
+    // The passes report ui
+    //
+    this.passes = new M.panel('Passing Students', 'ciniki_fatt_reports', 'passes', 'mc', 'full', 'sectioned', 'ciniki.fatt.certs.passes');
+    this.passes.data = {};
+    this.passes.sections = {
+        '_years':{'label':'', 'type':'menutabs', 'year':'all', 'selected':'_all', 'tabs':{
+            }},
+        'years':{'label':'', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_fatt_reports.passes.sections._years.selected == '_all' ? 'yes' : 'no'); },
+            'sortable':'yes',
+            },
+        'months':{'label':'', 'type':'simplegrid', 'num_cols':14,
+            'visible':function() { return (M.ciniki_fatt_reports.passes.sections._years.selected != '_all' ? 'yes' : 'no'); },
+            'headerValues':['Course', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total'],
+            'sortable':'yes',
+            'sortTypes':['text', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number'],
+            'cellClasses':['', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 
+                'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', ],
+            },
+        };
+    this.passes.sectionData = function(s) { return this.data.courses; }
+    this.passes.cellValue = function(s, i, j, d) {
+        if( s == 'years' ) {
+            if( j == 0 ) {
+                return d.code;
+            }
+            if( j == (this.sections[s].num_cols - 1) ) {
+                if( d.num_passes == 0 ) { return ''; }
+                return d.num_passes;
+            }
+//            console.log(d);
+//            console.log(s + ',' + i + ':' + j);
+//            console.log(this.data.years[(j-1)]);
+            var y = this.data.years[(j-1)];
+            if( d.years != null && d.years[y] != null && d.years[y].num_passes != null ) {
+                if( d.years[y].num_passes == 0 ) { return ''; }
+                return d.years[y].num_passes;
+            }
+        }
+        else if( s == 'months' ) {
+            if( j == 0 ) {
+                return d.code;
+            }
+            var y = this.sections._years.year;
+            if( j == (this.sections[s].num_cols - 1) ) {
+                if( d.years != null && d.years[y] != null && d.years[y].num_passes > 0 ) { 
+                    return d.years[y].num_passes;
+                }
+            }
+            var m = j-1;
+            if( d.years != null && d.years[y] != null && d.years[y].months != null && d.years[y].months[(j-1)] != null && d.years[y].months[(j-1)].num_passes > 0 ) { 
+                return d.years[y].months[(j-1)].num_passes;
+            }
+        }
+        return '';
+    }
+    this.passes.switchTab = function(t) {
+        this.sections._years.selected = '_' + t;
+        this.sections._years.year = t;
+        this.refresh();
+        this.show();
+    }
+    this.passes.open = function(cb) {
+        M.api.getJSONCb('ciniki.fatt.reportPasses', {'business_id':M.curBusinessID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_reports.passes;
+            p.data = rsp;
+            p.sections._years.tabs = {'_all':{'label':'All', 'fn':'M.ciniki_fatt_reports.passes.switchTab("all");'}};
+            p.sections.years.num_cols = 1;
+            p.sections.years.headerValues = ['Course'];
+            p.sections.years.sortTypes = ['text'];
+            for(var i in rsp.years) {
+                p.sections._years.tabs['_' + rsp.years[i]] = {'label':rsp.years[i], 'fn':'M.ciniki_fatt_reports.passes.switchTab("' + rsp.years[i] + '");'};
+                p.sections.years.headerValues[p.sections.years.num_cols] = rsp.years[i];
+                p.sections.years.sortTypes[p.sections.years.num_cols] = 'number';
+                p.sections.years.num_cols++;
+            }
+            p.sections.years.headerValues[p.sections.years.num_cols] = 'Total';
+            p.sections.years.sortTypes[p.sections.years.num_cols] = 'number';
+            p.sections.years.num_cols++;
+
+            p.refresh();
+            p.show(cb);
+        });
+    };
+    this.passes.addClose('Back');
 
     //
     // Arguments:

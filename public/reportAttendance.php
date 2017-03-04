@@ -13,7 +13,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_attendanceReport($ciniki) {
+function ciniki_fatt_reportAttendance($ciniki) {
     //
     // Find all the required and optional arguments
     //
