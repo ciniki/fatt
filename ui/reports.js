@@ -400,7 +400,11 @@ function ciniki_fatt_reports() {
             'headerValues':['Course', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total'],
             'sortable':'yes',
             'sortTypes':['text', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number'],
+            'headerClasses':['', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 
+                'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', ],
             'cellClasses':['', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 
+                'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', ],
+            'footerClasses':['', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 
                 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', 'aligncenter', ],
             },
         };
@@ -414,10 +418,7 @@ function ciniki_fatt_reports() {
                 if( d.num_passes == 0 ) { return ''; }
                 return d.num_passes;
             }
-//            console.log(d);
-//            console.log(s + ',' + i + ':' + j);
-//            console.log(this.data.years[(j-1)]);
-            var y = this.data.years[(j-1)];
+            var y = this.years[(j-1)];
             if( d.years != null && d.years[y] != null && d.years[y].num_passes != null ) {
                 if( d.years[y].num_passes == 0 ) { return ''; }
                 return d.years[y].num_passes;
@@ -434,8 +435,33 @@ function ciniki_fatt_reports() {
                 }
             }
             var m = j-1;
-            if( d.years != null && d.years[y] != null && d.years[y].months != null && d.years[y].months[(j-1)] != null && d.years[y].months[(j-1)].num_passes > 0 ) { 
-                return d.years[y].months[(j-1)].num_passes;
+            if( d.years != null && d.years[y] != null && d.years[y].months != null && d.years[y].months[j] != null && d.years[y].months[j].num_passes > 0 ) { 
+                return d.years[y].months[j].num_passes;
+            }
+        }
+        return '';
+    }
+    this.passes.footerValue = function(s, i, d) {
+        if( s == 'years' ) {
+            if( i == 0 ) { return ''; }
+            if( i == (this.sections[s].num_cols - 1) ) {
+                return this.data.num_passes;
+            }
+            var y = this.years[(i-1)];
+            if( this.data.years[y] != null && this.data.years[y].num_passes != null ) {
+                return this.data.years[y].num_passes;
+            }
+        } 
+        else if( s == 'months' ) {
+            var y = this.sections._years.year;
+            if( i == 0 ) { return ''; }
+            if( i == (this.sections[s].num_cols - 1) ) {
+                return this.data.years[y].num_passes;
+            }
+            if( this.data.years[y] != null && this.data.years[y].months != null ) {
+                if( this.data.years[y].months[i] > 0 ) {
+                    return this.data.years[y].months[i];
+                }
             }
         }
         return '';
@@ -457,16 +483,23 @@ function ciniki_fatt_reports() {
             p.sections._years.tabs = {'_all':{'label':'All', 'fn':'M.ciniki_fatt_reports.passes.switchTab("all");'}};
             p.sections.years.num_cols = 1;
             p.sections.years.headerValues = ['Course'];
+            p.sections.years.headerClasses = [''];
             p.sections.years.sortTypes = ['text'];
+            p.years = [];
             for(var i in rsp.years) {
-                p.sections._years.tabs['_' + rsp.years[i]] = {'label':rsp.years[i], 'fn':'M.ciniki_fatt_reports.passes.switchTab("' + rsp.years[i] + '");'};
-                p.sections.years.headerValues[p.sections.years.num_cols] = rsp.years[i];
+                p.sections._years.tabs['_' + rsp.years[i].year] = {'label':rsp.years[i].year, 'fn':'M.ciniki_fatt_reports.passes.switchTab("' + rsp.years[i].year + '");'};
+                p.sections.years.headerValues[p.sections.years.num_cols] = rsp.years[i].year;
                 p.sections.years.sortTypes[p.sections.years.num_cols] = 'number';
+                p.sections.years.headerClasses[p.sections.years.num_cols] = 'aligncenter';
+                p.years.push(rsp.years[i].year);
                 p.sections.years.num_cols++;
             }
             p.sections.years.headerValues[p.sections.years.num_cols] = 'Total';
             p.sections.years.sortTypes[p.sections.years.num_cols] = 'number';
+            p.sections.years.headerClasses[p.sections.years.num_cols] = 'aligncenter';
             p.sections.years.num_cols++;
+            p.sections.years.cellClasses = p.sections.years.headerClasses;
+            p.sections.years.footerClasses = p.sections.years.headerClasses;
 
             p.refresh();
             p.show(cb);

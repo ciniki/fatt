@@ -68,32 +68,53 @@ function ciniki_fatt_reportPasses($ciniki) {
     }
 
     $years = array();
+    $num_passes = 0;
+    $courses = array();
     foreach($rc['courses'] as $cid => $course) {
-        $rc['courses'][$cid]['num_passes'] = 0;
+        $course['num_passes'] = 0;
         if( isset($course['years']) ) {
             foreach($course['years'] as $year => $y) {
                 if( $year == 0 ) {
                     unset($rc['courses'][$cid]['years'][$year]);
                     continue;
                 }
-                if( !in_array($year, $years) ) {
-                    $years[] = $year;
+                if( !isset($years[$year]) ) {
+                    $years[$year] = array('year'=>$year,
+                        'months'=>array(
+                            '1'=>0,
+                            '2'=>0,
+                            '3'=>0,
+                            '4'=>0,
+                            '5'=>0,
+                            '6'=>0,
+                            '7'=>0,
+                            '8'=>0,
+                            '9'=>0,
+                            '10'=>0,
+                            '11'=>0,
+                            '12'=>0,
+                            ),
+                        'num_passes'=>0,
+                        );
                 }
-                $rc['courses'][$cid]['years'][$year]['num_passes'] = 0;
+                $course['years'][$year]['num_passes'] = 0;
                 if( isset($y['months']) ) {
                     foreach($y['months'] as $mid => $m) {
-                        $rc['courses'][$cid]['years'][$year]['num_passes'] += $m['num_passes'];
+                        $course['years'][$year]['num_passes'] += $m['num_passes'];
+                        $years[$year]['months'][$mid] += $m['num_passes'];
                     }
                 }
-                $rc['courses'][$cid]['num_passes'] += $rc['courses'][$cid]['years'][$year]['num_passes'];
+                $years[$year]['num_passes'] += $course['years'][$year]['num_passes'];
+                $course['num_passes'] += $course['years'][$year]['num_passes'];
+                $num_passes += $course['years'][$year]['num_passes'];
             }
         }
-        if( $rc['courses'][$cid]['num_passes'] == 0 ) {
-            unset($rc['courses'][$cid]);
+        if( $course['num_passes'] == 0 ) {
+            continue;
         }
+        $courses[] = $course;
     }
-    rsort($years);
 
-    return array('stat'=>'ok', 'courses'=>$rc['courses'], 'years'=>$years);
+    return array('stat'=>'ok', 'courses'=>$courses, 'years'=>$years, 'num_passes'=>$num_passes);
 }
 ?>
