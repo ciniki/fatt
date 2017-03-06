@@ -279,17 +279,17 @@ function ciniki_fatt_aeds() {
         'expirations':{'label':'Expiration Dates', 
             'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
             'fields':{
-                'device_expiration':{'label':'Device Warranty', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x01)>0?'yes':'no';},'type':'date'},
+                'device_expiration':{'label':'Device Warranty', 'visible':'no', 'type':'date'},
                 'primary_battery_expiration':{'label':'Primary Battery', 'type':'date'},
-                'secondary_battery_expiration':{'label':'Secondary Battery', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x04)>0?'yes':'no';}, 'type':'date'},
+                'secondary_battery_expiration':{'label':'Secondary Battery', 'visible':'no', 'type':'date'},
             }},
         'pads':{'label':'', 
             'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
             'fields':{
-                'primary_adult_pads_expiration':{'label':'Primary Adult Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x10)>0?'yes':'no';}, 'type':'date'},
-                'secondary_adult_pads_expiration':{'label':'Secondary Adult Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x20)>0?'yes':'no';}, 'type':'date'},
-                'primary_child_pads_expiration':{'label':'Primary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0100)>0?'yes':'no';}, 'type':'date'},
-                'secondary_child_pads_expiration':{'label':'Secondary Child Pads', 'visible':function() {return (M.ciniki_fatt_aeds.edit.data.flags&0x0200)>0?'yes':'no';}, 'type':'date'},
+                'primary_adult_pads_expiration':{'label':'Primary Adult Pads', 'visible':'no', 'type':'date'},
+                'secondary_adult_pads_expiration':{'label':'Secondary Adult Pads', 'visible':'no', 'type':'date'},
+                'primary_child_pads_expiration':{'label':'Primary Child Pads', 'visible':'no', 'type':'date'},
+                'secondary_child_pads_expiration':{'label':'Secondary Child Pads', 'visible':'no', 'type':'date'},
             }},
         'images':{'label':'Additional Images', 'type':'simplethumbs',
             'visible':function() { return (M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'images' ? 'yes':'hidden');},
@@ -406,7 +406,14 @@ function ciniki_fatt_aeds() {
                 return false;
             }
             var p = M.ciniki_fatt_aeds.edit;
+            p.reset();
             p.data = rsp.aed;
+            p.sections.expirations.fields.device_expiration.visible = ((p.data.flags&0x01) > 0 ? 'yes' : 'no');
+            p.sections.expirations.fields.secondary_battery_expiration.visible = ((p.data.flags&0x04) > 0 ? 'yes' : 'no');
+            p.sections.pads.fields.primary_adult_pads_expiration.visible = ((p.data.flags&0x10) > 0 ? 'yes' : 'no');
+            p.sections.pads.fields.secondary_adult_pads_expiration.visible = ((p.data.flags&0x20) > 0 ? 'yes' : 'no');
+            p.sections.pads.fields.primary_child_pads_expiration.visible = ((p.data.flags&0x0100) > 0 ? 'yes' : 'no');
+            p.sections.pads.fields.secondary_child_pads_expiration.visible = ((p.data.flags&0x0200) > 0 ? 'yes' : 'no');
             p.customer_id = rsp.aed.customer_id;
             p.refresh();
             p.show(cb);
