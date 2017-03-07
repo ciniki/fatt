@@ -112,6 +112,74 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             }
             continue;
         }
+
+        //
+        // Check if a new cert was issued
+        //
+        $strsql = "SELECT COUNT(certs.id) AS num_certs "
+            . "FROM ciniki_fatt_cert_customers AS certs "
+            . "WHERE certs.customer_id = '" . ciniki_core_dbQuote($ciniki, $cc['customer_id']) . "' "
+            . "AND certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' "
+            . "AND date_received > '" . ciniki_core_dbQuote($ciniki, $cc['date_received']) . "' "
+            . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'cert');
+        if( $rc['stat'] != 'ok' ) {
+            error_log("CRON-ERR: Unable to check for new certs on cert expiration reminder for customer " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+            continue;
+        }
+        if( isset($rc['cert']['num_certs']) && $rc['cert']['num_certs'] > 0 ) {
+            //
+            // Stop future emails, and skip this email reminder.
+            //
+            if( ($cc['flags']&0x02) == 0 ) {
+                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
+                    array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
+                if( $rc['stat'] != 'ok' ) {
+                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+                    continue;
+                }
+            }
+            continue;
+        }
+
+        //
+        // Check if the customer has registered or passed another course after this expiration date
+        //
+        $strsql = "SELECT COUNT(regs.id) AS num_reg "
+            . "FROM ciniki_fatt_offering_registrations AS regs, ciniki_fatt_offerings AS offerings, ciniki_fatt_course_certs AS certs "
+            . "WHERE regs.customer_id = '" . ciniki_core_dbQuote($ciniki, $cc['customer_id']) . "' "
+            . "AND regs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND regs.status < 30 "
+            . "AND regs.offering_id = offerings.id "
+            . "AND offerings.start_date > UTC_TIMESTAMP() "  
+            . "AND offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND offerings.course_id = certs.course_id "
+            . "AND certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' "
+            . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'reg');
+        if( $rc['stat'] != 'ok' ) {
+            error_log("CRON-ERR: Unable to check registrations for cert expiration reminder for customer " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+            continue;
+        }
+        if( isset($rc['reg']['num_reg']) && $rc['reg']['num_reg'] > 0 ) {
+            //
+            // Stop future emails, and skip this email reminder.
+            //
+            if( ($cc['flags']&0x02) == 0 ) {
+                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
+                    array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
+                if( $rc['stat'] != 'ok' ) {
+                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+                    continue;
+                }
+            }
+            continue;
+        }
+
+
+
         //
         // Double check the flags setting to make sure we are still to send to this customer
         //

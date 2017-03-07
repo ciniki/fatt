@@ -546,6 +546,7 @@ function ciniki_fatt_reports() {
         var flags = {};
         if( (M.curBusiness.modules['ciniki.fatt'].flags&0x20) > 0 ) { 
             flags['1'] = {'name':'Expiry Reminders'};
+            flags['2'] = {'name':'Emails Finished'};
         }
         this.certcustomer.sections.cert.fields.flags.flags = flags;
 
