@@ -145,8 +145,8 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
         if( $pdf->getStringHeight($w[0], $aed['display_name'], false, true, '', 1) > $lh ) {
             $lh = $pdf->getStringHeight($w[0], $aed['display_name'], false, true, '', 1);
         }
-        if( $pdf->getStringHeight($w[1], 'Make: ' . $aed['make'] . "\nModel: " . $aed['model'], false, true, '', 1) > $lh ) {
-            $lh = $pdf->getStringHeight($w[1], 'Make: ' . $aed['make'] . "\nModel: " . $aed['model'], false, true, '', 1);
+        if( $pdf->getStringHeight($w[1], $aed['make'] . ($aed['model'] != '' ? "\n" . $aed['model'] : ''), false, true, '', 1) > $lh ) {
+            $lh = $pdf->getStringHeight($w[1], $aed['make'] . ($aed['model'] != '' ? "\n" . $aed['model'] : ''), false, true, '', 1);
         }
         if( $pdf->getStringHeight($w[2], $aed['serial'], false, true, '', 1) > $lh ) {
             $lh = $pdf->getStringHeight($w[2], $aed['serial'], false, true, '', 1);
@@ -170,28 +170,27 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
         }
 
         $pdf->writeHTMLCell($w[0], $lh, '', '', $aed['display_name'], 1, 0, $fill, true);
-        $pdf->writeHTMLCell($w[1], $lh, '', '', '<b>Make</b>: ' . $aed['make'] . "<br/><b>Model</b>: " . $aed['model'], 1, 0, $fill, true);
+        $pdf->writeHTMLCell($w[1], $lh, '', '', $aed['make'] . ($aed['model'] != '' ? "<br/>" . $aed['model'] : ''), 1, 0, $fill, true);
         $pdf->writeHTMLCell($w[2], $lh, '', '', $aed['serial'], 1, 0, $fill, true);
         $pdf->writeHTMLCell($w[3], $lh, '', '', $aed['device_expiration_text'], 1, 0, $fill, true, 'L');
         $pdf->writeHTMLCell($w[4], $lh, '', '', $aed['primary_battery_expiration_text'], 1, 0, $fill, true, 'L');
         $pdf->writeHTMLCell($w[5], $lh, '', '', $aed['secondary_battery_expiration_text'], 1, 0, $fill, true, 'L');
         $adult = '';
         if( $aed['primary_adult_pads_expiration_text'] != '' ) {
-            $adult .= '<b>A</b>: ' . $aed['primary_adult_pads_expiration_text'] . "<br/>";
+            $adult .= '<b>A</b>: ' . $aed['primary_adult_pads_expiration_text'];
         }
         if( $aed['secondary_adult_pads_expiration_text'] != '' ) {
-            $adult .= '<b>B</b>: ' . $aed['secondary_adult_pads_expiration_text'];
+            $adult .= ($adult != '' ? '<br/>' : '') . '<b>B</b>: ' . $aed['secondary_adult_pads_expiration_text'];
         }
         $pdf->writeHTMLCell($w[6], $lh, '', '', $adult, 1, 0, $fill, true, 'L');
         $child = '';
         if( $aed['primary_child_pads_expiration_text'] != '' ) {
-            $child .= '<b>A</b>: ' . $aed['primary_child_pads_expiration_text'] . "<br/>";
+            $child .= '<b>A</b>: ' . $aed['primary_child_pads_expiration_text'];
         }
         if( $aed['secondary_child_pads_expiration_text'] != '' ) {
-            $child .= '<b>B</b>: ' . $aed['secondary_child_pads_expiration_text'];
+            $child .= ($child != '' ? '<br/>' : '') . '<b>B</b>: ' . $aed['secondary_child_pads_expiration_text'];
         }
-        $pdf->writeHTMLCell($w[7], $lh, '', '', $child, 1, 0, $fill, true, 'L');
-        $pdf->Ln();
+        $pdf->writeHTMLCell($w[7], $lh, '', '', $child, 1, 1, $fill, true, 'L');
 //        $pdf->writeHTMLCell($w[6], $lh, '', '', $aed['primary_adult_pads_expiration_text'], 1, 0, $fill, true, 'C');
 //        $pdf->writeHTMLCell($w[7], $lh, '', '', $aed['secondary_adult_pads_expiration_text'], 1, 0, $fill, true, 'C');
 //        $pdf->writeHTMLCell($w[8], $lh, '', '', $aed['primary_child_pads_expiration_text'], 1, 0, $fill, true, 'C');
