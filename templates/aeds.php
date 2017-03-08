@@ -116,7 +116,6 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
     $pdf->SetCellPadding(2);
 
     // add a page
-    $pdf->SetFillColor(246);
     $pdf->SetTextColor(0);
     $pdf->SetDrawColor(128);
     $pdf->SetLineWidth(0.15);
@@ -126,6 +125,7 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
     // Add the information to the first page
     //
     $pdf->SetFont('helvetica', 'B', 8);
+    $pdf->SetFillColor(246);
     $w = array(50, 20, 20, 22, 22, 22, 22, 22, 22, 22);
     $pdf->Cell($w[0], 6, 'Company', 1, 0, 'L', 1);
     $pdf->Cell($w[1], 6, 'Make', 1, 0, 'L', 1);
@@ -141,7 +141,6 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
 
     $pdf->SetFillColor(255);
     $pdf->SetFont('', '', 8);
-    $pdf->SetCellPaddings(2, 2, 2, 2);
     $fill = 0;
     foreach($aeds as $aed) {
         $lh = 6;
@@ -153,6 +152,26 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
         }
         if( $pdf->getStringHeight($w[2], $aed['model'], false, true, '', 1) > $lh ) {
             $lh = $pdf->getStringHeight($w[2], $aed['model'], false, true, '', 1);
+        }
+
+        if( $pdf->GetY() > (190 - $lh) ) {
+            $pdf->AddPage();
+            $pdf->SetFont('helvetica', 'B', 8);
+            $pdf->SetFillColor(246);
+            $w = array(50, 20, 20, 22, 22, 22, 22, 22, 22, 22);
+            $pdf->Cell($w[0], 6, 'Company', 1, 0, 'L', 1);
+            $pdf->Cell($w[1], 6, 'Make', 1, 0, 'L', 1);
+            $pdf->Cell($w[2], 6, 'Model', 1, 0, 'L', 1);
+            $pdf->Cell($w[3], 6, 'Device', 1, 0, 'L', 1);
+            $pdf->Cell($w[4], 6, 'Battery (A)', 1, 0, 'L', 1);
+            $pdf->Cell($w[5], 6, 'Battery (B)', 1, 0, 'L', 1);
+            $pdf->Cell($w[6], 6, 'Adult (A)', 1, 0, 'L', 1);
+            $pdf->Cell($w[7], 6, 'Adult (B)', 1, 0, 'L', 1);
+            $pdf->Cell($w[8], 6, 'Child (A)', 1, 0, 'L', 1);
+            $pdf->Cell($w[9], 6, 'Child (B)', 1, 0, 'L', 1);
+            $pdf->Ln();
+            $pdf->SetFillColor(255);
+            $pdf->SetFont('', '', 8);
         }
 
         $pdf->writeHTMLCell($w[0], $lh, '', '', $aed['display_name'], 1, 0, $fill, true);
