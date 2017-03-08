@@ -261,8 +261,10 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         $col = 0;
         $row = 1;
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Company', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Location', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Make', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Model', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Serial', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Device', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Battery (A)', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Battery (B)', false);
@@ -271,14 +273,16 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Child Pads (A)', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Child Pads (B)', false);
 
-        $objPHPExcelWorksheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $objPHPExcelWorksheet->getStyle('A1:L1')->getFont()->setBold(true);
       
         $row++;
         foreach($aeds as $aed) {
             $col = 0;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['display_name'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['location'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['make'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['model'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['serial'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['device_expiration_text'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['primary_battery_expiration_text'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['secondary_battery_expiration_text'], false);
@@ -299,6 +303,8 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         $objPHPExcelWorksheet->getColumnDimension('H')->setAutoSize(true);
         $objPHPExcelWorksheet->getColumnDimension('I')->setAutoSize(true);
         $objPHPExcelWorksheet->getColumnDimension('J')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('K')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('L')->setAutoSize(true);
         $objPHPExcelWorksheet->freezePane('A2');
 
         $filename = 'AEDs';

@@ -29,12 +29,12 @@ function ciniki_fatt_aeds() {
             'cellClasses':['', ''],
             'noData':'No companies/owners',
             },
-        'expirations':{'label':'Expirations', 'type':'simplegrid', 'num_cols':10,
+        'expirations':{'label':'Expirations', 'type':'simplegrid', 'num_cols':11,
             'visible':function() { return M.ciniki_fatt_aeds.menu.sections.tabs.selected=='expirations'?'yes':'no'; },
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'text', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber'],
-            'headerValues':['Company', 'Make', 'Model', 'Device', 'Battery(A)', 'Battery(B)', 'Adult(A)', 'Adult(B)', 'Child(A)', 'Child(B)'],
-            'cellClasses':['', '', '', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline'],
+            'sortTypes':['text', 'text', 'text', 'text', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber', 'altnumber'],
+            'headerValues':['Company', 'Make', 'Model', 'Serial', 'Device', 'Battery(A)', 'Battery(B)', 'Adult(A)', 'Adult(B)', 'Child(A)', 'Child(B)'],
+            'cellClasses':['', '', '', '', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline', 'nobreak multiline'],
             'noData':'No devices',
             },
     };
@@ -58,19 +58,20 @@ function ciniki_fatt_aeds() {
                 case 0: return d.display_name;
                 case 1: return d.make;
                 case 2: return d.model;
-                case 3: return '<span class="maintext">' + d.device_expiration_text + '</span>'
+                case 3: return d.serial;
+                case 4: return '<span class="maintext">' + d.device_expiration_text + '</span>'
                     + '<span class="subtext">' + d.device_expiration_days_text + '</span>';
-                case 4: return '<span class="maintext">' + d.primary_battery_expiration_text + '</span>'
+                case 5: return '<span class="maintext">' + d.primary_battery_expiration_text + '</span>'
                     + '<span class="subtext">' + d.primary_battery_expiration_days_text + '</span>';
-                case 5: return '<span class="maintext">' + d.secondary_battery_expiration_text + '</span>'
+                case 6: return '<span class="maintext">' + d.secondary_battery_expiration_text + '</span>'
                     + '<span class="subtext">' + d.secondary_battery_expiration_days_text + '</span>';
-                case 6: return '<span class="maintext">' + d.primary_adult_pads_expiration_text + '</span>'
+                case 7: return '<span class="maintext">' + d.primary_adult_pads_expiration_text + '</span>'
                     + '<span class="subtext">' + d.primary_adult_pads_expiration_days_text + '</span>';
-                case 7: return '<span class="maintext">' + d.secondary_adult_pads_expiration_text + '</span>'
+                case 9: return '<span class="maintext">' + d.secondary_adult_pads_expiration_text + '</span>'
                     + '<span class="subtext">' + d.secondary_adult_pads_expiration_days_text + '</span>';
-                case 6: return '<span class="maintext">' + d.primary_child_pads_expiration_text + '</span>'
+                case 9: return '<span class="maintext">' + d.primary_child_pads_expiration_text + '</span>'
                     + '<span class="subtext">' + d.primary_child_pads_expiration_days_text + '</span>';
-                case 7: return '<span class="maintext">' + d.secondary_child_pads_expiration_text + '</span>'
+                case 10: return '<span class="maintext">' + d.secondary_child_pads_expiration_text + '</span>'
                     + '<span class="subtext">' + d.secondary_child_pads_expiration_days_text + '</span>';
             }
         }
@@ -87,13 +88,14 @@ function ciniki_fatt_aeds() {
                 case 0: return d.display_name;
                 case 1: return d.make;
                 case 2: return d.model;
-                case 3: return d.device_expiration_days;
-                case 4: return d.primary_battery_expiration_days;
-                case 5: return d.secondary_battery_expiration_days;
-                case 6: return d.primary_adult_pads_expiration;
-                case 7: return d.secondary_adult_pads_expiration;
-                case 8: return d.primary_child_pads_expiration;
-                case 9: return d.secondary_child_pads_expiration;
+                case 3: return d.serial;
+                case 4: return d.device_expiration_days;
+                case 5: return d.primary_battery_expiration_days;
+                case 6: return d.secondary_battery_expiration_days;
+                case 7: return d.primary_adult_pads_expiration;
+                case 8: return d.secondary_adult_pads_expiration;
+                case 9: return d.primary_child_pads_expiration;
+                case 10: return d.secondary_child_pads_expiration;
             }
         }
     };

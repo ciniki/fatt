@@ -126,10 +126,10 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
     //
     $pdf->SetFont('helvetica', 'B', 8);
     $pdf->SetFillColor(246);
-    $w = array(50, 20, 20, 22, 22, 22, 22, 22, 22, 22);
+    $w = array(40, 30, 20, 22, 22, 22, 22, 22, 22, 22);
     $pdf->Cell($w[0], 6, 'Company', 1, 0, 'L', 1);
-    $pdf->Cell($w[1], 6, 'Make', 1, 0, 'L', 1);
-    $pdf->Cell($w[2], 6, 'Model', 1, 0, 'L', 1);
+    $pdf->Cell($w[1], 6, 'Make/Model', 1, 0, 'L', 1);
+    $pdf->Cell($w[2], 6, 'Serial', 1, 0, 'L', 1);
     $pdf->Cell($w[3], 6, 'Device', 1, 0, 'L', 1);
     $pdf->Cell($w[4], 6, 'Battery (A)', 1, 0, 'L', 1);
     $pdf->Cell($w[5], 6, 'Battery (B)', 1, 0, 'L', 1);
@@ -147,11 +147,11 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
         if( $pdf->getStringHeight($w[0], $aed['display_name'], false, true, '', 1) > $lh ) {
             $lh = $pdf->getStringHeight($w[0], $aed['display_name'], false, true, '', 1);
         }
-        if( $pdf->getStringHeight($w[1], $aed['make'], false, true, '', 1) > $lh ) {
-            $lh = $pdf->getStringHeight($w[1], $aed['make'], false, true, '', 1);
+        if( $pdf->getStringHeight($w[1], $aed['make'] . ' / ' . $aed['model'], false, true, '', 1) > $lh ) {
+            $lh = $pdf->getStringHeight($w[1], $aed['make'] . ' / ' . $aed['model'], false, true, '', 1);
         }
-        if( $pdf->getStringHeight($w[2], $aed['model'], false, true, '', 1) > $lh ) {
-            $lh = $pdf->getStringHeight($w[2], $aed['model'], false, true, '', 1);
+        if( $pdf->getStringHeight($w[2], $aed['serial'], false, true, '', 1) > $lh ) {
+            $lh = $pdf->getStringHeight($w[2], $aed['serial'], false, true, '', 1);
         }
 
         if( $pdf->GetY() > (190 - $lh) ) {
@@ -160,8 +160,8 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
             $pdf->SetFillColor(246);
             $w = array(50, 20, 20, 22, 22, 22, 22, 22, 22, 22);
             $pdf->Cell($w[0], 6, 'Company', 1, 0, 'L', 1);
-            $pdf->Cell($w[1], 6, 'Make', 1, 0, 'L', 1);
-            $pdf->Cell($w[2], 6, 'Model', 1, 0, 'L', 1);
+            $pdf->Cell($w[1], 6, 'Make/Model', 1, 0, 'L', 1);
+            $pdf->Cell($w[2], 6, 'Serial', 1, 0, 'L', 1);
             $pdf->Cell($w[3], 6, 'Device', 1, 0, 'L', 1);
             $pdf->Cell($w[4], 6, 'Battery (A)', 1, 0, 'L', 1);
             $pdf->Cell($w[5], 6, 'Battery (B)', 1, 0, 'L', 1);
@@ -175,8 +175,8 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
         }
 
         $pdf->writeHTMLCell($w[0], $lh, '', '', $aed['display_name'], 1, 0, $fill, true);
-        $pdf->writeHTMLCell($w[1], $lh, '', '', $aed['make'], 1, 0, $fill, true);
-        $pdf->writeHTMLCell($w[2], $lh, '', '', $aed['model'], 1, 0, $fill, true);
+        $pdf->writeHTMLCell($w[1], $lh, '', '', $aed['make'] . ' / ' . $aed['model'], 1, 0, $fill, true);
+        $pdf->writeHTMLCell($w[2], $lh, '', '', $aed['serial'], 1, 0, $fill, true);
         $pdf->writeHTMLCell($w[3], $lh, '', '', $aed['device_expiration_text'], 1, 0, $fill, true, 'C');
         $pdf->writeHTMLCell($w[4], $lh, '', '', $aed['primary_battery_expiration_text'], 1, 0, $fill, true, 'C');
         $pdf->writeHTMLCell($w[5], $lh, '', '', $aed['secondary_battery_expiration_text'], 1, 0, $fill, true, 'C');
