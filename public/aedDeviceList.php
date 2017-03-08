@@ -21,6 +21,7 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
+        'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -36,8 +37,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         return $rc;
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
-    $date_format = ciniki_users_dateFormat($ciniki, 'mysql');
+//    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+//    $date_format = ciniki_users_dateFormat($ciniki, 'mysql');
+    $date_format = "%b %e, %Y";
 
     //
     // Load business settings
@@ -249,6 +251,78 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         }
         $rsp['customer'] = $rc['customer'];
         $rsp['customer_details'] = $rc['details'];
+    }
+
+    if( isset($args['output']) && $args['output'] == 'excel' ) {
+        require($ciniki['config']['core']['lib_dir'] . '/PHPExcel/PHPExcel.php');
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcelWorksheet = $objPHPExcel->setActiveSheetIndex(0);
+
+        $col = 0;
+        $row = 1;
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Company', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Make', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Model', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Device', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Battery (A)', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Battery (B)', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Adult Pads (A)', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Adult Pads (B)', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Child Pads (A)', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Child Pads (B)', false);
+
+        $objPHPExcelWorksheet->getStyle('A1:J1')->getFont()->setBold(true);
+      
+        $row++;
+        foreach($aeds as $aed) {
+            $col = 0;
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['display_name'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['make'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['model'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['device_expiration_text'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['primary_battery_expiration_text'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['secondary_battery_expiration_text'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['primary_adult_pads_expiration_text'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['secondary_adult_pads_expiration_text'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['primary_child_pads_expiration_text'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $aed['secondary_child_pads_expiration_text'], false);
+            $row++;
+        }
+
+        $objPHPExcelWorksheet->getColumnDimension('A')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('B')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('C')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('D')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('E')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('F')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('G')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('H')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('I')->setAutoSize(true);
+        $objPHPExcelWorksheet->getColumnDimension('J')->setAutoSize(true);
+        $objPHPExcelWorksheet->freezePane('A2');
+
+        $filename = 'AEDs';
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
+        header('Cache-Control: max-age=0');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');
+    }
+
+    if( isset($args['output']) && $args['output'] == 'pdf' ) {
+        
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'templates', 'aeds');
+        $rc = ciniki_fatt_templates_aeds($ciniki, $args['business_id'], $aeds);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'D');
+            return array('stat'=>'exit');
+        }
     }
     
     return $rsp;

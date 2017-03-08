@@ -151,6 +151,7 @@ function ciniki_fatt_aeds() {
         }
     };
     this.menu.addButton('add', 'Add', 'M.ciniki_fatt_aeds.edit.addAED(\'M.ciniki_fatt_aeds.menu.open();\', 0);');
+    this.menu.addButton('tools', 'Tools', 'M.ciniki_fatt_aeds.tools.open(\'M.ciniki_fatt_aeds.menu.open();\');');
     this.menu.addClose('Back');
 
     //
@@ -659,6 +660,28 @@ function ciniki_fatt_aeds() {
     };
     this.aednote.addButton('save', 'Save', 'M.ciniki_fatt_aeds.aednote.save();');
     this.aednote.addClose('Cancel');
+
+    //
+    // The tools panel
+    //
+    this.tools = new M.panel('Tools', 'ciniki_fatt_aeds', 'tools', 'mc', 'narrow', 'sectioned', 'ciniki.fatt.aeds.tools');
+    this.tools.sections = {  
+        '_':{'label':'', 'list':{
+            'excel':{'label':'Export AEDs to Excel', 'fn':'M.ciniki_fatt_aeds.tools.downloadExcel();'},
+            'pdf':{'label':'AED PDF Report', 'fn':'M.ciniki_fatt_aeds.tools.downloadPDF();'},
+            }},
+    };
+    this.tools.open = function(cb) {
+        this.refresh();
+        this.show(cb);
+    }
+    this.tools.downloadExcel = function() {
+        M.api.openFile('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID, 'output':'excel'});
+    }
+    this.tools.downloadPDF = function() {
+        M.api.openFile('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID, 'output':'pdf'});
+    }
+    this.tools.addClose('Back');
 
     this.start = function(cb, appPrefix, aG) {
         args = {};
