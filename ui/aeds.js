@@ -259,8 +259,8 @@ function ciniki_fatt_aeds() {
             'location':{'label':'Location', 'type':'text'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '40':'Out for service', '60':'Deleted'}},
 //              'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}, '5':{'name':'Online Registrations'}}},
-            'make':{'label':'Make', 'type':'text'},
-            'model':{'label':'Model', 'type':'text'},
+            'make':{'label':'Make', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
+            'model':{'label':'Model', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
             'serial':{'label':'Serial', 'type':'text'},
             'flags1':{'label':'Options', 'type':'flagspiece', 'field':'flags', 'mask':0x3000, 'flags':{'13':{'name':'Wall Mount'}, '14':{'name':'Alarmed Cabinet'}}},
             }},
@@ -320,6 +320,26 @@ function ciniki_fatt_aeds() {
     this.edit.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.fatt.aedHistory', 'args':{'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'field':i}};
     };
+    this.edit.liveSearchCb = function(s, i, value) {
+        M.api.getJSONBgCb('ciniki.fatt.aedFieldSearch', {'business_id':M.curBusinessID, 'field':i, 'start_needle':value},
+            function(rsp) {
+                M.ciniki_fatt_aeds.edit.liveSearchShow(s, i, M.gE(M.ciniki_fatt_aeds.edit.panelUID + '_' + i), rsp.results);
+            });
+    }
+    this.edit.liveSearchResultValue = function(s, f, i, j, d) {
+        if( f == 'make' ) { return d.make + '/' + d.model; }
+        return d[f];
+    }
+    this.edit.liveSearchResultRowFn = function(s, f, i, j, d) {
+        return 'M.ciniki_fatt_aeds.edit.updateField(\'' + s + '\',\'' + f + '\',\'' + M.eU(d.make) + '\',\'' + M.eU(d.model) + '\');';
+    }
+    this.edit.updateField = function(s, f, make, model) {
+        if( f == 'make' ) {
+            this.setFieldValue('make', M.dU(make));
+        }
+        this.setFieldValue('model', M.dU(model));
+        this.removeLiveSearch(s, f);
+    }
     this.edit.cellValue = function(s, i, j, d) {
         if( s == 'notes' ) {
             return '<span class="maintext">' + d.note_date + '</span><span class="subtext">' + d.content + '</span>';
