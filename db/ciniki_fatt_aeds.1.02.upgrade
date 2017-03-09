@@ -1,0 +1,5 @@
+#
+# Update column size for flags
+#
+ALTER TABLE ciniki_fatt_aeds MODIFY COLUMN flags mediumint unsigned not null;
+ALTER TABLE ciniki_fatt_aeds COMMENT='v1.02';

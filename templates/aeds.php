@@ -126,7 +126,7 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
     //
     $pdf->SetFont('helvetica', 'B', 8);
     $pdf->SetFillColor(246);
-    $w = array(56, 45, 25, 22, 22, 22, 25, 25);
+    $w = array(56, 44, 24, 22, 22, 22, 26, 26);
     $pdf->Cell($w[0], 6, 'Company', 1, 0, 'L', 1);
     $pdf->Cell($w[1], 6, 'Make/Model', 1, 0, 'L', 1);
     $pdf->Cell($w[2], 6, 'Serial', 1, 0, 'L', 1);

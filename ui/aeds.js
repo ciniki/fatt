@@ -269,6 +269,13 @@ function ciniki_fatt_aeds() {
             'images':{'label':'Images', 'fn':'M.ciniki_fatt_aeds.edit.switchTab("images");'},
             'notes':{'label':'Notes', 'fn':'M.ciniki_fatt_aeds.edit.switchTab("notes");'},
             }},
+        'warranties':{'label':'Warranty', 
+            'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'flags_17':{'label':'Device', 'type':'flagtoggle', 'bit':0x010000, 'field':'flags', 'default':'no'},
+                'flags_18':{'label':'Batteries', 'type':'flagtoggle', 'bit':0x020000, 'field':'flags', 'default':'no'},
+                'flags_19':{'label':'Pads', 'type':'flagtoggle', 'bit':0x040000, 'field':'flags', 'default':'no'},
+            }},
         'options':{'label':'Tracking Options', 
             'visible':function() { return M.ciniki_fatt_aeds.edit.sections._tabs.selected == 'expirations' ? 'yes' : 'hidden'; },
             'fields':{

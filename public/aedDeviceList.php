@@ -118,6 +118,19 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     if( isset($rc['aeds']) ) {
         $aeds = $rc['aeds'];
         foreach($aeds as $aid => $aed) {
+            $warranty_device = ($aed['flags']&0x010000) > 0 ? '*' : '';
+            $warranty_batteries = ($aed['flags']&0x020000) > 0 ? '*' : '';
+            $warranty_pads = ($aed['flags']&0x040000) > 0 ? '*' : '';
+            $aeds[$aid]['device_expiration_text'] = ($aeds[$aid]['device_expiration_text'] != '' ? $warranty_device . $aeds[$aid]['device_expiration_text'] : '');
+            $aeds[$aid]['primary_battery_expiration_text'] = ($aeds[$aid]['primary_battery_expiration_text'] != '' ? $warranty_batteries . $aeds[$aid]['primary_battery_expiration_text'] : '');
+            $aeds[$aid]['secondary_battery_expiration_text'] = ($aeds[$aid]['secondary_battery_expiration_text'] != '' ? $warranty_batteries . $aeds[$aid]['secondary_battery_expiration_text'] : '');
+            $aeds[$aid]['primary_adult_pads_expiration_text'] = ($aeds[$aid]['primary_adult_pads_expiration_text'] != '' ? $warranty_pads . $aeds[$aid]['primary_adult_pads_expiration_text'] : '');
+            $aeds[$aid]['secondary_adult_pads_expiration_text'] = ($aeds[$aid]['secondary_adult_pads_expiration_text'] != '' ? $warranty_pads . $aeds[$aid]['secondary_adult_pads_expiration_text'] : '');
+            $aeds[$aid]['primary_child_pads_expiration_text'] = ($aeds[$aid]['primary_child_pads_expiration_text'] != '' ? $warranty_pads . $aeds[$aid]['primary_child_pads_expiration_text'] : '');
+            $aeds[$aid]['secondary_child_pads_expiration_text'] = ($aeds[$aid]['secondary_child_pads_expiration_text'] != '' ? $warranty_pads . $aeds[$aid]['secondary_child_pads_expiration_text'] : '');
+            $aeds[$aid]['warranty_device'] = $warranty_device;
+            $aeds[$aid]['warranty_batteries'] = $warranty_batteries;
+            $aeds[$aid]['warranty_pads'] = $warranty_pads;
             $aeds[$aid]['alert_level'] = 'green';       // Default to everything ok
             $aeds[$aid]['expiring_pieces'] = '';
             $lowest_expiration = 999999;                    // Number of days until the first piece of equipment expires
@@ -131,7 +144,7 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             if( ($aed['flags']&0x01) == 0x01 ) {
                 if( $aed['device_expiration_days'] <= $lowest_expiration ) {
                     if( strstr($aeds[$aid]['expiring_pieces'], 'device') === false ) {
-                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'device';
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . $warranty_device . 'device';
                     }
                     $lowest_expiration = $aed['device_expiration_days'];
                 }
@@ -139,9 +152,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             }
             if( $aed['primary_battery_expiration_days'] <= $lowest_expiration ) {
                 if( $aed['primary_battery_expiration_days'] < $lowest_expiration ) {
-                    $aeds[$aid]['expiring_pieces'] = 'battery';
+                    $aeds[$aid]['expiring_pieces'] = $warranty_batteries . 'battery';
                 } elseif( strstr($aeds[$aid]['expiring_pieces'], 'battery') === false ) {
-                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'battery';
+                    $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . $warranty_batteries . 'battery';
                 }
                 $lowest_expiration = $aed['primary_battery_expiration_days'];
             }
@@ -149,9 +162,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             if( ($aed['flags']&0x04) == 0x04 ) {
                 if( $aed['secondary_battery_expiration_days'] <= $lowest_expiration ) {
                     if( $aed['secondary_battery_expiration_days'] < $lowest_expiration ) {
-                        $aeds[$aid]['expiring_pieces'] = 'battery';
+                        $aeds[$aid]['expiring_pieces'] = $warranty_batteries . 'battery';
                     } elseif( strstr($aeds[$aid]['expiring_pieces'], 'batter') === false ) {
-                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'battery';
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . $warranty_batteries . 'battery';
                     } else {
                         $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . str_replace($aeds[$aid]['expiring_pieces'], 'batteries', 'battery');
                     }
@@ -162,9 +175,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             if( ($aed['flags']&0x10) == 0x10 ) {
                 if( $aed['primary_adult_pads_expiration_days'] <= $lowest_expiration ) {
                     if( $aed['primary_adult_pads_expiration_days'] < $lowest_expiration ) {
-                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                        $aeds[$aid]['expiring_pieces'] = $warranty_pads . 'pads';
                     } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . $warranty_pads . 'pads';
                     }
                     $lowest_expiration = $aed['primary_adult_pads_expiration_days'];
                 }
@@ -173,9 +186,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             if( ($aed['flags']&0x20) == 0x20 ) {
                 if( $aed['secondary_adult_pads_expiration_days'] <= $lowest_expiration ) {
                     if( $aed['secondary_adult_pads_expiration_days'] < $lowest_expiration ) {
-                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                        $aeds[$aid]['expiring_pieces'] = $warranty_pads . 'pads';
                     } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . $warranty_pads . 'pads';
                     }
                     $lowest_expiration = $aed['secondary_adult_pads_expiration_days'];
                 }
@@ -184,9 +197,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             if( ($aed['flags']&0x0100) == 0x0100 ) {
                 if( $aed['primary_child_pads_expiration_days'] <= $lowest_expiration ) {
                     if( $aed['primary_child_pads_expiration_days'] < $lowest_expiration ) {
-                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                        $aeds[$aid]['expiring_pieces'] = $warranty_pads . 'pads';
                     } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . $warranty_pads . 'pads';
                     }
                     $lowest_expiration = $aed['primary_child_pads_expiration_days'];
                 }
@@ -195,9 +208,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             if( ($aed['flags']&0x0200) == 0x0200 ) {
                 if( $aed['secondary_child_pads_expiration_days'] < $lowest_expiration ) {
                     if( $aed['secondary_child_pads_expiration_days'] < $lowest_expiration ) {
-                        $aeds[$aid]['expiring_pieces'] = 'pads';
+                        $aeds[$aid]['expiring_pieces'] = $warranty_pads . 'pads';
                     } elseif( strstr($aeds[$aid]['expiring_pieces'], 'pads') === false ) {
-                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . 'pads';
+                        $aeds[$aid]['expiring_pieces'] .= ($aeds[$aid]['expiring_pieces'] != '' ? ', ' : '') . $warranty_pads . 'pads';
                     }
                     $lowest_expiration = $aed['secondary_child_pads_expiration_days'];
                 }
