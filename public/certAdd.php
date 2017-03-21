@@ -25,6 +25,7 @@ function ciniki_fatt_certAdd(&$ciniki) {
         'grouping'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Grouping'), 
         'status'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Status'), 
         'years_valid'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Valid For'), 
+        'alt_cert_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Alternate Cert'), 
         'courses'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Courses'), 
         ));
     if( $rc['stat'] != 'ok' ) {

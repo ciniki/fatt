@@ -793,6 +793,7 @@ function ciniki_fatt_settings() {
             'grouping':{'label':'Grouping', 'type':'text', 'size':'small'},
             'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':{'10':'Active', '50':'Archived'}},
             'years_valid':{'label':'Valid For', 'type':'text', 'size':'small'},
+            'alt_cert_id':{'label':'Alternate', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
             }},
         '_courses':{'label':'Courses', 'aside':'yes', 'active':'yes', 'fields':{
             'courses':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'itemname':'item', 'list':{}},
@@ -816,22 +817,6 @@ function ciniki_fatt_settings() {
     this.cert.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.fatt.certHistory', 'args':{'business_id':M.curBusinessID, 'cert_id':this.cert_id, 'field':i}};
     }
-/*    this.cert.message.open = function(mid) {
-        if( this.cert_id == 0 ) {
-            // Save cert first 
-            var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.certAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                }
-                M.ciniki_fatt_settings.cert.cert_id = rsp.id;
-                M.ciniki_fatt_settings.message.open('M.ciniki_fatt_settings.cert.messagesUpdate();','ciniki.fatt.cert',rsp.id,mid);
-            });
-        } else {
-            M.ciniki_fatt_settings.message.open('M.ciniki_fatt_settings.cert.messagesUpdate();','ciniki.fatt.cert',this.cert_id,mid);
-        }
-    } */
     this.cert.messagesUpdate = function() {
         M.api.getJSONCb('ciniki.fatt.certGet', {'business_id':M.curBusinessID, 'cert_id':this.cert_id, 'messages':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
@@ -858,13 +843,12 @@ function ciniki_fatt_settings() {
         }
     }
     this.cert.rowFn = function(s, i, d) {
-//        return 'M.ciniki_fatt_settings.message.open(\'M.ciniki_fatt_settings.cert.messagesUpdate();\',\'ciniki.fatt.cert\',M.ciniki_fatt_settings.cert.cert_id,\'' + d.message.id + '\');';
         return 'M.ciniki_fatt_settings.cert.save(\'M.ciniki_fatt_settings.message.open("M.ciniki_fatt_settings.cert.messagesUpdate();","ciniki.fatt.cert",M.ciniki_fatt_settings.cert.cert_id,"' + d.message.id + '");\');';
     }
     this.cert.open = function(cb, cid) {
         if( cid != null ) { this.cert_id = cid; }
         this.sections._buttons.buttons.delete.visible = (this.cert_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.certGet', {'business_id':M.curBusinessID, 'cert_id':this.cert_id, 'messages':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.certGet', {'business_id':M.curBusinessID, 'cert_id':this.cert_id, 'messages':'yes', 'certs':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -872,6 +856,7 @@ function ciniki_fatt_settings() {
             var p = M.ciniki_fatt_settings.cert;
             p.data = rsp.cert;
             p.sections._courses.fields.courses.list = (rsp.courses!=null?rsp.courses:{});
+            p.sections.details.fields.alt_cert_id.options = rsp.certs;
             p.refresh();
             p.show(cb);
         });

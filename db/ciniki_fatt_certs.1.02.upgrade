@@ -1,0 +1,4 @@
+#
+#
+ALTER TABLE ciniki_fatt_certs ADD COLUMN alt_cert_id int not null AFTER years_valid;
+ALTER TABLE ciniki_fatt_certs COMMENT='v1.02';

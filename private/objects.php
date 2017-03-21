@@ -161,6 +161,7 @@ function ciniki_fatt_objects($ciniki) {
             'grouping'=>array('default'=>''),
             'status'=>array('default'=>'10'),
             'years_valid'=>array('default'=>'1'),
+            'alt_cert_id'=>array('default'=>'0'),
             ),
         'history_table'=>'ciniki_fatt_history',
         );

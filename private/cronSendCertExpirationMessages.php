@@ -50,9 +50,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
-        array('container'=>'certs', 'fname'=>'cert_id',
-            'fields'=>array('object', 'cert_id')),
-        array('container'=>'messages', 'fname'=>'id',
+        array('container'=>'certs', 'fname'=>'cert_id', 'fields'=>array('object', 'cert_id')), array('container'=>'messages', 'fname'=>'id',
             'fields'=>array('id', 'days', 'subject', 'message', 'parent_subject', 'parent_message')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -71,15 +69,26 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
     //
     // Get the list of cert customers that need to be checked for messages
     //
-    $strsql = "SELECT id, cert_id, flags, customer_id, offering_id, date_received, date_expiry, "
-        . "DATEDIFF('" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "', date_expiry) AS days_till_expiry, "
-        . "last_message_day, "
-        . "next_message_date "
-        . "FROM ciniki_fatt_cert_customers "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "AND date_expiry <> '0000-00-00' "
-        . "AND (flags&0x02) = 0 "       // Emails aren't marked as finished yet
-        . "AND next_message_date <= '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d H:m:s')) . "' "
+    $strsql = "SELECT cc.id, "
+        . "cc.cert_id, "
+        . "certs.alt_cert_id, "
+        . "cc.flags, "
+        . "cc.customer_id, "
+        . "cc.offering_id, "
+        . "cc.date_received, "
+        . "cc.date_expiry, "
+        . "DATEDIFF('" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "', cc.date_expiry) AS days_till_expiry, "
+        . "cc.last_message_day, "
+        . "cc.next_message_date "
+        . "FROM ciniki_fatt_cert_customers AS cc "
+        . "LEFT JOIN ciniki_fatt_certs AS certs ON ("
+            . "cc.cert_id = certs.id "
+            . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . ") "
+        . "WHERE cc.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND cc.date_expiry <> '0000-00-00' "
+        . "AND (cc.flags&0x03) = 0x01 "       // Emails aren't marked as finished yet
+        . "AND cc.next_message_date <= '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d H:m:s')) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -116,11 +125,19 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         //
         // Check if a new cert was issued
         //
+        if( $cc['alt_cert_id'] > 0 ) {
+            $cert_sql = "AND ("
+                . "certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' "
+                . "OR certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['alt_cert_id']) . "' "
+                . ") ";
+        } else {
+            $cert_sql = "certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' ";
+        }
         $strsql = "SELECT COUNT(certs.id) AS num_certs "
             . "FROM ciniki_fatt_cert_customers AS certs "
             . "WHERE certs.customer_id = '" . ciniki_core_dbQuote($ciniki, $cc['customer_id']) . "' "
-            . "AND certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' "
             . "AND date_received > '" . ciniki_core_dbQuote($ciniki, $cc['date_received']) . "' "
+            . $cert_sql
             . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'cert');
@@ -155,7 +172,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             . "AND offerings.start_date > UTC_TIMESTAMP() "  
             . "AND offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . "AND offerings.course_id = certs.course_id "
-            . "AND certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' "
+            . $cert_sql
             . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'reg');
@@ -168,8 +185,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             // Stop future emails, and skip this email reminder.
             //
             if( ($cc['flags']&0x02) == 0 ) {
-                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
-                    array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
+                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
                 if( $rc['stat'] != 'ok' ) {
                     error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
                     continue;
@@ -177,8 +193,6 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             }
             continue;
         }
-
-
 
         //
         // Double check the flags setting to make sure we are still to send to this customer
@@ -193,7 +207,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         $cur_message_to_send = NULL;
         $next_message_to_send = NULL;
         foreach($cert_messages[$cc['cert_id']]['messages'] as $message ) {
-//            error_log('message ' . $cc['id'] . ' days ' . $cc['days_till_expiry'] . ' message ' . $message['days']);
+//error_log('message ' . $cc['id'] . ' days ' . $cc['days_till_expiry'] . ' message ' . $message['days']);
 
             //
             // Check if message could be sent. It must be exactly on the day to send
@@ -208,7 +222,6 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             //
             elseif( $message['days'] > $cc['days_till_expiry'] ) {
                 $next_message_to_send = $message;
- //               error_log('break');
                 break;
             }
             
