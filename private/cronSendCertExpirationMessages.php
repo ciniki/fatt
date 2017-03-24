@@ -131,7 +131,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
                 . "OR certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['alt_cert_id']) . "' "
                 . ") ";
         } else {
-            $cert_sql = "certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' ";
+            $cert_sql = "AND certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $cc['cert_id']) . "' ";
         }
         $strsql = "SELECT COUNT(certs.id) AS num_certs "
             . "FROM ciniki_fatt_cert_customers AS certs "
