@@ -209,10 +209,8 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
         array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-            'fields'=>array('id', 'offering_id', 'invoice_id', 'status',
-                'customer_id', 'customer_display_name', 'customer_type', 
-                'student_id', 'student_display_name',
-                'customer_notes', 'notes')),
+            'fields'=>array('id', 'offering_id', 'invoice_id', 'status', 'customer_id', 'customer_display_name', 'customer_type', 
+                'student_id', 'student_display_name', 'customer_notes', 'notes')),
     ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -239,15 +237,17 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        if( isset($rc['invoices']) ) {
+//        if( isset($rc['invoices']) ) {
             foreach($class['registrations'] as $rid => $registration) {
                 if( isset($rc['invoices'][$registration['registration']['invoice_id']]) ) {
                     $class['registrations'][$rid]['registration']['invoice_status'] = $rc['invoices'][$registration['registration']['invoice_id']]['status_text'];
                     $class['registrations'][$rid]['registration']['invoice_customer_id'] = $rc['invoices'][$registration['registration']['invoice_id']]['customer_id'];
                     $class['registrations'][$rid]['registration']['invoice_number'] = $rc['invoices'][$registration['registration']['invoice_id']]['invoice_number'];
+                } else {
+                    $class['registrations'][$rid]['registration']['invoice_status'] = '';
                 }
             }
-        }
+//        }
         // Sort by class code
         usort($class['registrations'], function($a, $b) { 
             if( $a['registration']['course_hours'] == $b['registration']['course_hours'] ) {
