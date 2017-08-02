@@ -79,15 +79,10 @@ function ciniki_fatt_aedFieldSearch($ciniki) {
     }
     if( isset($rc['rows']) ) {
         $aeds = $rc['rows'];
-        $aed_ids = array();
-        foreach($aeds as $iid => $aed) {
-            $aed_ids[] = $aed['id'];
-        }
     } else {
         $aeds = array();
-        $aed_ids = array();
     }
 
-    return array('stat'=>'ok', 'results'=>$aeds, 'nplist'=>$aed_ids);
+    return array('stat'=>'ok', 'results'=>$aeds);
 }
 ?>
