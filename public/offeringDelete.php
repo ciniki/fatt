@@ -39,24 +39,6 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
     }
 
     //
-    // Get the uuid of the offering to be deleted
-    //
-    $strsql = "SELECT uuid "
-        . "FROM ciniki_fatt_offerings "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    if( !isset($rc['offering']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.104', 'msg'=>'The offering does not exist'));
-    }
-    $offering_uuid = $rc['offering']['uuid'];
-
-    //
     // Check if there is any customers still attached to the offering
     //
     $strsql = "SELECT 'items', COUNT(*) "
@@ -89,63 +71,12 @@ function ciniki_fatt_offeringDelete(&$ciniki) {
     }   
 
     //
-    // Remove the offering dates
-    //
-    $strsql = "SELECT id, uuid "
-        . "FROM ciniki_fatt_offering_dates "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'item');
-    if( $rc['stat'] != 'ok' ) {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-        return $rc;
-    }
-    if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
-        $items = $rc['rows'];
-        foreach($items as $fid => $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.offeringdate', 
-                $item['id'], $item['uuid'], 0x04);
-            if( $rc['stat'] != 'ok' ) {
-                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.106', 'msg'=>'Unable to remove offering date', 'err'=>$rc['err']));
-            }
-        }
-    }
-
-    //
-    // Remove the offering instructors
-    //
-    $strsql = "SELECT id, uuid "
-        . "FROM ciniki_fatt_offering_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'item');
-    if( $rc['stat'] != 'ok' ) {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-        return $rc;
-    }
-    if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
-        $items = $rc['rows'];
-        foreach($items as $fid => $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.offeringinstructor', 
-                $item['id'], $item['uuid'], 0x04);
-            if( $rc['stat'] != 'ok' ) {
-                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.107', 'msg'=>'Unable to remove offering instructor', 'err'=>$rc['err']));
-            }
-        }
-    }
-
-    //
     // Remove the offering
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.offering', 
-        $args['offering_id'], $offering_uuid, 0x04);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRemove');
+    $rc = ciniki_fatt_offeringRemove($ciniki, $args['business_id'], $args['offering_id']);
     if( $rc['stat'] != 'ok' ) {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.108', 'msg'=>'Unable to remove offering', 'err'=>$rc['err']));
+        return $rc;
     }
 
     //

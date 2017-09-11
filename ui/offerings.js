@@ -536,6 +536,10 @@ function ciniki_fatt_offerings() {
             'save':{'label':'Save', 'fn':'M.ciniki_fatt_offerings.class.save();'},
             'printlist':{'label':'Print Class List', 'fn':'M.ciniki_fatt_offerings.class.printList(M.ciniki_fatt_offerings.class.class_id);'},
             'printforms':{'label':'Download Forms', 'fn':'M.ciniki_fatt_offerings.class.save(\'M.ciniki_fatt_offerings.class.downloadForms();\');'},
+            'delete':{'label':'Cancel Class', 
+                'visible':function() { return (M.ciniki_fatt_offerings.class.data.registrations.length == 0 ? 'yes' : 'no'); }, 
+                'fn':'M.ciniki_fatt_offerings.class.cancelClass();',
+                },
             }},
         };
     this.class.sectionData = function(s) { 
@@ -655,6 +659,17 @@ function ciniki_fatt_offerings() {
             eval(cb);
         }
     };
+    this.class.cancelClass = function() {
+        if( confirm('Are you sure you want to remove this class?') ) {
+            M.api.getJSONCb('ciniki.fatt.classDelete', {'business_id':M.curBusinessID, 'class_id':this.class_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_fatt_offerings.class.close();
+            });
+        }
+    }
     this.class.printList = function(cid) {
         M.api.openFile('ciniki.fatt.classRegistrations', {'business_id':M.curBusinessID, 'output':'pdf', 'class_id':cid});
     };
