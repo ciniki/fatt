@@ -8,6 +8,7 @@ function ciniki_fatt_offerings() {
     
     this.regStatus = {
         '0':'Reg',
+        '20':'Incomplete',
         '30':'Cancel',
         '40':'No Show',
         '10':'Pass',

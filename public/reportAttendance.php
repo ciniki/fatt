@@ -57,7 +57,7 @@ function ciniki_fatt_reportAttendance($ciniki) {
         . "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
         . "AND ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
         . "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "GROUP BY year, month "
+        . "GROUP BY year, month, status "
         . "ORDER BY year DESC, month DESC "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'item');
@@ -75,18 +75,22 @@ function ciniki_fatt_reportAttendance($ciniki) {
             $months[$mon] = array(
                 'month_text'=>$row['month_text'] . ' ' . $row['year'],
                 'sort_month'=>$row['year'] . $row['month'],
-                'num_incomplete'=>0,
+                'num_unknown'=>0,
                 'num_pass'=>0,
+                'num_incomplete'=>0,
                 'num_cancel'=>0,
                 'num_noshow'=>0,
                 'num_total'=>0,
                 );
         }
         if( $row['status'] == 0 ) {
-            $months[$mon]['num_incomplete'] += $row['num'];
+            $months[$mon]['num_unknown'] += $row['num'];
             $months[$mon]['num_total'] += $row['num'];
         } elseif( $row['status'] == 10 ) {
             $months[$mon]['num_pass'] += $row['num'];
+            $months[$mon]['num_total'] += $row['num'];
+        } elseif( $row['status'] == 20 ) {
+            $months[$mon]['num_incomplete'] += $row['num'];
             $months[$mon]['num_total'] += $row['num'];
         } elseif( $row['status'] == 30 ) {
             $months[$mon]['num_cancel'] += $row['num'];

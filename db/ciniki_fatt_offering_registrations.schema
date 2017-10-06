@@ -25,8 +25,9 @@
 #
 # status:           The status of the registrant with the course.
 #
-#                   0 - Incomplete
+#                   0 - Unknown
 #                   10 - pass
+#                   20 - Incomplete (shown 1 day but not 2nd)
 #                   30 - cancelled
 #                   40 - noshow
 #                   50 - fail

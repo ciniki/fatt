@@ -58,8 +58,9 @@ function ciniki_fatt_maps($ciniki) {
         );
     $maps['offeringregistration'] = array(
         'status'=>array(
-            '0'=>'Incomplete',
+            '0'=>'Unknown',
             '10'=>'Pass',
+            '20'=>'Incomplete',
             '30'=>'Cancelled',
             '40'=>'No Show',
             '50'=>'Fail',

@@ -7,6 +7,7 @@ function ciniki_fatt_sapos() {
 
     this.regStatus = {
         '0':'Registered',
+        '20':'Incomplete',
         '30':'Cancelled',
         '40':'No Show',
         '10':'Pass',
