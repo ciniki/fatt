@@ -8,7 +8,7 @@
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get events for.
+// tnid:     The ID of the tenant to get events for.
 //
 // args:            The possible arguments for posts
 //
@@ -16,9 +16,9 @@
 // Returns
 // -------
 //
-function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
+function ciniki_fatt_web_courses(&$ciniki, $settings, $tnid, $args) {
     
-    if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
+    if( !isset($ciniki['tenant']['modules']['ciniki.fatt']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.133', 'msg'=>"I'm sorry, the file you requested does not exist."));
     }
 
@@ -34,10 +34,10 @@ function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
             . "ciniki_fatt_courses.description, "
             . "'yes' AS is_details "
             . "FROM ciniki_fatt_course_categories, ciniki_fatt_courses "
-            . "WHERE ciniki_fatt_course_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_fatt_course_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_fatt_course_categories.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
             . "AND ciniki_fatt_course_categories.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (ciniki_fatt_courses.flags&0x01) = 0x01 "
             . "ORDER BY ciniki_fatt_courses.sequence, ciniki_fatt_courses.name "
             . "";
@@ -49,7 +49,7 @@ function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
         return $rc;
     } 
 
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 ) {
         $strsql = "SELECT ciniki_fatt_courses.id, "
             . "ciniki_fatt_courses.name AS title, "
             . "ciniki_fatt_courses.code, "
@@ -64,13 +64,13 @@ function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
             . "FROM ciniki_fatt_courses "
             . "LEFT JOIN ciniki_fatt_course_categories ON ("
                 . "ciniki_fatt_courses.id = ciniki_fatt_course_categories.course_id "
-                . "AND ciniki_fatt_course_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_fatt_course_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_fatt_categories ON ("
                 . "ciniki_fatt_course_categories.category_id = ciniki_fatt_categories.id "
-                . "AND ciniki_fatt_course_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_fatt_course_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (ciniki_fatt_courses.flags&0x01) = 0x01 "
             . "ORDER BY ciniki_fatt_course_categories.id, ciniki_fatt_courses.name "
             . "";
@@ -94,7 +94,7 @@ function ciniki_fatt_web_courses(&$ciniki, $settings, $business_id, $args) {
         . "ciniki_fatt_courses.description, "
         . "'yes' AS is_details "
         . "FROM ciniki_fatt_courses "
-        . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY ciniki_fatt_courses.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');

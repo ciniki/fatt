@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will add a new offering for the business.
+// This method will add a new offering for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to add the offering to.
+// tnid:     The ID of the tenant to add the offering to.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'), 
         'price'=>array('required'=>'no', 'blank'=>'no', 'type'=>'currency', 'name'=>'Price'), 
@@ -33,10 +33,10 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.offeringAdd');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.offeringAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -64,7 +64,7 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
     //
     $strsql = "SELECT id "
         . "FROM ciniki_fatt_offerings "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' " 
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' " 
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
@@ -91,7 +91,7 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
     // Add the offering to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.offering', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.fatt.offering', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return $rc;
@@ -103,7 +103,7 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
     //
     if( isset($args['instructors']) && count($args['instructors']) > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateInstructors');
-        $rc = ciniki_fatt_offeringUpdateInstructors($ciniki, $args['business_id'], $offering_id, $args['instructors']);
+        $rc = ciniki_fatt_offeringUpdateInstructors($ciniki, $args['tnid'], $offering_id, $args['instructors']);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
             return $rc;
@@ -114,7 +114,7 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
     // Update the seats
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
-    $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $args['business_id'], $offering_id, 'yes');
+    $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $args['tnid'], $offering_id, 'yes');
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return $rc;
@@ -129,11 +129,11 @@ function ciniki_fatt_offeringAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     return array('stat'=>'ok', 'id'=>$offering_id);
 }

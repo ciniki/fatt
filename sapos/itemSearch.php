@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_fatt_sapos_itemSearch($ciniki, $business_id, $args) {
+function ciniki_fatt_sapos_itemSearch($ciniki, $tnid, $args) {
 
     if( $args['start_needle'] == '' ) {
         return array('stat'=>'ok', 'items'=>array());
@@ -35,10 +35,10 @@ function ciniki_fatt_sapos_itemSearch($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_courses "
         . "INNER JOIN ciniki_fatt_offerings ON ("
             . "ciniki_fatt_courses.id = ciniki_fatt_offerings.course_id "
-            . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND UNIX_TIMESTAMP(ciniki_fatt_offerings.start_date) > (UNIX_TIMESTAMP(UTC_TIMESTAMP())-86400) "
             . ") "
-        . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_fatt_courses.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_fatt_courses.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_fatt_courses.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

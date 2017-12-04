@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the offering is attached to.
+// tnid:     The ID of the tenant the offering is attached to.
 // 
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'class_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -30,10 +30,10 @@ function ciniki_fatt_classUpdate(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.classUpdate'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.classUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -43,7 +43,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
     //
     $class = array();
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'classLoad');
-    $rc = ciniki_fatt_classLoad($ciniki, $args['business_id'], $args);
+    $rc = ciniki_fatt_classLoad($ciniki, $args['tnid'], $args);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -74,7 +74,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
             //
             // Update the status
             //
-            $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array(
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array(
                 'status'=>$ciniki['request']['args'][$arg_name]), 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
@@ -86,7 +86,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
             //
             if( ($ciniki['request']['args'][$arg_name] == 30 || $ciniki['request']['args'][$arg_name] == 40) && $registration['registration']['invoice_id'] > 0 ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
-                $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['business_id'], array(
+                $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['tnid'], array(
                     'invoice_id'=>$registration['registration']['invoice_id'],
                     'object'=>'ciniki.fatt.offeringregistration',
                     'object_id'=>$registration['registration']['id'],
@@ -99,7 +99,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
                 //
                 // Update the status
                 //
-                $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array('invoice_id'=>0), 0x04);
+                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array('invoice_id'=>0), 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
                     return $rc;
@@ -110,7 +110,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
             // Update the certification
             //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationUpdateCerts');
-            $rc = ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $args['business_id'], $registration['registration']['id'], $registration['registration']);
+            $rc = ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $args['tnid'], $registration['registration']['id'], $registration['registration']);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
                 return $rc;
@@ -127,11 +127,11 @@ function ciniki_fatt_classUpdate(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     return array('stat'=>'ok');
 }

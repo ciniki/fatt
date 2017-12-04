@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_fatt_sapos_itemLookup($ciniki, $business_id, $args) {
+function ciniki_fatt_sapos_itemLookup($ciniki, $tnid, $args) {
 
     if( !isset($args['object']) || $args['object'] == ''
         || !isset($args['object_id']) || $args['object_id'] == '' 
@@ -35,9 +35,9 @@ function ciniki_fatt_sapos_itemLookup($ciniki, $business_id, $args) {
             . "FROM ciniki_fatt_offerings "
             . "INNER JOIN ciniki_fatt_courses ON ("
                 . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-                . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_fatt_offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');

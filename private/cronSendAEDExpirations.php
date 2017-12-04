@@ -2,25 +2,25 @@
 //
 // Description
 // -----------
-// This method will return the list of AEDs for a business.
+// This method will return the list of AEDs for a tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:        The ID of the business to get AED for.
+// tnid:        The ID of the tenant to get AED for.
 //
 // Returns
 // -------
 //
-function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
+function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $tnid) {
 
     error_log('Check for AED expirations');
     //
-    // Load business settings
+    // Load tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -58,9 +58,9 @@ function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
         . "FROM ciniki_fatt_aeds "
         . "LEFT JOIN ciniki_customers ON ("
             . "ciniki_fatt_aeds.customer_id = ciniki_customers.id "
-            . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_aeds.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -212,15 +212,15 @@ function ciniki_fatt_cronSendAEDExpirations(&$ciniki, $business_id) {
     if( $text_content != '' ) {
         error_log('emailing aed expirations');
         $text_content = "You have the following upcoming AED Expirations\n\n" . $text_content;
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'hooks', 'businessOwners');
-        $rc = ciniki_businesses_hooks_businessOwners($ciniki, $business_id, array());
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'tenantOwners');
+        $rc = ciniki_tenants_hooks_tenantOwners($ciniki, $tnid, array());
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.17', 'msg'=>'Unable to get business owners', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.17', 'msg'=>'Unable to get tenant owners', 'err'=>$rc['err']));
         }
         $owners = $rc['users'];
         ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'hooks', 'emailUser');
         foreach($owners as $user_id => $owner) {
-            $rc = ciniki_users_hooks_emailUser($ciniki, $business_id, array('user_id'=>$user_id,
+            $rc = ciniki_users_hooks_emailUser($ciniki, $tnid, array('user_id'=>$user_id,
                 'subject'=>'AED Expirations',
                 'textmsg'=>$text_content,
                 ));

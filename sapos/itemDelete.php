@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_fatt_sapos_itemDelete($ciniki, $business_id, $invoice_id, $item) {
+function ciniki_fatt_sapos_itemDelete($ciniki, $tnid, $invoice_id, $item) {
 
     //
     // An invoice line item was removed that was an offering
@@ -21,7 +21,7 @@ function ciniki_fatt_sapos_itemDelete($ciniki, $business_id, $invoice_id, $item)
         //
         $strsql = "SELECT id, uuid, offering_id, customer_id, student_id "
             . "FROM ciniki_fatt_offering_registrations "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'registration');
@@ -38,7 +38,7 @@ function ciniki_fatt_sapos_itemDelete($ciniki, $business_id, $invoice_id, $item)
         // Remove the invoice from the registration, don't delete it
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.offeringregistration', 
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.offeringregistration', 
             $registration['id'], array('invoice_id'=>'0'), 0x04);
         if( $rc['stat'] != 'ok' ) {
             return $rc;

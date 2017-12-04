@@ -16,14 +16,14 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the offering is attached to.
+// tnid:     The ID of the tenant the offering is attached to.
 // 
-function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_id, $recurse='yes') {
+function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $recurse='yes') {
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -58,18 +58,18 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
         . "FROM ciniki_fatt_offerings "
         . "LEFT JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_offering_instructors ON ("
             . "ciniki_fatt_offerings.id = ciniki_fatt_offering_instructors.offering_id "
-            . "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offering_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_offering_registrations ON ("
             . "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
-            . "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE ciniki_fatt_offerings.id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
-        . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "GROUP BY ciniki_fatt_offerings.id "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -114,10 +114,10 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
         . "FROM ciniki_fatt_offering_dates "
         . "LEFT JOIN ciniki_fatt_locations ON ("
             . "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
-            . "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE ciniki_fatt_offering_dates.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
-        . "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY ciniki_fatt_offering_dates.start_date "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -142,13 +142,13 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
             . "FROM ciniki_fatt_offering_dates "
             . "LEFT JOIN ciniki_fatt_offerings ON ("
                 . "ciniki_fatt_offering_dates.offering_id = ciniki_fatt_offerings.id "
-                . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_fatt_offering_registrations ON ("
                 . "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
-                . "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_fatt_offering_dates.offering_id <> '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
             . "";
         $strsql_dates = "";
@@ -348,7 +348,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
     //
     if( count($offering_update_args) > 0 ) {
 //      error_log(print_r($offering_update_args, true));
-        $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.offering', $offering_id, $offering_update_args, 0x04);
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.offering', $offering_id, $offering_update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.28', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
         }
@@ -359,7 +359,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering_i
     //
     if( $recurse == 'yes' ) {
         foreach($other_offerings as $oid => $offering) {
-            $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $offering['id'], 'no');
+            $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering['id'], 'no');
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.29', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
             }

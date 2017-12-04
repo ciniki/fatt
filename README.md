@@ -1,7 +1,7 @@
-Ciniki - Small Business Management Platform
+Ciniki - Multitenant Cloud Platform
 ===========================================
 
-The FATT modules is for businesses doing first aid training and/or certification and/or device tracking.
+The FATT modules is for tenants doing first aid training and/or certification and/or device tracking.
 
 License
 -------

@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_fatt_sapos_itemUpdate($ciniki, $business_id, $invoice_id, $item) {
+function ciniki_fatt_sapos_itemUpdate($ciniki, $tnid, $invoice_id, $item) {
 
     return array('stat'=>'ok');
 }

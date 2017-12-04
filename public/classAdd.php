@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will add a new class for the business. The class can be a bundle or course.
+// This method will add a new class for the tenant. The class can be a bundle or course.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to add the offering to.
+// tnid:     The ID of the tenant to add the offering to.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'day1'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'datetimetoutc', 'name'=>'Day 1'), 
         'day2'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Day 2'), 
@@ -43,10 +43,10 @@ function ciniki_fatt_classAdd(&$ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.classAdd');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.classAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -68,9 +68,9 @@ function ciniki_fatt_classAdd(&$ciniki) {
             . "ciniki_fatt_courses.num_days "
             . "FROM ciniki_fatt_course_bundles, ciniki_fatt_courses "
             . "WHERE ciniki_fatt_course_bundles.bundle_id = '" . ciniki_core_dbQuote($ciniki, $args['bundle_id']) . "' "
-            . "AND ciniki_fatt_course_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_course_bundles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_fatt_course_bundles.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'course');
         if( $rc['stat'] != 'ok' ) {
@@ -89,7 +89,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
             . "ciniki_fatt_courses.num_days "
             . "FROM ciniki_fatt_courses "
             . "WHERE ciniki_fatt_courses.id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'course');
         if( $rc['stat'] != 'ok' ) {
@@ -137,7 +137,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
         //
         $strsql = "SELECT id "
             . "FROM ciniki_fatt_offerings "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' " 
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' " 
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
@@ -157,7 +157,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
             'flags'=>$args['flags'],
             );
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-        $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.offering', $offering_args, 0x04);
+        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.fatt.offering', $offering_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
             return $rc;
@@ -181,7 +181,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
             'longitude'=>$args['longitude'],
             );
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-        $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.offeringdate', $date_args, 0x04);
+        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.fatt.offeringdate', $date_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
             return $rc;
@@ -197,7 +197,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
             $date_args['num_hours'] = $course['num_hours'] - 8;
 
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-            $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.offeringdate', $date_args, 0x04);
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.fatt.offeringdate', $date_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
                 return $rc;
@@ -210,7 +210,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
         //
         if( isset($args['instructors']) && count($args['instructors']) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateInstructors');
-            $rc = ciniki_fatt_offeringUpdateInstructors($ciniki, $args['business_id'], $offering_id, $args['instructors']);
+            $rc = ciniki_fatt_offeringUpdateInstructors($ciniki, $args['tnid'], $offering_id, $args['instructors']);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
                 return $rc;
@@ -231,7 +231,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
         // Update the seats
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
-        $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $args['business_id'], $offering_id, 'yes');
+        $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $args['tnid'], $offering_id, 'yes');
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
             return $rc;
@@ -247,11 +247,11 @@ function ciniki_fatt_classAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     return array('stat'=>'ok');
 }

@@ -8,18 +8,18 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the offering is attached to.
+// tnid:         The ID of the tenant the offering is attached to.
 // registration_id:     The ID of the offering registration to get the details for.
 // 
 // Returns
 // -------
 //
-function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registration_id) {
+function ciniki_fatt_offeringRegistrationLoad($ciniki, $tnid, $registration_id) {
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -68,13 +68,13 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
         . "FROM ciniki_fatt_offering_registrations "
         . "INNER JOIN ciniki_fatt_offerings ON ("
             . "ciniki_fatt_offering_registrations.offering_id = ciniki_fatt_offerings.id "
-            . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_fatt_offering_registrations.id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -101,7 +101,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
     if( $rsp['registration']['customer_id'] > 0 ) {
-        $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$rsp['registration']['customer_id'], 
+        $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$rsp['registration']['customer_id'], 
             'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -114,7 +114,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
     // Get the student details
     //
     if( $rsp['registration']['customer_id'] != $rsp['registration']['student_id'] && $rsp['registration']['student_id'] > 0 ) {
-        $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$rsp['registration']['student_id'], 
+        $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$rsp['registration']['student_id'], 
             'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -127,7 +127,7 @@ function ciniki_fatt_offeringRegistrationLoad($ciniki, $business_id, $registrati
     //
     if( $rsp['registration']['invoice_id'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceObjectItem');
-        $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $business_id, $rsp['registration']['invoice_id'], 
+        $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $rsp['registration']['invoice_id'], 
             'ciniki.fatt.offeringregistration', $rsp['registration']['id']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;

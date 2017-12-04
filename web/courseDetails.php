@@ -8,7 +8,7 @@
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get events for.
+// tnid:     The ID of the tenant to get events for.
 //
 // args:            The possible arguments for posts
 //
@@ -16,17 +16,17 @@
 // Returns
 // -------
 //
-function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $business_id, $permalink) {
+function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $tnid, $permalink) {
     
-    if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
+    if( !isset($ciniki['tenant']['modules']['ciniki.fatt']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.131', 'msg'=>"I'm sorry, the file you requested does not exist."));
     }
 
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -49,7 +49,7 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $business_id, $perma
         . "ciniki_fatt_courses.num_hours, "
         . "ciniki_fatt_courses.flags "
         . "FROM ciniki_fatt_courses "
-        . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_fatt_courses.permalink = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'course');
@@ -79,9 +79,9 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $business_id, $perma
         . "FROM ciniki_fatt_offerings "
         . "LEFT JOIN ciniki_fatt_offering_dates ON ("
             . "ciniki_fatt_offerings.id = ciniki_fatt_offering_dates.offering_id "
-            . "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_fatt_offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $course['id']) . "' "
         . "AND (ciniki_fatt_offerings.flags&0x01) = 0x01 "
         . "AND ciniki_fatt_offerings.start_date >= UTC_TIMESTAMP() "

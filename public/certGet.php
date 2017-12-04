@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the cert is attached to.
+// tnid:     The ID of the tenant the cert is attached to.
 // cert_id:     The ID of the cert to get the details for.
 // 
 // Returns
@@ -20,7 +20,7 @@ function ciniki_fatt_certGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'cert_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Certification'), 
         'messages'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Messages'), 
         'certs'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certs'), 
@@ -32,10 +32,10 @@ function ciniki_fatt_certGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.certGet'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.certGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -75,7 +75,7 @@ function ciniki_fatt_certGet($ciniki) {
             . "ciniki_fatt_certs.years_valid, "
             . "ciniki_fatt_certs.alt_cert_id "
             . "FROM ciniki_fatt_certs "
-            . "WHERE ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_fatt_certs.id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.certs', array(
@@ -92,7 +92,7 @@ function ciniki_fatt_certGet($ciniki) {
     }
 
     //
-    // Get the courses for the certs and the business
+    // Get the courses for the certs and the tenant
     //
     $rsp['cert']['courses'] = '';
     $strsql = "SELECT ciniki_fatt_courses.id, "
@@ -102,9 +102,9 @@ function ciniki_fatt_certGet($ciniki) {
         . "LEFT JOIN ciniki_fatt_course_certs ON ("
             . "ciniki_fatt_courses.id = ciniki_fatt_course_certs.course_id "
             . "AND ciniki_fatt_course_certs.cert_id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
-            . "AND ciniki_fatt_course_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_course_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY ciniki_fatt_courses.name "
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -129,12 +129,12 @@ function ciniki_fatt_certGet($ciniki) {
     // Get any messages about the cert
     //
     if( isset($args['messages']) && $args['messages'] == 'yes' 
-        && ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x20) > 0 
+        && ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x20) > 0 
         ) {
         $strsql = "SELECT id, status, status AS status_text, "
             . "days, subject, message, parent_subject, parent_message "
             . "FROM ciniki_fatt_messages "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND object = 'ciniki.fatt.cert' "
             . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
             . "ORDER BY days "
@@ -161,7 +161,7 @@ function ciniki_fatt_certGet($ciniki) {
     if( isset($args['certs']) && $args['certs'] == 'yes' ) {
         $strsql = "SELECT id, name "
             . "FROM ciniki_fatt_certs "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
             . "AND status = 10 "
             . "ORDER BY name "

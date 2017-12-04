@@ -2,27 +2,27 @@
 //
 // Description
 // -----------
-// This method will delete a offering from the business.
+// This method will delete a offering from the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the offering is attached to.
+// tnid:         The ID of the tenant the offering is attached to.
 // offering_id:         The ID of the offering to be removed.
 //
 // Returns
 // -------
 // <rsp stat="ok">
 //
-function ciniki_fatt_offeringRemove(&$ciniki, $business_id, $offering_id) {
+function ciniki_fatt_offeringRemove(&$ciniki, $tnid, $offering_id) {
 
     //
     // Get the uuid of the offering to be deleted
     //
     $strsql = "SELECT uuid "
         . "FROM ciniki_fatt_offerings "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
@@ -40,7 +40,7 @@ function ciniki_fatt_offeringRemove(&$ciniki, $business_id, $offering_id) {
     //
     $strsql = "SELECT 'items', COUNT(*) "
         . "FROM ciniki_fatt_offering_registrations "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
@@ -58,7 +58,7 @@ function ciniki_fatt_offeringRemove(&$ciniki, $business_id, $offering_id) {
     //
     $strsql = "SELECT id, uuid "
         . "FROM ciniki_fatt_offering_dates "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'item');
@@ -69,7 +69,7 @@ function ciniki_fatt_offeringRemove(&$ciniki, $business_id, $offering_id) {
     if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
         $items = $rc['rows'];
         foreach($items as $fid => $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.offeringdate', 
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.fatt.offeringdate', 
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
@@ -83,7 +83,7 @@ function ciniki_fatt_offeringRemove(&$ciniki, $business_id, $offering_id) {
     //
     $strsql = "SELECT id, uuid "
         . "FROM ciniki_fatt_offering_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'item');
@@ -94,7 +94,7 @@ function ciniki_fatt_offeringRemove(&$ciniki, $business_id, $offering_id) {
     if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
         $items = $rc['rows'];
         foreach($items as $fid => $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.offeringinstructor', 
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.fatt.offeringinstructor', 
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
@@ -106,7 +106,7 @@ function ciniki_fatt_offeringRemove(&$ciniki, $business_id, $offering_id) {
     //
     // Remove the offering
     //
-    $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.offering', $offering_id, $offering_uuid, 0x04);
+    $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.fatt.offering', $offering_id, $offering_uuid, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.108', 'msg'=>'Unable to remove offering', 'err'=>$rc['err']));

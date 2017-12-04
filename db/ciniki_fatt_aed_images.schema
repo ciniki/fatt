@@ -7,7 +7,7 @@
 # ------
 # id:               The ID of the aed image.
 # uuid:             The Universal Unique ID.
-# business_id:      The ID of the business the aed is attached to.
+# tnid:             The ID of the tenant the aed is attached to.
 #
 # aed_id:           The ID of the aed from the ciniki_events table.
 # 
@@ -23,7 +23,7 @@
 create table ciniki_fatt_aed_images (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     aed_id int not null,
     image_id int not null,
     image_date date not null,
@@ -31,5 +31,5 @@ create table ciniki_fatt_aed_images (
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
-    index (business_id, uuid, last_updated)
+    index (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

@@ -7,19 +7,19 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The business ID to check the session user against.
+// tnid:         The tenant ID to check the session user against.
 // method:              The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_fatt_hooks_customerNameUpdate($ciniki, $business_id, $args) {
+function ciniki_fatt_hooks_customerNameUpdate($ciniki, $tnid, $args) {
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -45,7 +45,7 @@ function ciniki_fatt_hooks_customerNameUpdate($ciniki, $business_id, $args) {
             . "FROM ciniki_fatt_offering_registrations "
             . "WHERE student_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
             . "AND customer_id <> student_id "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
         if( $rc['stat'] != 'ok' ) {
@@ -63,7 +63,7 @@ function ciniki_fatt_hooks_customerNameUpdate($ciniki, $business_id, $args) {
                 //
                 // Get the item
                 //
-                $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $business_id, $invoice['invoice_id'], 'ciniki.fatt.offeringregistration', $invoice['id']);
+                $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $invoice['invoice_id'], 'ciniki.fatt.offeringregistration', $invoice['id']);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
@@ -72,7 +72,7 @@ function ciniki_fatt_hooks_customerNameUpdate($ciniki, $business_id, $args) {
                 //
                 // Update invoice item
                 //
-                $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $business_id, array('item_id'=>$item['id'], 'notes'=>$args['display_name']));
+                $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $tnid, array('item_id'=>$item['id'], 'notes'=>$args['display_name']));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }

@@ -8,18 +8,18 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the offering is attached to.
+// tnid:         The ID of the tenant the offering is attached to.
 // registration_id:     The ID of the offering registration to get the details for.
 // 
 // Returns
 // -------
 //
-function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $registration_id) {
+function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $tnid, $registration_id) {
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -53,7 +53,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
         . "ciniki_fatt_offering_registrations.status "
         . "FROM ciniki_fatt_offering_registrations "
         . "WHERE ciniki_fatt_offering_registrations.id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
-        . "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'registration');
     if( $rc['stat'] != 'ok' ) {
@@ -70,7 +70,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
     $strsql = "SELECT MAX(start_date) AS date_received "
         . "FROM ciniki_fatt_offering_dates "
         . "WHERE offering_id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'date');
     if( $rc['stat'] != 'ok' ) {
@@ -88,14 +88,14 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
         . "FROM ciniki_fatt_offerings "
         . "INNER JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_course_certs ON ("
             . "ciniki_fatt_courses.id = ciniki_fatt_course_certs.course_id "
-            . "AND ciniki_fatt_course_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_course_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE ciniki_fatt_offerings.id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
-        . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'certs', 'fname'=>'cert_id',
@@ -120,7 +120,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
         . "FROM ciniki_fatt_cert_customers "
         . "WHERE ciniki_fatt_cert_customers.offering_id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
         . "AND ciniki_fatt_cert_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $registration['student_id']) . "' "
-        . "AND ciniki_fatt_cert_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_cert_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'certs', 'fname'=>'cert_id',
@@ -143,7 +143,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
                 //
                 // Add the cert
                 //
-                $rc = ciniki_fatt__certCustomerAdd($ciniki, $business_id, array(
+                $rc = ciniki_fatt__certCustomerAdd($ciniki, $tnid, array(
                     'cert_id'=>$cert_id,
                     'offering_id'=>$registration['offering_id'],
                     'customer_id'=>$registration['student_id'],
@@ -165,7 +165,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $business_id, $reg
                 //
                 // Delete the cert
                 //
-                $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.certcustomer', 
+                $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.fatt.certcustomer', 
                     $customer_certs[$cert_id]['id'], $customer_certs[$cert_id]['uuid'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.26', 'msg'=>'Unable to remove certification', 'err'=>$rc['err']));

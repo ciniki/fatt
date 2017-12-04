@@ -18,7 +18,7 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         )); 
@@ -29,10 +29,10 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.classCustomerInvoice'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.classCustomerInvoice'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -44,7 +44,7 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
     $strsql = "SELECT parent_id "
         . "FROM ciniki_customers "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
@@ -63,13 +63,13 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
     $strsql = "SELECT r1.invoice_id, r1.customer_id "
         . "FROM ciniki_fatt_offering_dates AS d1, ciniki_fatt_offering_dates AS d2, ciniki_fatt_offering_registrations AS r1 "
         . "WHERE d1.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-        . "AND d1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND d1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND d1.start_date = d2.start_date "
         . "AND d1.location_id = d2.location_id "
-        . "AND d2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND d2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND d2.offering_id = r1.offering_id "
         . "AND r1.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND r1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND r1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'registration');
     if( $rc['stat'] != 'ok' ) {
@@ -90,7 +90,7 @@ function ciniki_fatt_classCustomerInvoice($ciniki) {
     $strsql = "SELECT start_date "
         . "FROM ciniki_fatt_offerings "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
     if( $rc['stat'] != 'ok' ) {

@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_fatt_sapos_invoiceUpdate($ciniki, $business_id, $invoice_id, $item) {
+function ciniki_fatt_sapos_invoiceUpdate($ciniki, $tnid, $invoice_id, $item) {
 
     //
     // If an invoice was updated, check if we need to change any of the registrations
@@ -21,7 +21,7 @@ function ciniki_fatt_sapos_invoiceUpdate($ciniki, $business_id, $invoice_id, $it
         //
         $strsql = "SELECT id, offering_id, customer_id, student_id "
             . "FROM ciniki_fatt_offering_registrations "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'registration');
@@ -38,7 +38,7 @@ function ciniki_fatt_sapos_invoiceUpdate($ciniki, $business_id, $invoice_id, $it
         //
         $strsql = "SELECT id, customer_id "
             . "FROM ciniki_sapos_invoices "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $invoice_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'invoice');
@@ -59,7 +59,7 @@ function ciniki_fatt_sapos_invoiceUpdate($ciniki, $business_id, $invoice_id, $it
             //       might be changing from a self pay registration, to a company pay.
             //
             $reg_args = array('customer_id'=>$invoice['customer_id']);
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.offeringregistration', 
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.offeringregistration', 
                 $registration['id'], $reg_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;

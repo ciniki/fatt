@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the course is attached to.
+// tnid:     The ID of the tenant the course is attached to.
 // course_id:       The ID of the course to get the details for.
 // 
 // Returns
@@ -20,7 +20,7 @@ function ciniki_fatt_courseGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'messages'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Messages'), 
         )); 
@@ -31,19 +31,19 @@ function ciniki_fatt_courseGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.courseGet'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.courseGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -55,7 +55,7 @@ function ciniki_fatt_courseGet($ciniki) {
     if( $args['course_id'] == 0 ) {
         $strsql = "SELECT MAX(sequence) AS sequence "
             . "FROM ciniki_fatt_courses "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'max');
         if( $rc['stat'] != 'ok' ) {
@@ -99,7 +99,7 @@ function ciniki_fatt_courseGet($ciniki) {
             . "ciniki_fatt_courses.cert_form1, "
             . "ciniki_fatt_courses.cert_form2 "
             . "FROM ciniki_fatt_courses "
-            . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_fatt_courses.id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -119,9 +119,9 @@ function ciniki_fatt_courseGet($ciniki) {
     }
 
     //
-    // Get the categories for the course and the business
+    // Get the categories for the course and the tenant
     //
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) > 0 ) {
         $rsp['course']['categories'] = '';
         $strsql = "SELECT ciniki_fatt_categories.id, "
             . "ciniki_fatt_categories.name, "
@@ -131,9 +131,9 @@ function ciniki_fatt_courseGet($ciniki) {
             . "LEFT JOIN ciniki_fatt_course_categories ON ("
                 . "ciniki_fatt_categories.id = ciniki_fatt_course_categories.category_id "
                 . "AND ciniki_fatt_course_categories.course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
-                . "AND ciniki_fatt_course_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_fatt_course_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_fatt_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY ciniki_fatt_categories.sequence, ciniki_fatt_categories.name "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -156,9 +156,9 @@ function ciniki_fatt_courseGet($ciniki) {
     }
 
     //
-    // Get the bundles for the course and the business
+    // Get the bundles for the course and the tenant
     //
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) > 0 ) {
         $rsp['course']['bundles'] = '';
         $strsql = "SELECT ciniki_fatt_bundles.id, "
             . "ciniki_fatt_bundles.name, "
@@ -167,9 +167,9 @@ function ciniki_fatt_courseGet($ciniki) {
             . "LEFT JOIN ciniki_fatt_course_bundles ON ("
                 . "ciniki_fatt_bundles.id = ciniki_fatt_course_bundles.bundle_id "
                 . "AND ciniki_fatt_course_bundles.course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
-                . "AND ciniki_fatt_course_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_fatt_course_bundles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_fatt_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_bundles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY ciniki_fatt_bundles.name "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -192,9 +192,9 @@ function ciniki_fatt_courseGet($ciniki) {
     }
 
     //
-    // Get the certs for the course and the business
+    // Get the certs for the course and the tenant
     //
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x10) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x10) > 0 ) {
         $rsp['course']['certs'] = '';
         $strsql = "SELECT ciniki_fatt_certs.id, "
             . "ciniki_fatt_certs.name, "
@@ -203,9 +203,9 @@ function ciniki_fatt_courseGet($ciniki) {
             . "LEFT JOIN ciniki_fatt_course_certs ON ("
                 . "ciniki_fatt_certs.id = ciniki_fatt_course_certs.cert_id "
                 . "AND ciniki_fatt_course_certs.course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
-                . "AND ciniki_fatt_course_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_fatt_course_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY ciniki_fatt_certs.name "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -231,11 +231,11 @@ function ciniki_fatt_courseGet($ciniki) {
     // Get any messages about the course
     //
     if( isset($args['messages']) && $args['messages'] == 'yes' 
-        && ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x08) > 0 
+        && ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x08) > 0 
         ) {
         $strsql = "SELECT id, days, subject, message "
             . "FROM ciniki_fatt_messages "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND object = 'ciniki.fatt.course' "
             . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
             . "ORDER BY days "
@@ -258,7 +258,7 @@ function ciniki_fatt_courseGet($ciniki) {
     // Get the list of available forms
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'forms', 'list');
-    $rc = ciniki_fatt_forms_list($ciniki, $args['business_id'], array());
+    $rc = ciniki_fatt_forms_list($ciniki, $args['tnid'], array());
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

@@ -8,7 +8,7 @@
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get post for.
+// tnid:     The ID of the tenant to get post for.
 //
 // args:            The possible arguments for posts
 //
@@ -16,9 +16,9 @@
 // Returns
 // -------
 //
-function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args) {
+function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
 
-    if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
+    if( !isset($ciniki['tenant']['modules']['ciniki.fatt']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.135', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
     $page = array(
@@ -37,7 +37,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
         && preg_match("/^(.*)\.pdf$/", $args['uri_split'][2], $matches)
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'blog', 'web', 'downloadPDF');
-        $rc = ciniki_blog_web_downloadPDF($ciniki, $settings, $business_id, $ciniki['request']['uri_split'][0], $args['uri_split'][2], $args['blogtype']);
+        $rc = ciniki_blog_web_downloadPDF($ciniki, $settings, $tnid, $ciniki['request']['uri_split'][0], $args['uri_split'][2], $args['blogtype']);
         if( $rc['stat'] == 'ok' ) {
             return array('stat'=>'ok', 'download'=>$rc['file']);
         }
@@ -78,12 +78,12 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
     // Parse the URL and decide what should be displayed
     //
     $display = 'courses';
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 
         && isset($args['uri_split'][0]) && $args['uri_split'][0] != ''
         ) {
         $category_permalink = array_shift($args['uri_split']);
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'categoryDetails');
-        $rc = ciniki_fatt_web_categoryDetails($ciniki, $settings, $business_id, $category_permalink);
+        $rc = ciniki_fatt_web_categoryDetails($ciniki, $settings, $tnid, $category_permalink);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -114,14 +114,14 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
     //
     if( $display == 'courses' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courses');
-        $rc = ciniki_fatt_web_courses($ciniki, $settings, $business_id, array());
+        $rc = ciniki_fatt_web_courses($ciniki, $settings, $tnid, array());
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.137', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested.", 'err'=>$rc['err']));
         }
         //
         // If categories are enabled, then show the default list by category
         //
-        if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 ) {
+        if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 ) {
             if( !isset($rc['categories']) ) {
                 return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.138', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested."));
             }
@@ -153,7 +153,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
         }
 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courses');
-        $rc = ciniki_fatt_web_courses($ciniki, $settings, $business_id, array('category_id'=>(isset($category['id'])?$category['id']:0)));
+        $rc = ciniki_fatt_web_courses($ciniki, $settings, $tnid, array('category_id'=>(isset($category['id'])?$category['id']:0)));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.140', 'msg'=>"I'm sorry, but we can't seem to find the courses you requested.", 'err'=>$rc['err']));
         }
@@ -168,7 +168,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
 
     elseif( $display == 'course' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courseDetails');
-        $rc = ciniki_fatt_web_courseDetails($ciniki, $settings, $business_id, $course_permalink);
+        $rc = ciniki_fatt_web_courseDetails($ciniki, $settings, $tnid, $course_permalink);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.142', 'msg'=>"I'm sorry, but we can't seem to find the course you requested.", 'err'=>$rc['err']));
         }
@@ -216,12 +216,12 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $business_id, $args
     //
     // If categories enabled and not category menu, display submenu as categories
     //
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) == 0x02 
         && isset($settings['page-fatt-submenu-categories']) && $settings['page-fatt-submenu-categories'] == 'yes'
         ) {
         $strsql = "SELECT id, name, permalink, primary_image_id, synopsis, description "
             . "FROM ciniki_fatt_categories "
-            . "WHERE ciniki_fatt_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_fatt_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY sequence ";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'category');
         if( $rc['stat'] != 'ok' ) {

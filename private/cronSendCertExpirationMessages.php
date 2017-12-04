@@ -8,9 +8,9 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the course is attached to.
+// tnid:     The ID of the tenant the course is attached to.
 // 
-function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsupdate=0x07) {
+function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $tnid, $tmsupdate=0x07) {
 
     // Default delivery time, will need to be a setting in the future.
     $delivery_time = '06:00:00';
@@ -19,16 +19,16 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
     $message_status = 7;
 
     // Functions required
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'sendCertExpirationMessage');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 
     //
-    // Load the business time zone information
+    // Load the tenant time zone information
     //
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -43,7 +43,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         . "days, "
         . "subject, message, parent_subject, parent_message "
         . "FROM ciniki_fatt_messages "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (status = 10 || status = 20) "
         . "AND object = 'ciniki.fatt.cert' "
         . "ORDER BY cert_id, days ASC "
@@ -62,7 +62,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
     $cert_messages = $rc['certs'];
 
     //
-    // Setup the current date in the business timezone
+    // Setup the current date in the tenant timezone
     //
     $dt = new DateTime('now', new DateTimeZone($intl_timezone));
 
@@ -83,9 +83,9 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         . "FROM ciniki_fatt_cert_customers AS cc "
         . "LEFT JOIN ciniki_fatt_certs AS certs ON ("
             . "cc.cert_id = certs.id "
-            . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND certs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE cc.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE cc.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND cc.date_expiry <> '0000-00-00' "
         . "AND (cc.flags&0x03) = 0x01 "       // Emails aren't marked as finished yet
         . "AND cc.next_message_date <= '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d H:m:s')) . "' "
@@ -111,10 +111,10 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             if( $cc['days_till_expiry'] > 0 ) {
                 error_log("CRON: No expiration messages for certification " . $cc['id']);
                 if( ($cc['flags']&0x02) == 0 ) {
-                    $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
+                    $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.certcustomer', $cc['id'], 
                         array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
                     if( $rc['stat'] != 'ok' ) {
-                        error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+                        error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $tnid . (" . serialize($rc['err']) . ")");
                         continue;
                     }
                 }
@@ -138,11 +138,11 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             . "WHERE certs.customer_id = '" . ciniki_core_dbQuote($ciniki, $cc['customer_id']) . "' "
             . "AND date_received > '" . ciniki_core_dbQuote($ciniki, $cc['date_received']) . "' "
             . $cert_sql
-            . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND certs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'cert');
         if( $rc['stat'] != 'ok' ) {
-            error_log("CRON-ERR: Unable to check for new certs on cert expiration reminder for customer " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+            error_log("CRON-ERR: Unable to check for new certs on cert expiration reminder for customer " . $cc['id'] . " for $tnid . (" . serialize($rc['err']) . ")");
             continue;
         }
         if( isset($rc['cert']['num_certs']) && $rc['cert']['num_certs'] > 0 ) {
@@ -150,10 +150,10 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             // Stop future emails, and skip this email reminder.
             //
             if( ($cc['flags']&0x02) == 0 ) {
-                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.certcustomer', $cc['id'], 
                     array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
                 if( $rc['stat'] != 'ok' ) {
-                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $tnid . (" . serialize($rc['err']) . ")");
                     continue;
                 }
             }
@@ -166,18 +166,18 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         $strsql = "SELECT COUNT(regs.id) AS num_reg "
             . "FROM ciniki_fatt_offering_registrations AS regs, ciniki_fatt_offerings AS offerings, ciniki_fatt_course_certs AS certs "
             . "WHERE regs.customer_id = '" . ciniki_core_dbQuote($ciniki, $cc['customer_id']) . "' "
-            . "AND regs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND regs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND regs.status < 30 "
             . "AND regs.offering_id = offerings.id "
             . "AND offerings.start_date > UTC_TIMESTAMP() "  
-            . "AND offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND offerings.course_id = certs.course_id "
             . $cert_sql
-            . "AND certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND certs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'reg');
         if( $rc['stat'] != 'ok' ) {
-            error_log("CRON-ERR: Unable to check registrations for cert expiration reminder for customer " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+            error_log("CRON-ERR: Unable to check registrations for cert expiration reminder for customer " . $cc['id'] . " for $tnid . (" . serialize($rc['err']) . ")");
             continue;
         }
         if( isset($rc['reg']['num_reg']) && $rc['reg']['num_reg'] > 0 ) {
@@ -185,9 +185,9 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             // Stop future emails, and skip this email reminder.
             //
             if( ($cc['flags']&0x02) == 0 ) {
-                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.certcustomer', $cc['id'], array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
                 if( $rc['stat'] != 'ok' ) {
-                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $tnid . (" . serialize($rc['err']) . ")");
                     continue;
                 }
             }
@@ -234,16 +234,16 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
             //
             // Check to make sure message hasn't already been sent
             //
-            $rc = ciniki_mail_hooks_objectMessages($ciniki, $business_id, 
+            $rc = ciniki_mail_hooks_objectMessages($ciniki, $tnid, 
                 array('object'=>'ciniki.fatt.message', 'object_id'=>$cur_message_to_send['id'], 'customer_id'=>$cc['customer_id']));
             if( $rc['stat'] != 'ok' ) {
-                error_log("CRON-ERR: Unable to get objectMessages for $business_id . (" . serialize($rc['err']) . ")");
+                error_log("CRON-ERR: Unable to get objectMessages for $tnid . (" . serialize($rc['err']) . ")");
             }
             elseif( !isset($rc['messages']) || count($rc['messages']) == 0 ) {
                 //
                 // Add the message to the customer
                 //
-                $rc = ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, 
+                $rc = ciniki_fatt_sendCertExpirationMessage($ciniki, $tnid, 
                     array('certcustomer'=>$cc, 'message'=>$cur_message_to_send, 'message_status'=>$message_status), $tmsupdate);
                 if( isset($rc['err']['code']) && $rc['err']['code'] == 'ciniki.fatt.33' ) {
                     //
@@ -251,16 +251,16 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
                     //
                     error_log("CRON-ERR: No email addresses for customer " . $cc['customer_id']);
                     if( ($cc['flags']&0x02) == 0 ) {
-                        $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
+                        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.certcustomer', $cc['id'], 
                             array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
                         if( $rc['stat'] != 'ok' ) {
-                            error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+                            error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $tnid . (" . serialize($rc['err']) . ")");
                             continue;
                         }
                     }
                 }
                 elseif( $rc['stat'] != 'ok' ) {
-                    error_log("CRON-ERR: Unable to send message for $business_id . (" . serialize($rc['err']) . ")");
+                    error_log("CRON-ERR: Unable to send message for $tnid . (" . serialize($rc['err']) . ")");
                     continue;
                 }
             }
@@ -277,10 +277,10 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
                 $delivery_time_pieces = explode(':', $delivery_time);
                 $next_dt->setTime($delivery_time_pieces[0], $delivery_time_pieces[1]);
                 $next_dt->setTimezone(new DateTimeZone('UTC'));
-                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.certcustomer', $cc['id'], 
                     array('next_message_date'=>$next_dt->format('Y-m-d H:i:s')), $tmsupdate);
                 if( $rc['stat'] != 'ok' ) {
-                    error_log("CRON-ERR: Unable to send message for $business_id . (" . serialize($rc['err']) . ")");
+                    error_log("CRON-ERR: Unable to send message for $tnid . (" . serialize($rc['err']) . ")");
                     continue;
                 }
             }
@@ -291,10 +291,10 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $business_id, $tmsu
         else {
             error_log("CRON: No more messages for customer " . $cc['customer_id']);
             if( ($cc['flags']&0x02) == 0 ) {
-                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.certcustomer', $cc['id'], 
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.certcustomer', $cc['id'], 
                     array('flags'=>($cc['flags']|=0x02)), $tmsupdate);
                 if( $rc['stat'] != 'ok' ) {
-                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $business_id . (" . serialize($rc['err']) . ")");
+                    error_log("CRON-ERR: Unable to update customer cert " . $cc['id'] . " for $tnid . (" . serialize($rc['err']) . ")");
                     continue;
                 }
             }

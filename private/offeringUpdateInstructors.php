@@ -8,9 +8,9 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the offering is attached to.
+// tnid:     The ID of the tenant the offering is attached to.
 // 
-function ciniki_fatt_offeringUpdateInstructors($ciniki, $business_id, $offering_id, $ninstructors) {
+function ciniki_fatt_offeringUpdateInstructors($ciniki, $tnid, $offering_id, $ninstructors) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
@@ -21,7 +21,7 @@ function ciniki_fatt_offeringUpdateInstructors($ciniki, $business_id, $offering_
     //
     $strsql = "SELECT instructor_id, id "
         . "FROM ciniki_fatt_offering_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
         . "";
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.fatt', 'instructors');
@@ -36,7 +36,7 @@ function ciniki_fatt_offeringUpdateInstructors($ciniki, $business_id, $offering_
     foreach($ninstructors as $cid) {
         if( !isset($oinstructors[$cid]) ) {
             // Add instructor link
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.fatt.offeringinstructor', 
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.fatt.offeringinstructor', 
                 array('instructor_id'=>$cid, 'offering_id'=>$offering_id), 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -49,7 +49,7 @@ function ciniki_fatt_offeringUpdateInstructors($ciniki, $business_id, $offering_
     //
     foreach($oinstructors as $cid => $object_id) {
         if( !in_array($cid, $ninstructors) ) {
-            $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.offeringinstructor', $object_id, null, 0x04);
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.fatt.offeringinstructor', $object_id, null, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }

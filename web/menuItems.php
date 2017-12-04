@@ -8,7 +8,7 @@
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get events for.
+// tnid:     The ID of the tenant to get events for.
 //
 // args:            The possible arguments for posts
 //
@@ -16,9 +16,9 @@
 // Returns
 // -------
 //
-function ciniki_fatt_web_menuItems(&$ciniki, $settings, $business_id, $args) {
+function ciniki_fatt_web_menuItems(&$ciniki, $settings, $tnid, $args) {
     
-    if( !isset($ciniki['business']['modules']['ciniki.fatt']) ) {
+    if( !isset($ciniki['tenant']['modules']['ciniki.fatt']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.134', 'msg'=>"I'm sorry, the file you requested does not exist."));
     }
 
@@ -29,7 +29,7 @@ function ciniki_fatt_web_menuItems(&$ciniki, $settings, $business_id, $args) {
     if( isset($settings['page-fatt-menu-categories']) && $settings['page-fatt-menu-categories'] == 'yes' ) {
         $strsql = "SELECT id, name, permalink, primary_image_id, synopsis, description "
             . "FROM ciniki_fatt_categories "
-            . "WHERE ciniki_fatt_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_fatt_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY sequence ";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'category');
         if( $rc['stat'] != 'ok' ) {

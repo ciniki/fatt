@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will delete a instructor from the business.
+// This method will delete a instructor from the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the instructor is attached to.
+// tnid:         The ID of the tenant the instructor is attached to.
 // instructor_id:           The ID of the instructor to be removed.
 //
 // Returns
@@ -21,7 +21,7 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'instructor_id'=>array('required'=>'yes', 'default'=>'', 'blank'=>'yes', 'name'=>'Instructor'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -30,10 +30,10 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.instructorDelete');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.instructorDelete');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -43,7 +43,7 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
     //
     $strsql = "SELECT uuid "
         . "FROM ciniki_fatt_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['instructor_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
@@ -61,7 +61,7 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
     //
     $strsql = "SELECT 'items', COUNT(*) "
         . "FROM ciniki_fatt_offering_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND instructor_id = '" . ciniki_core_dbQuote($ciniki, $args['instructor_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
@@ -91,7 +91,7 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
     //
     // Remove the instructor
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.fatt.instructor', 
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.fatt.instructor', 
         $args['instructor_id'], $instructor_uuid, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
@@ -107,11 +107,11 @@ function ciniki_fatt_instructorDelete(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     return array('stat'=>'ok');
 }

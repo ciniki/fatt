@@ -8,9 +8,9 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the course is attached to.
+// tnid:     The ID of the tenant the course is attached to.
 // 
-function ciniki_fatt_categoryUpdateCourses($ciniki, $business_id, $category_id, $ncoursess) {
+function ciniki_fatt_categoryUpdateCourses($ciniki, $tnid, $category_id, $ncoursess) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
@@ -21,7 +21,7 @@ function ciniki_fatt_categoryUpdateCourses($ciniki, $business_id, $category_id, 
     //
     $strsql = "SELECT course_id, id "
         . "FROM ciniki_fatt_course_categories "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND category_id = '" . ciniki_core_dbQuote($ciniki, $category_id) . "' "
         . "";
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.fatt', 'categories');
@@ -36,7 +36,7 @@ function ciniki_fatt_categoryUpdateCourses($ciniki, $business_id, $category_id, 
     foreach($ncoursess as $cid) {
         if( !isset($ocourses[$cid]) ) {
             // Add category link
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.fatt.course_category', 
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.fatt.course_category', 
                 array('course_id'=>$cid, 'category_id'=>$category_id), 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -49,7 +49,7 @@ function ciniki_fatt_categoryUpdateCourses($ciniki, $business_id, $category_id, 
     //
     foreach($ocourses as $cid => $object_id) {
         if( !in_array($cid, $ncoursess) ) {
-            $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.course_category', $object_id, null, 0x04);
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.fatt.course_category', $object_id, null, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }

@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will return the list of locations for a business.  
+// This method will return the list of locations for a tenant.  
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get locations for.
+// tnid:     The ID of the tenant to get locations for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_fatt_locationList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -27,10 +27,10 @@ function ciniki_fatt_locationList($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.locationList');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.locationList');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -56,7 +56,7 @@ function ciniki_fatt_locationList($ciniki) {
         . "ciniki_fatt_locations.flags, "
         . "ciniki_fatt_locations.city "
         . "FROM ciniki_fatt_locations "
-        . "WHERE ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY name "
         . "";
 

@@ -8,7 +8,7 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The ID of the business to get the appointments for.
+// tnid:         The ID of the tenant to get the appointments for.
 // args:                The args passed from the API.
 //
 // Returns
@@ -17,12 +17,12 @@
 //      <appointment module="ciniki.fatt" customer_name="" invoice_number="" wine_name="" />
 //  </appointments>
 //
-function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
+function ciniki_fatt_hooks_appointments($ciniki, $tnid, $args) {
     //
     // Load date settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -85,25 +85,25 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_offering_dates "
         . "LEFT JOIN ciniki_fatt_offerings ON ("
             . "ciniki_fatt_offering_dates.offering_id = ciniki_fatt_offerings.id "
-            . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_offering_instructors ON ("
             . "ciniki_fatt_offerings.id = ciniki_fatt_offering_instructors.offering_id "
-            . "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_offering_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_instructors ON ("
             . "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
-            . "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_locations ON ("
             . "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
-            . "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_fatt_offering_dates.start_date >= '" . $start_date->format('Y-m-d H:i:s') . "' "
         . "AND ciniki_fatt_offering_dates.start_date < '" . $end_date->format('Y-m-d H:i:s') . "' "
         . "ORDER BY ciniki_fatt_offering_dates.start_date, ciniki_fatt_locations.code, ciniki_fatt_courses.code "
@@ -226,9 +226,9 @@ function ciniki_fatt_hooks_appointments($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_aeds "
         . "LEFT JOIN ciniki_customers ON ("
             . "ciniki_fatt_aeds.customer_id = ciniki_customers.id "
-            . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_aeds.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ("
             . "(ciniki_fatt_aeds.device_expiration >= '" . $start_date->format('Y-m-d') . "' "
                 . "AND ciniki_fatt_aeds.device_expiration < '" . $end_date->format('Y-m-d') . "' "

@@ -11,7 +11,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_forms_processCAONLSSCPR($ciniki, $business_id, &$pdf, $form) {
+function ciniki_fatt_forms_processCAONLSSCPR($ciniki, $tnid, &$pdf, $form) {
 
     $reg_number = 0;
     while($reg_number < count($form['registrations']) ) {

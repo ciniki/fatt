@@ -7,19 +7,19 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The business ID to check the session user against.
+// tnid:         The tenant ID to check the session user against.
 // method:              The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_fatt_hooks_customerCerts($ciniki, $business_id, $args) {
+function ciniki_fatt_hooks_customerCerts($ciniki, $tnid, $args) {
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -32,7 +32,7 @@ function ciniki_fatt_hooks_customerCerts($ciniki, $business_id, $args) {
     $php_date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     //
-    // Get the current date in the business timezone
+    // Get the current date in the tenant timezone
     //
     $cur_date = new DateTime('now', new DateTimeZone($intl_timezone));
 
@@ -59,10 +59,10 @@ function ciniki_fatt_hooks_customerCerts($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_cert_customers "
         . "LEFT JOIN ciniki_fatt_certs ON ("
             . "ciniki_fatt_cert_customers.cert_id = ciniki_fatt_certs.id "
-            . "AND ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE ciniki_fatt_cert_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND ciniki_fatt_cert_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_cert_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY ciniki_fatt_cert_customers.date_expiry DESC, ciniki_fatt_certs.name "
         . "";
     if( isset($args['limit']) && $args['limit'] > 0 ) {

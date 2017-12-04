@@ -74,7 +74,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.courses.open = function(cb) {
-        M.api.getJSONCb('ciniki.fatt.courseList', {'business_id':M.curBusinessID, 'categories':'yes', 'bundles':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.courseList', {'tnid':M.curTenantID, 'categories':'yes', 'bundles':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -143,10 +143,10 @@ function ciniki_fatt_settings() {
         return this.data[i];
     };
     this.course.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.courseHistory', 'args':{'business_id':M.curBusinessID, 'course_id':this.course_id, 'field':i}};
+        return {'method':'ciniki.fatt.courseHistory', 'args':{'tnid':M.curTenantID, 'course_id':this.course_id, 'field':i}};
     }
     this.course.messagesUpdate = function() {
-        M.api.getJSONCb('ciniki.fatt.courseGet', {'business_id':M.curBusinessID, 'course_id':this.course_id, 'messages':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.courseGet', {'tnid':M.curTenantID, 'course_id':this.course_id, 'messages':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -184,7 +184,7 @@ function ciniki_fatt_settings() {
     this.course.open = function(cb, cid) {
         if( cid != null ) { this.course_id = cid; }
         this.sections._buttons.buttons.delete.visible = (this.course_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.courseGet', {'business_id':M.curBusinessID, 'course_id':this.course_id, 'messages':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.courseGet', {'tnid':M.curTenantID, 'course_id':this.course_id, 'messages':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -208,7 +208,7 @@ function ciniki_fatt_settings() {
         if( this.course_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.courseUpdate', {'business_id':M.curBusinessID, 'course_id':this.course_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.fatt.courseUpdate', {'tnid':M.curTenantID, 'course_id':this.course_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -220,7 +220,7 @@ function ciniki_fatt_settings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.courseAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.courseAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -231,7 +231,7 @@ function ciniki_fatt_settings() {
     };
     this.course.remove = function(lid) {
         if( confirm('Are you sure you want to remove this course?') ) {
-            M.api.getJSONCb('ciniki.fatt.courseDelete', {'business_id':M.curBusinessID, 'course_id':lid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.courseDelete', {'tnid':M.curTenantID, 'course_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -277,7 +277,7 @@ function ciniki_fatt_settings() {
         return this.data[i];
     };
     this.category.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.categoryHistory', 'args':{'business_id':M.curBusinessID, 'category_id':this.category_id, 'field':i}};
+        return {'method':'ciniki.fatt.categoryHistory', 'args':{'tnid':M.curTenantID, 'category_id':this.category_id, 'field':i}};
     }
     this.category.addDropImage = function(iid) {
         M.ciniki_fatt_settings.category.setFieldValue('primary_image_id', iid, null, null);
@@ -290,7 +290,7 @@ function ciniki_fatt_settings() {
     this.category.open = function(cb, cid) {
         if( cid != null ) { this.category_id = cid; }
         this.sections._buttons.buttons.delete.visible = (this.category_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.categoryGet', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.categoryGet', {'tnid':M.curTenantID, 
             'category_id':this.category_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -307,7 +307,7 @@ function ciniki_fatt_settings() {
         if( this.category_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.categoryUpdate', {'business_id':M.curBusinessID,
+                M.api.postJSONCb('ciniki.fatt.categoryUpdate', {'tnid':M.curTenantID,
                     'category_id':this.category_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -320,7 +320,7 @@ function ciniki_fatt_settings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.categoryAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.categoryAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -331,7 +331,7 @@ function ciniki_fatt_settings() {
     };
     this.category.remove = function(lid) {
         if( confirm('Are you sure you want to remove this category?') ) {
-            M.api.getJSONCb('ciniki.fatt.categoryDelete', {'business_id':M.curBusinessID, 'category_id':lid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.categoryDelete', {'tnid':M.curTenantID, 'category_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -374,7 +374,7 @@ function ciniki_fatt_settings() {
         return this.data[i];
     };
     this.bundle.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.bundleHistory', 'args':{'business_id':M.curBusinessID, 'bundle_id':this.bundle_id, 'field':i}};
+        return {'method':'ciniki.fatt.bundleHistory', 'args':{'tnid':M.curTenantID, 'bundle_id':this.bundle_id, 'field':i}};
     }
     this.bundle.addDropImage = function(iid) {
         M.ciniki_fatt_settings.bundle.setFieldValue('primary_image_id', iid, null, null);
@@ -387,7 +387,7 @@ function ciniki_fatt_settings() {
     this.bundle.open = function(cb, cid) {
         if( cid != null ) { this.bundle_id = cid; }
         this.sections._buttons.buttons.delete.visible = (this.bundle_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.bundleGet', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.bundleGet', {'tnid':M.curTenantID, 
             'bundle_id':this.bundle_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -404,7 +404,7 @@ function ciniki_fatt_settings() {
         if( this.bundle_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.bundleUpdate', {'business_id':M.curBusinessID,
+                M.api.postJSONCb('ciniki.fatt.bundleUpdate', {'tnid':M.curTenantID,
                     'bundle_id':this.bundle_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -417,7 +417,7 @@ function ciniki_fatt_settings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.bundleAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.bundleAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -428,7 +428,7 @@ function ciniki_fatt_settings() {
     };
     this.bundle.remove = function(lid) {
         if( confirm('Are you sure you want to remove this bundle?') ) {
-            M.api.getJSONCb('ciniki.fatt.bundleDelete', {'business_id':M.curBusinessID, 'bundle_id':lid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.bundleDelete', {'tnid':M.curTenantID, 'bundle_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -463,7 +463,7 @@ function ciniki_fatt_settings() {
         return 'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructors.open();\',\'' + d.instructor.id + '\');';
     };
     this.instructors.open = function(cb) {
-        M.api.getJSONCb('ciniki.fatt.instructorList', {'business_id':M.curBusinessID, 'instructor_id':this.instructor_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.instructorList', {'tnid':M.curTenantID, 'instructor_id':this.instructor_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -513,7 +513,7 @@ function ciniki_fatt_settings() {
         return this.data[i];
     };
     this.instructor.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.instructorHistory', 'args':{'business_id':M.curBusinessID, 'instructor_id':this.instructor_id, 'field':i}};
+        return {'method':'ciniki.fatt.instructorHistory', 'args':{'tnid':M.curTenantID, 'instructor_id':this.instructor_id, 'field':i}};
     }
     this.instructor.addDropImage = function(iid) {
         M.ciniki_fatt_settings.instructor.setFieldValue('primary_image_id', iid, null, null);
@@ -526,7 +526,7 @@ function ciniki_fatt_settings() {
     this.instructor.open = function(cb, iid) {
         if( iid != null ) { this.instructor_id = iid; }
         this.sections._buttons.buttons.delete.visible = (this.instructor_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.instructorGet', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.instructorGet', {'tnid':M.curTenantID, 
             'instructor_id':this.instructor_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -542,7 +542,7 @@ function ciniki_fatt_settings() {
         if( this.instructor_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.instructorUpdate', {'business_id':M.curBusinessID,
+                M.api.postJSONCb('ciniki.fatt.instructorUpdate', {'tnid':M.curTenantID,
                     'instructor_id':this.instructor_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -555,7 +555,7 @@ function ciniki_fatt_settings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.instructorAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.instructorAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -566,7 +566,7 @@ function ciniki_fatt_settings() {
     };
     this.instructor.remove = function(lid) {
         if( confirm('Are you sure you want to remove this instructor?') ) {
-            M.api.getJSONCb('ciniki.fatt.instructorDelete', {'business_id':M.curBusinessID, 'instructor_id':lid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.instructorDelete', {'tnid':M.curTenantID, 'instructor_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -601,7 +601,7 @@ function ciniki_fatt_settings() {
         return 'M.ciniki_fatt_settings.location.open(\'M.ciniki_fatt_settings.locations.open();\',\'' + d.location.id + '\');';
     };
     this.locations.open = function(cb) {
-        M.api.getJSONCb('ciniki.fatt.locationList', {'business_id':M.curBusinessID, 'location_id':this.location_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.locationList', {'tnid':M.curTenantID, 'location_id':this.location_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -667,7 +667,7 @@ function ciniki_fatt_settings() {
             var script = document.createElement("script");
             script.id = 'googlemaps_js';
             script.type = "text/javascript";
-            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curBusiness.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_fatt_settings.location.lookupGoogleLatLong";
+            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curTenant.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_fatt_settings.location.lookupGoogleLatLong";
             document.body.appendChild(script);
         } else {
             this.lookupGoogleLatLong();
@@ -688,12 +688,12 @@ function ciniki_fatt_settings() {
         }); 
     };
     this.location.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.locationHistory', 'args':{'business_id':M.curBusinessID, 'location_id':this.location_id, 'field':i}};
+        return {'method':'ciniki.fatt.locationHistory', 'args':{'tnid':M.curTenantID, 'location_id':this.location_id, 'field':i}};
     }
     this.location.open = function(cb, lid) {
         if( lid != null ) { this.location_id = lid; }
         this.sections._buttons.buttons.delete.visible = (this.location_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.locationGet', {'business_id':M.curBusinessID, 'location_id':this.location_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.locationGet', {'tnid':M.curTenantID, 'location_id':this.location_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -708,7 +708,7 @@ function ciniki_fatt_settings() {
         if( this.location_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.locationUpdate', {'business_id':M.curBusinessID, 'location_id':this.location_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.fatt.locationUpdate', {'tnid':M.curTenantID, 'location_id':this.location_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -720,7 +720,7 @@ function ciniki_fatt_settings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.locationAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.locationAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -731,7 +731,7 @@ function ciniki_fatt_settings() {
     };
     this.location.remove = function(lid) {
         if( confirm('Are you sure you want to remove this location?') ) {
-            M.api.getJSONCb('ciniki.fatt.locationDelete', {'business_id':M.curBusinessID, 'location_id':lid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.locationDelete', {'tnid':M.curTenantID, 'location_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -767,7 +767,7 @@ function ciniki_fatt_settings() {
         return 'M.ciniki_fatt_settings.cert.open(\'M.ciniki_fatt_settings.certs.open();\',\'' + d.cert.id + '\');';
     };
     this.certs.open = function(cb) {
-        M.api.getJSONCb('ciniki.fatt.certList', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.certList', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -815,10 +815,10 @@ function ciniki_fatt_settings() {
         return this.data[i];
     };
     this.cert.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.certHistory', 'args':{'business_id':M.curBusinessID, 'cert_id':this.cert_id, 'field':i}};
+        return {'method':'ciniki.fatt.certHistory', 'args':{'tnid':M.curTenantID, 'cert_id':this.cert_id, 'field':i}};
     }
     this.cert.messagesUpdate = function() {
-        M.api.getJSONCb('ciniki.fatt.certGet', {'business_id':M.curBusinessID, 'cert_id':this.cert_id, 'messages':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.certGet', {'tnid':M.curTenantID, 'cert_id':this.cert_id, 'messages':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -848,7 +848,7 @@ function ciniki_fatt_settings() {
     this.cert.open = function(cb, cid) {
         if( cid != null ) { this.cert_id = cid; }
         this.sections._buttons.buttons.delete.visible = (this.cert_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.certGet', {'business_id':M.curBusinessID, 'cert_id':this.cert_id, 'messages':'yes', 'certs':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.certGet', {'tnid':M.curTenantID, 'cert_id':this.cert_id, 'messages':'yes', 'certs':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -866,7 +866,7 @@ function ciniki_fatt_settings() {
         if( this.cert_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.certUpdate', {'business_id':M.curBusinessID, 'cert_id':this.cert_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.fatt.certUpdate', {'tnid':M.curTenantID, 'cert_id':this.cert_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -878,7 +878,7 @@ function ciniki_fatt_settings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.certAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.certAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -889,7 +889,7 @@ function ciniki_fatt_settings() {
     };
     this.cert.remove = function(cid) {
         if( confirm('Are you sure you want to remove this certification?') ) {
-            M.api.getJSONCb('ciniki.fatt.certDelete', {'business_id':M.curBusinessID, 'cert_id':cid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.certDelete', {'tnid':M.curTenantID, 'cert_id':cid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -936,14 +936,14 @@ function ciniki_fatt_settings() {
         return this.data[i];
     };
     this.message.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.messageHistory', 'args':{'business_id':M.curBusinessID, 'message_id':this.message_id, 'field':i}};
+        return {'method':'ciniki.fatt.messageHistory', 'args':{'tnid':M.curTenantID, 'message_id':this.message_id, 'field':i}};
     }
     this.message.open = function(cb, o, oid, mid) {
         if( o != null ) { this.object = o; }
         if( oid != null ) { this.object_id = oid; }
         if( mid != null ) { this.message_id = mid; }
         this.sections._buttons.buttons.delete.visible = (this.message_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.messageGet', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.messageGet', {'tnid':M.curTenantID, 
             'message_id':this.message_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -965,7 +965,7 @@ function ciniki_fatt_settings() {
                 c += '&object_id=' + this.object_id;
             }
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.messageUpdate', {'business_id':M.curBusinessID,
+                M.api.postJSONCb('ciniki.fatt.messageUpdate', {'tnid':M.curTenantID,
                     'message_id':this.message_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -979,7 +979,7 @@ function ciniki_fatt_settings() {
         } else {
             var c = this.serializeForm('yes');
             c += '&object=' + this.object + '&object_id=' + this.object_id;
-            M.api.postJSONCb('ciniki.fatt.messageAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.messageAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -990,7 +990,7 @@ function ciniki_fatt_settings() {
     };
     this.message.remove = function(cid) {
         if( confirm('Are you sure you want to remove this message?') ) {
-            M.api.getJSONCb('ciniki.fatt.messageDelete', {'business_id':M.curBusinessID, 'message_id':cid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.messageDelete', {'tnid':M.curTenantID, 'message_id':cid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -1012,7 +1012,7 @@ function ciniki_fatt_settings() {
             }},
         'header':{'label':'Header Address Options', 'fields':{
             'default-header-contact-position':{'label':'Position', 'type':'toggle', 'default':'center', 'toggles':this.positionOptions},
-            'default-header-name':{'label':'Business Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'default-header-name':{'label':'Tenant Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'default-header-address':{'label':'Address', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'default-header-phone':{'label':'Phone', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'default-header-cell':{'label':'Cell', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
@@ -1026,7 +1026,7 @@ function ciniki_fatt_settings() {
     };
     this.documents.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.fatt.settingsHistory', 
-            'args':{'business_id':M.curBusinessID, 'setting':i}};
+            'args':{'tnid':M.curTenantID, 'setting':i}};
     }
     this.documents.fieldValue = function(s, i, d) {
         if( this.data[i] == null && d.default != null ) { return d.default; }
@@ -1041,7 +1041,7 @@ function ciniki_fatt_settings() {
         return true;
     };
     this.documents.open = function(cb) {
-        M.api.getJSONCb('ciniki.fatt.settingsGet', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.settingsGet', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -1055,7 +1055,7 @@ function ciniki_fatt_settings() {
     this.documents.save = function() {
         var c = this.serializeForm('no');
         if( c != '' ) {
-            M.api.postJSONCb('ciniki.fatt.settingsUpdate', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.settingsUpdate', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -1084,7 +1084,7 @@ function ciniki_fatt_settings() {
     };
     this.aeds.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.fatt.settingsHistory', 
-            'args':{'business_id':M.curBusinessID, 'setting':i}};
+            'args':{'tnid':M.curTenantID, 'setting':i}};
     }
     this.aeds.fieldValue = function(s, i, d) {
         if( this.data[i] == null && d.default != null ) { return d.default; }
@@ -1099,7 +1099,7 @@ function ciniki_fatt_settings() {
         return true;
     };
     this.aeds.open = function(cb) {
-        M.api.getJSONCb('ciniki.fatt.settingsGet', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.settingsGet', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -1113,7 +1113,7 @@ function ciniki_fatt_settings() {
     this.aeds.save = function() {
         var c = this.serializeForm('no');
         if( c != '' ) {
-            M.api.postJSONCb('ciniki.fatt.settingsUpdate', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.settingsUpdate', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -1148,11 +1148,11 @@ function ciniki_fatt_settings() {
         // 
         // Setup main menu
         //
-        this.menu.sections._.list.courses.visible = M.modFlagSet('ciniki.fatt', 0x01); // (M.curBusiness.modules['ciniki.fatt'].flags&0x01)>0?'yes':'no';
-        this.menu.sections._.list.instructors.visible = M.modFlagSet('ciniki.fatt', 0x01); // (M.curBusiness.modules['ciniki.fatt'].flags&0x01)>0?'yes':'no';
-        this.menu.sections._.list.certs.visible = M.modFlagSet('ciniki.fatt', 0x10); // (M.curBusiness.modules['ciniki.fatt'].flags&0x10)>0?'yes':'no';
-        this.menu.sections._.list.locations.visible = M.modFlagSet('ciniki.fatt', 0x04); // (M.curBusiness.modules['ciniki.fatt'].flags&0x04)>0?'yes':'no';
-        this.menu.sections._aeds.list.aeds.visible = M.modFlagSet('ciniki.fatt', 0x0100); // (M.curBusiness.modules['ciniki.fatt'].flags&0x0100)>0?'yes':'no';
+        this.menu.sections._.list.courses.visible = M.modFlagSet('ciniki.fatt', 0x01); // (M.curTenant.modules['ciniki.fatt'].flags&0x01)>0?'yes':'no';
+        this.menu.sections._.list.instructors.visible = M.modFlagSet('ciniki.fatt', 0x01); // (M.curTenant.modules['ciniki.fatt'].flags&0x01)>0?'yes':'no';
+        this.menu.sections._.list.certs.visible = M.modFlagSet('ciniki.fatt', 0x10); // (M.curTenant.modules['ciniki.fatt'].flags&0x10)>0?'yes':'no';
+        this.menu.sections._.list.locations.visible = M.modFlagSet('ciniki.fatt', 0x04); // (M.curTenant.modules['ciniki.fatt'].flags&0x04)>0?'yes':'no';
+        this.menu.sections._aeds.list.aeds.visible = M.modFlagSet('ciniki.fatt', 0x0100); // (M.curTenant.modules['ciniki.fatt'].flags&0x0100)>0?'yes':'no';
 
         //
         // Determine what is visible
@@ -1175,20 +1175,20 @@ function ciniki_fatt_settings() {
         } else {
             this.courses.sections.bundles.active = 'no';
         }
-        this.cert.sections.messages.active = M.modFlagOn('ciniki.fatt', 0x20); // ((M.curBusiness.modules['ciniki.fatt'].flags&0x20) > 0?'yes':'no');
-        this.course.sections._categories.active = M.modFlagOn('ciniki.fatt', 0x02); // ((M.curBusiness.modules['ciniki.fatt'].flags&0x02) > 0?'yes':'no');
-        this.course.sections._bundles.active = M.modFlagOn('ciniki.fatt', 0x40); // ((M.curBusiness.modules['ciniki.fatt'].flags&0x40) > 0?'yes':'no');
-        this.course.sections._certs.active = M.modFlagOn('ciniki.fatt', 0x10); // ((M.curBusiness.modules['ciniki.fatt'].flags&0x10) > 0?'yes':'no');
-        this.course.sections.messages.active = M.modFlagOn('ciniki.fatt', 0x08); // ((M.curBusiness.modules['ciniki.fatt'].flags&0x08) > 0?'yes':'no');
-        if( M.curBusiness.modules['ciniki.customers'].settings != null 
-            && M.curBusiness.modules['ciniki.customers'].settings['ui-labels-parent'] != null ) {
-            this.message.sections._parent_subject.label = M.curBusiness.modules['ciniki.customers'].settings['ui-labels-parent'] + ' Message';
+        this.cert.sections.messages.active = M.modFlagOn('ciniki.fatt', 0x20); // ((M.curTenant.modules['ciniki.fatt'].flags&0x20) > 0?'yes':'no');
+        this.course.sections._categories.active = M.modFlagOn('ciniki.fatt', 0x02); // ((M.curTenant.modules['ciniki.fatt'].flags&0x02) > 0?'yes':'no');
+        this.course.sections._bundles.active = M.modFlagOn('ciniki.fatt', 0x40); // ((M.curTenant.modules['ciniki.fatt'].flags&0x40) > 0?'yes':'no');
+        this.course.sections._certs.active = M.modFlagOn('ciniki.fatt', 0x10); // ((M.curTenant.modules['ciniki.fatt'].flags&0x10) > 0?'yes':'no');
+        this.course.sections.messages.active = M.modFlagOn('ciniki.fatt', 0x08); // ((M.curTenant.modules['ciniki.fatt'].flags&0x08) > 0?'yes':'no');
+        if( M.curTenant.modules['ciniki.customers'].settings != null 
+            && M.curTenant.modules['ciniki.customers'].settings['ui-labels-parent'] != null ) {
+            this.message.sections._parent_subject.label = M.curTenant.modules['ciniki.customers'].settings['ui-labels-parent'] + ' Message';
         } else {
             this.message.sections._parent_subject.label = 'Parent Message';
         }
-        if( M.curBusiness.modules['ciniki.customers'].settings != null 
-            && M.curBusiness.modules['ciniki.customers'].settings['ui-labels-child'] != null ) {
-            this.message.sections._subject.label = M.curBusiness.modules['ciniki.customers'].settings['ui-labels-child'] + ' Message';
+        if( M.curTenant.modules['ciniki.customers'].settings != null 
+            && M.curTenant.modules['ciniki.customers'].settings['ui-labels-child'] != null ) {
+            this.message.sections._subject.label = M.curTenant.modules['ciniki.customers'].settings['ui-labels-child'] + ' Message';
         } else {
             this.message.sections._subject.label = 'Customer Message';
         }
@@ -1199,9 +1199,9 @@ function ciniki_fatt_settings() {
         if( M.modOn('ciniki.taxes') ) {
             this.course.sections.details.fields.taxtype_id.active = 'yes';
             this.course.sections.details.fields.taxtype_id.options = {'0':'No Taxes'};
-            if( M.curBusiness.taxes != null && M.curBusiness.taxes.settings.types != null ) {
-                for(i in M.curBusiness.taxes.settings.types) {
-                    this.course.sections.details.fields.taxtype_id.options[M.curBusiness.taxes.settings.types[i].type.id] = M.curBusiness.taxes.settings.types[i].type.name;
+            if( M.curTenant.taxes != null && M.curTenant.taxes.settings.types != null ) {
+                for(i in M.curTenant.taxes.settings.types) {
+                    this.course.sections.details.fields.taxtype_id.options[M.curTenant.taxes.settings.types[i].type.id] = M.curTenant.taxes.settings.types[i].type.name;
                 }
             }
         } else {

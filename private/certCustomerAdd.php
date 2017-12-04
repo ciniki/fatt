@@ -2,24 +2,24 @@
 //
 // Description
 // -----------
-// This method will add a new cert for the business.
+// This method will add a new cert for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to add the cert to.
+// tnid:     The ID of the tenant to add the cert to.
 //
 // Returns
 // -------
 // <rsp stat="ok" id="42">
 //
-function ciniki_fatt__certCustomerAdd(&$ciniki, $business_id, $args) {
+function ciniki_fatt__certCustomerAdd(&$ciniki, $tnid, $args) {
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -33,7 +33,7 @@ function ciniki_fatt__certCustomerAdd(&$ciniki, $business_id, $args) {
         $strsql = "SELECT id, name, years_valid "
             . "FROM ciniki_fatt_certs "
             . "WHERE ciniki_fatt_certs.id = '" . ciniki_core_dbQuote($ciniki, $args['cert_id']) . "' "
-            . "AND ciniki_fatt_certs.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'cert');
         if( $rc['stat'] != 'ok' ) {
@@ -60,7 +60,7 @@ function ciniki_fatt__certCustomerAdd(&$ciniki, $business_id, $args) {
     // Add the cert to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.fatt.certcustomer', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.fatt.certcustomer', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return $rc;
@@ -68,11 +68,11 @@ function ciniki_fatt__certCustomerAdd(&$ciniki, $business_id, $args) {
     $certcustomer_id = $rc['id'];
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $business_id, 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $tnid, 'ciniki', 'fatt');
 
     return array('stat'=>'ok', 'id'=>$certcustomer_id);
 }

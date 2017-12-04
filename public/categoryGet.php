@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the category is attached to.
+// tnid:     The ID of the tenant the category is attached to.
 // category_id:     The ID of the category to get the details for.
 // 
 // Returns
@@ -20,7 +20,7 @@ function ciniki_fatt_categoryGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'category_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -30,10 +30,10 @@ function ciniki_fatt_categoryGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.categoryGet'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.categoryGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -42,7 +42,7 @@ function ciniki_fatt_categoryGet($ciniki) {
     if( $args['category_id'] == 0 ) {
         $strsql = "SELECT MAX(sequence) AS max_sequence "
             . "FROM ciniki_fatt_categories "
-            . "WHERE ciniki_fatt_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'max');
         if( $rc['stat'] != 'ok' ) {
@@ -71,7 +71,7 @@ function ciniki_fatt_categoryGet($ciniki) {
         . "ciniki_fatt_categories.synopsis, "
         . "ciniki_fatt_categories.description "
         . "FROM ciniki_fatt_categories "
-        . "WHERE ciniki_fatt_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_fatt_categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -98,9 +98,9 @@ function ciniki_fatt_categoryGet($ciniki) {
         . "LEFT JOIN ciniki_fatt_course_categories ON ("
             . "ciniki_fatt_courses.id = ciniki_fatt_course_categories.course_id "
             . "AND ciniki_fatt_course_categories.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
-            . "AND ciniki_fatt_course_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_course_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY ciniki_fatt_courses.name "
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(

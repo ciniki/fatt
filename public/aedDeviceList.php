@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will return the list of AEDs for a business.
+// This method will return the list of AEDs for a tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:        The ID of the business to get AED for.
+// tnid:        The ID of the tenant to get AED for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
@@ -29,10 +29,10 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner, or sys admin.
+    // Check access to tnid as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.aedDeviceList');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.aedDeviceList');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -42,10 +42,10 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     $date_format = "%b %e, %Y";
 
     //
-    // Load business settings
+    // Load tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -91,9 +91,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         . "FROM ciniki_fatt_aeds "
         . "LEFT JOIN ciniki_customers ON ("
             . "ciniki_fatt_aeds.customer_id = ciniki_customers.id "
-            . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_aeds.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     if( isset($args['customer_id']) && $args['customer_id'] != '' ) {
         $strsql .= "AND ciniki_fatt_aeds.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -258,7 +258,7 @@ function ciniki_fatt_aedDeviceList($ciniki) {
         // Get the customer details
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-        $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], array('customer_id'=>$aed['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
+        $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], array('customer_id'=>$aed['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -333,7 +333,7 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     if( isset($args['output']) && $args['output'] == 'pdf' ) {
         
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'templates', 'aeds');
-        $rc = ciniki_fatt_templates_aeds($ciniki, $args['business_id'], $aeds);
+        $rc = ciniki_fatt_templates_aeds($ciniki, $args['tnid'], $aeds);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }

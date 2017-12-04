@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
+function ciniki_fatt_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
 
     //
     // An offering was added to an invoice item, get the details and see if we need to 
@@ -22,7 +22,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
         //
         $strsql = "SELECT id, seats_remaining "
             . "FROM ciniki_fatt_offerings "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
@@ -39,7 +39,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
         //
         $strsql = "SELECT id, customer_id "
             . "FROM ciniki_sapos_invoices "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $invoice_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'invoice');
@@ -59,7 +59,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
             'student_id'=>(isset($item['student_id']) ? $item['student_id'] : $invoice['customer_id']),
             'invoice_id'=>$invoice['id'],
             );
-        $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.fatt.offeringregistration', $reg_args, 0x04);
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.fatt.offeringregistration', $reg_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -69,7 +69,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
         // Update the offering
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
-        $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $business_id, $item['object_id'], 'yes');
+        $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $item['object_id'], 'yes');
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.123', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
         }
@@ -87,7 +87,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
         //
         $strsql = "SELECT id, invoice_id "
             . "FROM ciniki_fatt_offering_registrations "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'registration');
@@ -105,7 +105,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
         if( $registration['invoice_id'] == '0' ) {
             $reg_args = array('invoice_id'=>$invoice_id);
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.fatt.registration', 
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.registration', 
                 $registration['id'], $reg_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;

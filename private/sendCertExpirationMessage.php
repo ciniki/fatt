@@ -8,9 +8,9 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the course is attached to.
+// tnid:     The ID of the tenant the course is attached to.
 // 
-function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tmsupdate=0x07) {
+function ciniki_fatt_sendCertExpirationMessage($ciniki, $tnid, $args, $tmsupdate=0x07) {
 
     //
     // FIXME: allow the certcustomer_id passed instead and function will lookup ciniki_fatt_cert_customers.
@@ -35,7 +35,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
     // Load the customer details
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerEmails');
-    $rc = ciniki_customers_hooks_customerEmails($ciniki, $business_id, array('customer_id'=>$args['certcustomer']['customer_id']));
+    $rc = ciniki_customers_hooks_customerEmails($ciniki, $tnid, array('customer_id'=>$args['certcustomer']['customer_id']));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -61,7 +61,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
 
     $parent = NULL;
     if( isset($customer['parent_id']) && $customer['parent_id'] > 0 ) {
-        $rc = ciniki_customers_hooks_customerEmails($ciniki, $business_id, array('customer_id'=>$customer['parent_id']));
+        $rc = ciniki_customers_hooks_customerEmails($ciniki, $tnid, array('customer_id'=>$customer['parent_id']));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -97,7 +97,7 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
     $strsql = "UPDATE ciniki_fatt_cert_customers "  
         . "SET last_message_day = '" . ciniki_core_dbQuote($ciniki, $args['message']['days']) . "' "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['certcustomer']['id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND last_message_day <> '" . ciniki_core_dbQuote($ciniki, $args['message']['days']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
@@ -131,14 +131,14 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
         //
         // Add to pending mail
         //
-        $rc = ciniki_mail_hooks_addMessage($ciniki, $business_id, $email_args);
+        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, $email_args);
         if( $rc['stat'] != 'ok' ) {
             $rsp = array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.35', 'msg'=>'Unable to send customer message', 'err'=>$rc['err']));
             // Remove "lock" and reset the last_message_day so can try again
             $strsql = "UPDATE ciniki_fatt_cert_customers "  
                 . "SET last_message_day = '" . ciniki_core_dbQuote($ciniki, $args['certcustomer']['last_message_day']) . "' "
                 . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['certcustomer']['id']) . "' "
-                . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND last_message_day = '" . ciniki_core_dbQuote($ciniki, $args['message']['days']) . "' "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
@@ -174,14 +174,14 @@ function ciniki_fatt_sendCertExpirationMessage($ciniki, $business_id, $args, $tm
             //
             // Add to pending mail
             //
-            $rc = ciniki_mail_hooks_addMessage($ciniki, $business_id, $email_args);
+            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, $email_args);
             if( $rc['stat'] != 'ok' ) {
                 $rsp = array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.37', 'msg'=>'Unable to send parent message', 'err'=>$rc['err']));
                 // Remove "lock" and reset the last_message_day so can try again
                 $strsql = "UPDATE ciniki_fatt_cert_customers "  
                     . "SET last_message_day = '" . ciniki_core_dbQuote($ciniki, $args['certcustomer']['last_message_day']) . "' "
                     . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['certcustomer']['id']) . "' "
-                    . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . "AND last_message_day = '" . ciniki_core_dbQuote($ciniki, $args['message']['days']) . "' "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');

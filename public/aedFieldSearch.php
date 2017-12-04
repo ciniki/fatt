@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method searchs for a AEDs for a business.
+// This method searchs for a AEDs for a tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:        The ID of the business to get AED for.
+// tnid:        The ID of the tenant to get AED for.
 // start_needle:       The search string to search for.
 // limit:              The maximum number of entries to return.
 //
@@ -21,7 +21,7 @@ function ciniki_fatt_aedFieldSearch($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('make', 'model'), 'name'=>'Field'),
         'start_needle'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Search String'),
         ));
@@ -31,10 +31,10 @@ function ciniki_fatt_aedFieldSearch($ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner, or sys admin.
+    // Check access to tnid as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.aedFieldSearch');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.aedFieldSearch');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -47,7 +47,7 @@ function ciniki_fatt_aedFieldSearch($ciniki) {
             . "ciniki_fatt_aeds.make, "
             . "ciniki_fatt_aeds.model "
             . "FROM ciniki_fatt_aeds "
-            . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_aeds.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ("
                 . "make LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR make LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
@@ -58,7 +58,7 @@ function ciniki_fatt_aedFieldSearch($ciniki) {
             . "'' AS make, "
             . "ciniki_fatt_aeds.model "
             . "FROM ciniki_fatt_aeds "
-            . "WHERE ciniki_fatt_aeds.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_aeds.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ("
                 . "model LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR model LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

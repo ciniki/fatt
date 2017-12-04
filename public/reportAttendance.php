@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get certs for.
+// tnid:     The ID of the tenant to get certs for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_fatt_reportAttendance($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -27,10 +27,10 @@ function ciniki_fatt_reportAttendance($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.attendanceReport');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.attendanceReport');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -54,9 +54,9 @@ function ciniki_fatt_reportAttendance($ciniki) {
         . "ciniki_fatt_offering_registrations.status, "
         . "COUNT(ciniki_fatt_offering_registrations.id) AS num "
         . "FROM ciniki_fatt_offerings, ciniki_fatt_offering_registrations "
-        . "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
-        . "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "GROUP BY year, month, status "
         . "ORDER BY year DESC, month DESC "
         . "";

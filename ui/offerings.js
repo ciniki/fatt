@@ -97,7 +97,7 @@ function ciniki_fatt_offerings() {
             this.month = month;
             this.sections.months.selected = month;
         }
-        M.api.getJSONCb('ciniki.fatt.offeringList', {'business_id':M.curBusinessID, 'year':this.year, 'month':this.month, 'years':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.offeringList', {'tnid':M.curTenantID, 'year':this.year, 'month':this.month, 'years':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -192,7 +192,7 @@ function ciniki_fatt_offerings() {
     this.offering.open = function(cb, oid) {
         if( oid != null ) { this.offering_id = oid; }
         if( cb != null ) { this.cb = cb; }
-        M.api.getJSONCb('ciniki.fatt.offeringGet', {'business_id':M.curBusinessID, 'offering_id':this.offering_id}, this.openFinish);
+        M.api.getJSONCb('ciniki.fatt.offeringGet', {'tnid':M.curTenantID, 'offering_id':this.offering_id}, this.openFinish);
     };
     this.offering.openFinish = function(rsp) {
         if( rsp.stat != 'ok' ) {
@@ -254,7 +254,7 @@ function ciniki_fatt_offerings() {
         return this.data[i];
     };
     this.edit.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.offeringHistory', 'args':{'business_id':M.curBusinessID, 'offering_id':this.offering_id, 'field':i}};
+        return {'method':'ciniki.fatt.offeringHistory', 'args':{'tnid':M.curTenantID, 'offering_id':this.offering_id, 'field':i}};
     };
     this.edit.cellValue = function(s, i, j, d) {
         return '<span class="maintext">' + d.date.start_date + '</span><span class="subtext">' + d.date.location_name + '</span>';
@@ -274,7 +274,7 @@ function ciniki_fatt_offerings() {
     this.edit.open = function(cb, oid) {
         if( oid != null ) { this.offering_id = oid; }
         this.sections._buttons.buttons.delete.visible = (this.offering_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.offeringGet', {'business_id':M.curBusinessID, 'offering_id':this.offering_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.offeringGet', {'tnid':M.curTenantID, 'offering_id':this.offering_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -287,7 +287,7 @@ function ciniki_fatt_offerings() {
         });
     };
     this.edit.updateDates = function() {
-        M.api.getJSONCb('ciniki.fatt.offeringGet', {'business_id':M.curBusinessID, 'offering_id':this.offering_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.offeringGet', {'tnid':M.curTenantID, 'offering_id':this.offering_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -303,7 +303,7 @@ function ciniki_fatt_offerings() {
         if( this.offering_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.offeringUpdate', {'business_id':M.curBusinessID, 'offering_id':this.offering_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.fatt.offeringUpdate', {'tnid':M.curTenantID, 'offering_id':this.offering_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -315,7 +315,7 @@ function ciniki_fatt_offerings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.offeringAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.offeringAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -331,7 +331,7 @@ function ciniki_fatt_offerings() {
     };
     this.edit.remove = function(oid) {
         if( confirm('Are you sure you want to remove this offering?') ) {
-            M.api.getJSONCb('ciniki.fatt.offeringDelete', {'business_id':M.curBusinessID, 'offering_id':oid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.offeringDelete', {'tnid':M.curTenantID, 'offering_id':oid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -387,7 +387,7 @@ function ciniki_fatt_offerings() {
     this.odate.liveAppointmentDayEvents = function(i, day, cb) {
         if( i == 'start_date' ) {
             if( day == '--' ) { day = 'today';}
-            M.api.getJSONCb('ciniki.calendars.appointments', {'business_id':M.curBusinessID, 'date':day}, cb);
+            M.api.getJSONCb('ciniki.calendars.appointments', {'tnid':M.curTenantID, 'date':day}, cb);
         }
     };
     this.odate.fieldValue = function(s, i, d) {
@@ -395,7 +395,7 @@ function ciniki_fatt_offerings() {
         return this.data[i];
     };
     this.odate.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.offeringDateHistory', 'args':{'business_id':M.curBusinessID, 'date_id':this.date_id, 'field':i}};
+        return {'method':'ciniki.fatt.offeringDateHistory', 'args':{'tnid':M.curTenantID, 'date_id':this.date_id, 'field':i}};
     };
     this.odate.locationChange = function(s, i) {
         var lid = this.formValue(i);
@@ -410,7 +410,7 @@ function ciniki_fatt_offerings() {
         }
     };
 //      this.add.fieldHistoryArgs = function(s, i) {
-//          return {'method':'ciniki.fatt.offeringDateHistory', 'args':{'business_id':M.curBusinessID, 'date_id':this.date_id, 'field':i}};
+//          return {'method':'ciniki.fatt.offeringDateHistory', 'args':{'tnid':M.curTenantID, 'date_id':this.date_id, 'field':i}};
 //      };
     this.odate.lookupLatLong = function() {
         M.startLoad();
@@ -418,7 +418,7 @@ function ciniki_fatt_offerings() {
             var script = document.createElement("script");
             script.id = 'googlemaps_js';
             script.type = "text/javascript";
-            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curBusiness.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_fatt_offerings.odate.lookupGoogleLatLong";
+            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curTenant.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_fatt_offerings.odate.lookupGoogleLatLong";
             document.body.appendChild(script);
         } else {
             this.lookupGoogleLatLong();
@@ -442,7 +442,7 @@ function ciniki_fatt_offerings() {
         if( did != null ) { this.date_id = did; }
         if( oid != null ) { this.offering_id = oid; }
         this.sections._buttons.buttons.delete.visible = (this.date_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.offeringDateGet', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.offeringDateGet', {'tnid':M.curTenantID, 
             'date_id':this.date_id, 'offering_id':this.offering_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -470,7 +470,7 @@ function ciniki_fatt_offerings() {
         if( this.date_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.offeringDateUpdate', {'business_id':M.curBusinessID, 'date_id':this.date_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.fatt.offeringDateUpdate', {'tnid':M.curTenantID, 'date_id':this.date_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -483,7 +483,7 @@ function ciniki_fatt_offerings() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.offeringDateAdd', {'business_id':M.curBusinessID, 'offering_id':this.offering_id}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.offeringDateAdd', {'tnid':M.curTenantID, 'offering_id':this.offering_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -495,7 +495,7 @@ function ciniki_fatt_offerings() {
     };
     this.odate.remove = function() {
         if( confirm('Are you sure you want to remove this date?') ) {
-            M.api.getJSONCb('ciniki.fatt.offeringDateDelete', {'business_id':M.curBusinessID, 'date_id':this.date_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.offeringDateDelete', {'tnid':M.curTenantID, 'date_id':this.date_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -607,7 +607,7 @@ function ciniki_fatt_offerings() {
     };
     this.class.open = function(cb, cid, rf) {
         if( cid != null ) { this.class_id = cid; }
-        M.api.getJSONCb('ciniki.fatt.classGet', {'business_id':M.curBusinessID, 'class_id':this.class_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.classGet', {'tnid':M.curTenantID, 'class_id':this.class_id}, function(rsp) {
             if( rf != null && rf == 'yes' && rsp.stat == 'noexist' ) {
                 // Returned from function that may have deleted all the courses in a class
                 M.ciniki_fatt_offerings.class.close();
@@ -649,7 +649,7 @@ function ciniki_fatt_offerings() {
         if( cb == null ) { cb = 'M.ciniki_fatt_offerings.class.close();'; }
         var c = this.serializeForm('no');
         if( c != '' ) {
-            M.api.postJSONCb('ciniki.fatt.classUpdate', {'business_id':M.curBusinessID, 'class_id':this.class_id}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.classUpdate', {'tnid':M.curTenantID, 'class_id':this.class_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -662,7 +662,7 @@ function ciniki_fatt_offerings() {
     };
     this.class.cancelClass = function() {
         if( confirm('Are you sure you want to remove this class?') ) {
-            M.api.getJSONCb('ciniki.fatt.classDelete', {'business_id':M.curBusinessID, 'class_id':this.class_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.classDelete', {'tnid':M.curTenantID, 'class_id':this.class_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -672,10 +672,10 @@ function ciniki_fatt_offerings() {
         }
     }
     this.class.printList = function(cid) {
-        M.api.openFile('ciniki.fatt.classRegistrations', {'business_id':M.curBusinessID, 'output':'pdf', 'class_id':cid});
+        M.api.openFile('ciniki.fatt.classRegistrations', {'tnid':M.curTenantID, 'output':'pdf', 'class_id':cid});
     };
     this.class.downloadForms = function() {
-        M.api.openFile('ciniki.fatt.classDownloadForms', {'business_id':M.curBusinessID, 'output':'pdf', 'class_id':this.class_id});
+        M.api.openFile('ciniki.fatt.classDownloadForms', {'tnid':M.curTenantID, 'output':'pdf', 'class_id':this.class_id});
     }
     this.class.addButton('save', 'Save', 'M.ciniki_fatt_offerings.class.save();');
     this.class.addClose('Cancel');
@@ -735,11 +735,11 @@ function ciniki_fatt_offerings() {
     this.add.liveAppointmentDayEvents = function(i, day, cb) {
         if( i == 'day1' ) {
             if( day == '--' ) { day = 'today';}
-            M.api.getJSONCb('ciniki.calendars.appointments', {'business_id':M.curBusinessID, 'date':day}, cb);
+            M.api.getJSONCb('ciniki.calendars.appointments', {'tnid':M.curTenantID, 'date':day}, cb);
         }
         else if( i == 'day2' ) {
             if( day == '--' ) { day = 'today';}
-            M.api.getJSONCb('ciniki.calendars.appointments', {'business_id':M.curBusinessID, 'date':day}, cb);
+            M.api.getJSONCb('ciniki.calendars.appointments', {'tnid':M.curTenantID, 'date':day}, cb);
         }
     };
     this.add.fieldValue = function(s, i, d) {
@@ -796,7 +796,7 @@ function ciniki_fatt_offerings() {
         }
     };
 //      this.add.fieldHistoryArgs = function(s, i) {
-//          return {'method':'ciniki.fatt.offeringDateHistory', 'args':{'business_id':M.curBusinessID, 'date_id':this.date_id, 'field':i}};
+//          return {'method':'ciniki.fatt.offeringDateHistory', 'args':{'tnid':M.curTenantID, 'date_id':this.date_id, 'field':i}};
 //      };
     this.add.lookupLatLong = function() {
         M.startLoad();
@@ -804,7 +804,7 @@ function ciniki_fatt_offerings() {
             var script = document.createElement("script");
             script.id = 'googlemaps_js';
             script.type = "text/javascript";
-            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curBusiness.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_fatt_offerings.add.lookupGoogleLatLong";
+            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curTenant.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_fatt_offerings.add.lookupGoogleLatLong";
             document.body.appendChild(script);
         } else {
             this.lookupGoogleLatLong();
@@ -827,7 +827,7 @@ function ciniki_fatt_offerings() {
     this.add.open = function(cb, d, t, ad) {
         // Decide if tabs should be shown at top to switch to appointment from offering
         this.sections._tabs.visible = 'no';
-        if( M.curBusiness.modules['ciniki.atdo'] != null && (M.curBusiness.modules['ciniki.atdo'].flags&0x01) == 1 ) {
+        if( M.curTenant.modules['ciniki.atdo'] != null && (M.curTenant.modules['ciniki.atdo'].flags&0x01) == 1 ) {
             this.sections._tabs.visible = 'yes';
             this.sections._tabs.tabs.appointment.fn = 'M.startApp(\'ciniki.atdo.main\',null,\'' + cb + '\',\'mc\',{\'add\':\'appointment\',\'date\':\'' + d + '\',\'time\':\'' + t + '\',\'allday\':\'' + ad + '\'});';
         }
@@ -856,7 +856,7 @@ function ciniki_fatt_offerings() {
         if( this.customer_id > 0 ) {
             c += '&customer_id=' + encodeURIComponent(this.customer_id);
         }
-        M.api.postJSONCb('ciniki.fatt.classAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+        M.api.postJSONCb('ciniki.fatt.classAdd', {'tnid':M.curTenantID}, c, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -876,7 +876,7 @@ function ciniki_fatt_offerings() {
             }
             this.sections.customer_details.addTxt = 'Edit';
             this.sections.customer_details.changeTxt = 'Change';
-            M.api.getJSONCb('ciniki.customers.customerDetails', {'business_id':M.curBusinessID, 'customer_id':this.customer_id, 'phones':'yes', 'emails':'yes', 'addresses':'yes'}, function(rsp) {
+            M.api.getJSONCb('ciniki.customers.customerDetails', {'tnid':M.curTenantID, 'customer_id':this.customer_id, 'phones':'yes', 'emails':'yes', 'addresses':'yes'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -926,27 +926,27 @@ function ciniki_fatt_offerings() {
         // Add the bundles to the list of courses for add
         //
         
-        if( M.curBusiness.modules['ciniki.fatt'].settings.courses != null ) {
-            for(var i in M.curBusiness.modules['ciniki.fatt'].settings.courses) {
-                this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].num_days;
-                courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].name;
-                acourses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].name;
-                this.edit.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i];
-                this.add.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i];
-//              this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.num_days;
-//              courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
-//              acourses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.name;
-//              this.edit.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
-//              this.add.courses[M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curBusiness.modules['ciniki.fatt'].settings.courses[i].course;
+        if( M.curTenant.modules['ciniki.fatt'].settings.courses != null ) {
+            for(var i in M.curTenant.modules['ciniki.fatt'].settings.courses) {
+                this.add.ndays = M.curTenant.modules['ciniki.fatt'].settings.courses[i].num_days;
+                courses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i].name;
+                acourses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i].name;
+                this.edit.courses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i];
+                this.add.courses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i];
+//              this.add.ndays = M.curTenant.modules['ciniki.fatt'].settings.courses[i].course.num_days;
+//              courses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i].course.name;
+//              acourses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i].course.name;
+//              this.edit.courses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i].course;
+//              this.add.courses[M.curTenant.modules['ciniki.fatt'].settings.courses[i].course.id] = M.curTenant.modules['ciniki.fatt'].settings.courses[i].course;
             }
         }
         this.edit.sections.details.fields.course_id.options = courses;
 
-        if( M.curBusiness.modules['ciniki.fatt'].settings.bundles != null ) {
-            for(var i in M.curBusiness.modules['ciniki.fatt'].settings.bundles) {
-//              this.add.ndays = M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.num_days;
-                acourses['b-' + M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.id] = 'Bundle: ' + M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.name;
-                this.add.courses['b-' + M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle.id] = M.curBusiness.modules['ciniki.fatt'].settings.bundles[i].bundle;
+        if( M.curTenant.modules['ciniki.fatt'].settings.bundles != null ) {
+            for(var i in M.curTenant.modules['ciniki.fatt'].settings.bundles) {
+//              this.add.ndays = M.curTenant.modules['ciniki.fatt'].settings.bundles[i].bundle.num_days;
+                acourses['b-' + M.curTenant.modules['ciniki.fatt'].settings.bundles[i].bundle.id] = 'Bundle: ' + M.curTenant.modules['ciniki.fatt'].settings.bundles[i].bundle.name;
+                this.add.courses['b-' + M.curTenant.modules['ciniki.fatt'].settings.bundles[i].bundle.id] = M.curTenant.modules['ciniki.fatt'].settings.bundles[i].bundle;
             }
         }
         this.add.sections.details.fields.course_id.options = acourses;
@@ -957,11 +957,11 @@ function ciniki_fatt_offerings() {
         var locations = {0:'Unknown'};
         this.add.locations = {};
         this.odate.locations = {};
-        if( M.curBusiness.modules['ciniki.fatt'].settings.locations != null ) {
-            for(var i in M.curBusiness.modules['ciniki.fatt'].settings.locations) {
-                locations[M.curBusiness.modules['ciniki.fatt'].settings.locations[i].location.id] = M.curBusiness.modules['ciniki.fatt'].settings.locations[i].location.name;
-                this.add.locations[M.curBusiness.modules['ciniki.fatt'].settings.locations[i].location.id] = M.curBusiness.modules['ciniki.fatt'].settings.locations[i].location;
-                this.odate.locations[M.curBusiness.modules['ciniki.fatt'].settings.locations[i].location.id] = M.curBusiness.modules['ciniki.fatt'].settings.locations[i].location;
+        if( M.curTenant.modules['ciniki.fatt'].settings.locations != null ) {
+            for(var i in M.curTenant.modules['ciniki.fatt'].settings.locations) {
+                locations[M.curTenant.modules['ciniki.fatt'].settings.locations[i].location.id] = M.curTenant.modules['ciniki.fatt'].settings.locations[i].location.name;
+                this.add.locations[M.curTenant.modules['ciniki.fatt'].settings.locations[i].location.id] = M.curTenant.modules['ciniki.fatt'].settings.locations[i].location;
+                this.odate.locations[M.curTenant.modules['ciniki.fatt'].settings.locations[i].location.id] = M.curTenant.modules['ciniki.fatt'].settings.locations[i].location;
             }
         }
         this.odate.sections.details.fields.location_id.options = locations;
@@ -972,10 +972,10 @@ function ciniki_fatt_offerings() {
         //
         this.edit.sections._instructors.active = 'no';
         this.add.sections._instructors.active = 'no';
-        if( M.curBusiness.modules['ciniki.fatt'].settings.instructors != null ) {
-            this.edit.sections._instructors.fields.instructors.list = M.curBusiness.modules['ciniki.fatt'].settings.instructors;
-            this.add.sections._instructors.fields.instructors.list = M.curBusiness.modules['ciniki.fatt'].settings.instructors;
-            if( M.curBusiness.modules['ciniki.fatt'].settings.instructors.length > 0 ) {
+        if( M.curTenant.modules['ciniki.fatt'].settings.instructors != null ) {
+            this.edit.sections._instructors.fields.instructors.list = M.curTenant.modules['ciniki.fatt'].settings.instructors;
+            this.add.sections._instructors.fields.instructors.list = M.curTenant.modules['ciniki.fatt'].settings.instructors;
+            if( M.curTenant.modules['ciniki.fatt'].settings.instructors.length > 0 ) {
                 this.edit.sections._instructors.active = 'yes';
                 this.add.sections._instructors.active = 'yes';
             }

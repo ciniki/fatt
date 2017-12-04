@@ -11,27 +11,27 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
+function ciniki_fatt_templates_aeds(&$ciniki, $tnid, $aeds) {
 
     //
-    // Load business details
+    // Load tenant details
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
-    $rc = ciniki_businesses_businessDetails($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'tenantDetails');
+    $rc = ciniki_tenants_tenantDetails($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( isset($rc['details']) && is_array($rc['details']) ) {   
-        $business_details = $rc['details'];
+        $tenant_details = $rc['details'];
     } else {
-        $business_details = array();
+        $tenant_details = array();
     }
 
     //
     // Load the invoice settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_fatt_settings', 'business_id', $business_id, 'ciniki.fatt', 'settings', '');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_fatt_settings', 'tnid', $tnid, 'ciniki.fatt', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -56,7 +56,7 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
         public $header_addr = array();
         public $header_details = array();
         public $header_height = 15;      // The height of the image and address
-        public $business_details = array();
+        public $tenant_details = array();
         public $fatt_settings = array();
 
         public function Header() {
@@ -86,13 +86,13 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
     //
     if( isset($fatt_settings['default-header-image']) && $fatt_settings['default-header-image'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
-        $rc = ciniki_images_loadImage($ciniki, $business_id, $fatt_settings['default-header-image'], 'original');
+        $rc = ciniki_images_loadImage($ciniki, $tnid, $fatt_settings['default-header-image'], 'original');
         if( $rc['stat'] == 'ok' ) {
             $pdf->header_image = $rc['image'];
         }
     }
 
-    $pdf->business_details = $business_details;
+    $pdf->tenant_details = $tenant_details;
     $pdf->fatt_settings = $fatt_settings;
 
 //  print "<pre>" . print_r($class, true) . "</pre>";
@@ -101,7 +101,7 @@ function ciniki_fatt_templates_aeds(&$ciniki, $business_id, $aeds) {
     // Setup the PDF basics
     //
     $pdf->SetCreator('Ciniki');
-    $pdf->SetAuthor($business_details['name']);
+    $pdf->SetAuthor($tenant_details['name']);
     $pdf->SetTitle('AEDs');
     $pdf->SetSubject('');
     $pdf->SetKeywords('');

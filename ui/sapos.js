@@ -104,9 +104,9 @@ function ciniki_fatt_sapos() {
     };
     this.registration.fieldHistoryArgs = function(s, i) {
         if( s == 'details' ) {
-            return {'method':'ciniki.sapos.history', 'args':{'business_id':M.curBusinessID, 'object':'ciniki.sapos.invoice_item', 'object_id':this.item_id, 'field':i}};
+            return {'method':'ciniki.sapos.history', 'args':{'tnid':M.curTenantID, 'object':'ciniki.sapos.invoice_item', 'object_id':this.item_id, 'field':i}};
         }
-        return {'method':'ciniki.fatt.offeringRegistrationHistory', 'args':{'business_id':M.curBusinessID, 'registration_id':this.registration_id, 'field':i}};
+        return {'method':'ciniki.fatt.offeringRegistrationHistory', 'args':{'tnid':M.curTenantID, 'registration_id':this.registration_id, 'field':i}};
     };
     this.registration.cellValue = function(s, i, j, d) {
         if( s == 'customer_details' || s == 'student_details' || s == 'invoice_details' ) {
@@ -116,7 +116,7 @@ function ciniki_fatt_sapos() {
             }
         } 
         else if( s == 'alternate_courses' ) {
-            return M.curBusiness.modules['ciniki.fatt'].settings.courses[d.course_id].name;
+            return M.curTenant.modules['ciniki.fatt'].settings.courses[d.course_id].name;
         }
         else if( s == 'alternate_dates' ) {
             var sr = '';
@@ -159,7 +159,7 @@ function ciniki_fatt_sapos() {
             this.student_id = cid;
         }
         if( this.student_id > 0 ) {
-            M.api.getJSONCb('ciniki.customers.customerDetails', {'business_id':M.curBusinessID, 'customer_id':this.student_id, 'phones':'yes', 'emails':'yes', 'addresses':'yes'}, function(rsp) {
+            M.api.getJSONCb('ciniki.customers.customerDetails', {'tnid':M.curTenantID, 'customer_id':this.student_id, 'phones':'yes', 'emails':'yes', 'addresses':'yes'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -207,18 +207,18 @@ function ciniki_fatt_sapos() {
         'buttons':{'label':'', 'buttons':{
             'add1':{'label':'New Customer', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
 //            'add2':{'label':'New Employee', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
-            'add3':{'label':'New Business', 'fn':'M.ciniki_fatt_sapos.reserve.addbusiness();'},
+            'add3':{'label':'New Tenant', 'fn':'M.ciniki_fatt_sapos.reserve.addtenant();'},
             }},
     }
     this.reserve.addcustomer = function() {
         M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':1});
     }
-    this.reserve.addbusiness = function() {
+    this.reserve.addtenant = function() {
         M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':2});
     }
     this.reserve.liveSearchCb = function(s, i, value) {
         if( s == 'search' && value != '' ) {
-            M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':encodeURIComponent(value), 'limit':'25'}, 
+            M.api.getJSONBgCb('ciniki.customers.searchQuick', {'tnid':M.curTenantID, 'start_needle':encodeURIComponent(value), 'limit':'25'}, 
                 function(rsp) { 
                     M.ciniki_fatt_sapos.reserve.liveSearchShow('search', null, M.gE(M.ciniki_fatt_sapos.reserve.panelUID + '_' + s), rsp.customers); 
                 });
@@ -258,14 +258,14 @@ function ciniki_fatt_sapos() {
         } 
 
         //
-        // Setup the taxtypes available for the business
+        // Setup the taxtypes available for the tenant
         //
-        if( M.curBusiness.modules['ciniki.taxes'] != null ) {
+        if( M.curTenant.modules['ciniki.taxes'] != null ) {
             this.registration.sections.details.fields.taxtype_id.active = 'yes';
             this.registration.sections.details.fields.taxtype_id.options = {'0':'No Taxes'};
-            if( M.curBusiness.modules != null && M.curBusiness.modules['ciniki.taxes'] != null && M.curBusiness.modules['ciniki.taxes'].settings.types != null ) {
-                for(i in M.curBusiness.taxes.settings.types) {
-                    this.registration.sections.details.fields.taxtype_id.options[M.curBusiness.taxes.settings.types[i].type.id] = M.curBusiness.taxes.settings.types[i].type.name;
+            if( M.curTenant.modules != null && M.curTenant.modules['ciniki.taxes'] != null && M.curTenant.modules['ciniki.taxes'].settings.types != null ) {
+                for(i in M.curTenant.taxes.settings.types) {
+                    this.registration.sections.details.fields.taxtype_id.options[M.curTenant.taxes.settings.types[i].type.id] = M.curTenant.taxes.settings.types[i].type.name;
                 }
             }
         } else {
@@ -313,7 +313,7 @@ function ciniki_fatt_sapos() {
 
     this.invoiceCheck = function(cid, ns) {
         M.api.getJSONCb('ciniki.fatt.classCustomerInvoice', 
-            {'business_id':M.curBusinessID, 'offering_id':this.regadd.offering_id, 'customer_id':cid},
+            {'tnid':M.curTenantID, 'offering_id':this.regadd.offering_id, 'customer_id':cid},
             function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -364,7 +364,7 @@ function ciniki_fatt_sapos() {
         this.registration.reset();
         if( rid != null ) { this.registration.registration_id = rid; }
         if( source != null ) { this.registration._source = source; }
-        M.api.getJSONCb('ciniki.fatt.offeringRegistrationGet', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.offeringRegistrationGet', {'tnid':M.curTenantID, 
             'registration_id':this.registration.registration_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -377,7 +377,7 @@ function ciniki_fatt_sapos() {
                 }
                 p.sections._switch.buttons.switchcourse.visible = (rsp.registration.alternate_courses != null ? 'yes' : 'no');
                 p.sections._switch.buttons.switchdate.visible = (rsp.registration.alternate_dates != null ? 'yes' : 'no');
-                if( rsp.registration.invoice_status < 50 || (M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] != null && M.curBusiness.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
+                if( rsp.registration.invoice_status < 50 || (M.curTenant.sapos.settings['rules-invoice-paid-change-items'] != null && M.curTenant.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
                     p.sections._buttons.buttons.delete.visible = 'yes';
                 } else { 
                     p.sections._buttons.buttons.delete.visible = 'no';
@@ -395,7 +395,7 @@ function ciniki_fatt_sapos() {
             c += '&student_id=' + this.registration.student_id;
         }
         if( c != '' ) {
-            M.api.postJSONCb('ciniki.fatt.offeringRegistrationUpdate', {'business_id':M.curBusinessID,
+            M.api.postJSONCb('ciniki.fatt.offeringRegistrationUpdate', {'tnid':M.curTenantID,
                 'registration_id':this.registration.registration_id, 'item_id':this.registration.item_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -409,7 +409,7 @@ function ciniki_fatt_sapos() {
     };
 
     this.registrationSwitchCourse = function(oid) {
-        M.api.getJSONCb('ciniki.fatt.offeringRegistrationSwitchOffering', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.offeringRegistrationSwitchOffering', {'tnid':M.curTenantID, 
             'registration_id':this.registration.registration_id, 'item_id':this.registration.data.item_id, 'offering_id':oid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -420,7 +420,7 @@ function ciniki_fatt_sapos() {
     };
 
     this.registrationSwitchDate = function(oid) {
-        M.api.getJSONCb('ciniki.fatt.offeringRegistrationSwitchOffering', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.fatt.offeringRegistrationSwitchOffering', {'tnid':M.curTenantID, 
             'registration_id':this.registration.registration_id, 'item_id':this.registration.data.item_id, 'offering_id':oid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -432,7 +432,7 @@ function ciniki_fatt_sapos() {
 
     this.registrationDelete = function() {
         if( confirm('Are you sure you want to remove this registration? It will remove it from the invoice as well.') ) {
-            M.api.getJSONCb('ciniki.fatt.offeringRegistrationDelete', {'business_id':M.curBusinessID, 'registration_id':this.registration.registration_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.offeringRegistrationDelete', {'tnid':M.curTenantID, 'registration_id':this.registration.registration_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;

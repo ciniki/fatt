@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_hooks_checkObjectUsed($ciniki, $business_id, $args) {
+function ciniki_fatt_hooks_checkObjectUsed($ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
 
@@ -25,7 +25,7 @@ function ciniki_fatt_hooks_checkObjectUsed($ciniki, $business_id, $args) {
         $strsql = "SELECT 'items', COUNT(*) "
             . "FROM ciniki_fatt_cert_customers "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.fatt', 'num');
         if( $rc['stat'] != 'ok' ) {
@@ -43,7 +43,7 @@ function ciniki_fatt_hooks_checkObjectUsed($ciniki, $business_id, $args) {
         $strsql = "SELECT 'items', COUNT(*) "
             . "FROM ciniki_fatt_offering_registrations "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.fatt', 'num');
         if( $rc['stat'] != 'ok' ) {
@@ -61,7 +61,7 @@ function ciniki_fatt_hooks_checkObjectUsed($ciniki, $business_id, $args) {
         $strsql = "SELECT 'items', COUNT(*) "
             . "FROM ciniki_fatt_aeds "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.fatt', 'num');
         if( $rc['stat'] != 'ok' ) {

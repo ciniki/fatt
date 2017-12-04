@@ -7,11 +7,11 @@
 # ------
 # id:               The ID assigned to the course.
 # uuid:             The Universal Unique ID.
-# business_id:      The business the course is attached to.
+# tnid:             The tenant the course is attached to.
 #
-# customer_id:      The ID of the customer or business that the device belongs to.
+# customer_id:      The ID of the customer or tenant that the device belongs to.
 #
-# location:         The location within the business the device is physically located.
+# location:         The location within the tenant the device is physically located.
 #
 # status:           The current status of the device.
 #
@@ -64,7 +64,7 @@
 create table ciniki_fatt_aeds (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     customer_id int not null,
     location varchar(250) not null,
     status tinyint unsigned not null,
@@ -85,5 +85,5 @@ create table ciniki_fatt_aeds (
     last_updated datetime not null,
     primary key (id),
     index (customer_id),
-    index sync (business_id, uuid, last_updated)
+    index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.02';

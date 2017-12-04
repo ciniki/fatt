@@ -11,7 +11,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
+function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
 
     if( !isset($args['offering_ids']) || !is_array($args['offering_ids']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.6', 'msg'=>'No offering(s) specified'));
@@ -26,7 +26,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
     // Load the forms
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'forms', 'list');
-    $rc = ciniki_fatt_forms_list($ciniki, $business_id, array());
+    $rc = ciniki_fatt_forms_list($ciniki, $tnid, array());
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -37,24 +37,24 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
     }
 
     //
-    // Load business details
+    // Load tenant details
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'hooks', 'businessDetails');
-    $rc = ciniki_businesses_hooks_businessDetails($ciniki, $business_id, array());
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'tenantDetails');
+    $rc = ciniki_tenants_hooks_tenantDetails($ciniki, $tnid, array());
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( isset($rc['details']) && is_array($rc['details']) ) {   
-        $business_details = $rc['details'];
+        $tenant_details = $rc['details'];
     } else {
-        $business_details = array();
+        $tenant_details = array();
     }
 
     //
     // Load timezone
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -75,15 +75,15 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_offerings "
         . "INNER JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_fatt_offering_registrations ON ("
             . "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
-            . "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_fatt_offering_registrations.status = 10 "
             . ") "
         . "WHERE ciniki_fatt_offerings.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['offering_ids']) . ") "
-        . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY cover_letter DESC, cert_form1, cert_form2 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
@@ -112,10 +112,10 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_offering_dates "
         . "LEFT JOIN ciniki_fatt_locations ON ("
             . "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
-            . "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE ciniki_fatt_offering_dates.offering_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['offering_ids']) . ") "
-        . "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY ciniki_fatt_offering_dates.offering_id, ciniki_fatt_offering_dates.day_number DESC "
         . "";
     // Because query is sorted by day_number, automatically last item will be put in the result.
@@ -163,18 +163,18 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
                 $reg_forms[$form_name]['registrations'] = array();
                 $reg_forms[$form_name]['exam_date'] = $sdt;
                 $reg_forms[$form_name]['location'] = $dates[$reg['offering_id']]['city'] . ', ' . $dates[$reg['offering_id']]['province'];
-                $reg_forms[$form_name]['host_name'] = isset($business_details['name']) ? $business_details['name'] : '';
-                if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $business_details['contact.phone.number'], $matches) ) {
+                $reg_forms[$form_name]['host_name'] = isset($tenant_details['name']) ? $tenant_details['name'] : '';
+                if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $tenant_details['contact.phone.number'], $matches) ) {
                     $reg_forms[$form_name]['host_area_code'] = $matches[1];
                     $reg_forms[$form_name]['host_phone'] = $matches[2] . '-' . $matches[3];
                 } else {
                     $reg_forms[$form_name]['host_area_code'] = '';
                     $reg_forms[$form_name]['host_phone'] = '';
                 }
-                $reg_forms[$form_name]['host_street'] = isset($business_details['contact.address.street1']) ? $business_details['contact.address.street1'] : '';
-                $reg_forms[$form_name]['host_city'] = isset($business_details['contact.address.city']) ? $business_details['contact.address.city'] : '';
-                $reg_forms[$form_name]['host_province'] = isset($business_details['contact.address.province']) ? $business_details['contact.address.province'] : '';
-                $reg_forms[$form_name]['host_postal'] = isset($business_details['contact.address.postal']) ? $business_details['contact.address.postal'] : '';
+                $reg_forms[$form_name]['host_street'] = isset($tenant_details['contact.address.street1']) ? $tenant_details['contact.address.street1'] : '';
+                $reg_forms[$form_name]['host_city'] = isset($tenant_details['contact.address.city']) ? $tenant_details['contact.address.city'] : '';
+                $reg_forms[$form_name]['host_province'] = isset($tenant_details['contact.address.province']) ? $tenant_details['contact.address.province'] : '';
+                $reg_forms[$form_name]['host_postal'] = isset($tenant_details['contact.address.postal']) ? $tenant_details['contact.address.postal'] : '';
 
                 //
                 // Get the list of instructors for the course
@@ -186,10 +186,10 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
                     . "FROM ciniki_fatt_offering_instructors "
                     . "INNER JOIN ciniki_fatt_instructors ON ("
                         . "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
-                        . "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                        . "AND ciniki_fatt_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                         . ") "
                     . "WHERE ciniki_fatt_offering_instructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $reg['offering_id']) . "' "
-                    . "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                    . "AND ciniki_fatt_offering_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . "LIMIT 1 "
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'instructor');
@@ -232,7 +232,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             //
             // Get the student details
             //
-            $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes'));
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
@@ -300,19 +300,19 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
             }
 
             //
-            // Get the business details
+            // Get the tenant details
             //
             if( $reg['student_id'] != $reg['customer_id'] ) {
-                $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes'));
+                $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes'));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
                 if( isset($rc['customer']) && $rc['customer']['type'] == 2 ) {
-                    if( !isset($reg_forms[$form_name]['businesses']) ) {
-                        $reg_forms[$form_name]['businesses'] = array();
+                    if( !isset($reg_forms[$form_name]['tenants']) ) {
+                        $reg_forms[$form_name]['tenants'] = array();
                     }
-                    if( !isset($reg_forms[$form_name]['businesses'][$reg['customer_id']]) ) {
-                        $reg_forms[$form_name]['businesses'][$reg['customer_id']] = array(
+                    if( !isset($reg_forms[$form_name]['tenants'][$reg['customer_id']]) ) {
+                        $reg_forms[$form_name]['tenants'][$reg['customer_id']] = array(
                             'id'=>$reg['customer_id'],
                             'display_name'=>$rc['customer']['display_name'],
                             'address1'=>'',
@@ -326,18 +326,18 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
                             foreach($rc['customer']['addresses'] as $address) {
                                 $address = $address['address'];
                                 if( ($address['flags']&0x04) > 0 ) {
-                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['address1'] = $address['address1'];
-                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['address2'] = $address['address2'];
-                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['city'] = $address['city'];
-                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['province'] = $address['province'];
-                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['postal'] = $address['postal'];
-                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['country'] = $address['country'];
+                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['address1'] = $address['address1'];
+                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['address2'] = $address['address2'];
+                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['city'] = $address['city'];
+                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['province'] = $address['province'];
+                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['postal'] = $address['postal'];
+                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['country'] = $address['country'];
                                     break;
                                 }
                             }
                         }
                     }
-                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['registrations'][] = $registrations[$reg_id];
+                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['registrations'][] = $registrations[$reg_id];
                 }
             }
 
@@ -371,7 +371,7 @@ function ciniki_fatt_forms_generate($ciniki, $business_id, $args) {
         $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'forms', 'process' . $form['processor']);
         if( $rc['stat'] == 'ok' ) {
             $fn = $rc['function_call'];
-            $rc = $fn($ciniki, $business_id, $pdf, $form);
+            $rc = $fn($ciniki, $tnid, $pdf, $form);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }

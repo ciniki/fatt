@@ -11,7 +11,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_forms_processCAONLSSSFA($ciniki, $business_id, &$pdf, $form) {
+function ciniki_fatt_forms_processCAONLSSSFA($ciniki, $tnid, &$pdf, $form) {
 
     $reg_number = 0;
     $page_num = 0;

@@ -7,20 +7,20 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business to get events for.
+// tnid:     The ID of the tenant to get events for.
 //
 // Returns
 // -------
 //
-function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
+function ciniki_fatt_hooks_uiSettings($ciniki, $tnid, $args) {
 
     $settings = array();
 
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -28,12 +28,12 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
     $intl_currency = $rc['settings']['intl-default-currency'];
 
     //
-    // Load the courses and instructors for the business
+    // Load the courses and instructors for the tenant
     //
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x01) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x01) > 0 ) {
         $strsql = "SELECT id, name, price, num_days "
             . "FROM ciniki_fatt_courses "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 10 "
             . "ORDER BY name "
             . "";
@@ -53,14 +53,14 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 //                  $settings['courses'][$cid]['course']['price'], $intl_currency);
             }
         }
-        if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x40) > 0 ) {
+        if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x40) > 0 ) {
             $strsql = "SELECT ciniki_fatt_bundles.id, ciniki_fatt_bundles.name, MAX(num_days) as num_days "
                 . "FROM ciniki_fatt_bundles, ciniki_fatt_course_bundles, ciniki_fatt_courses "
-                . "WHERE ciniki_fatt_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "WHERE ciniki_fatt_bundles.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND ciniki_fatt_bundles.id = ciniki_fatt_course_bundles.bundle_id "
-                . "AND ciniki_fatt_course_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_fatt_course_bundles.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND ciniki_fatt_course_bundles.course_id = ciniki_fatt_courses.id "
-                . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND ciniki_fatt_courses.status = 10 "
                 . "GROUP BY ciniki_fatt_bundles.id "
                 . "ORDER BY ciniki_fatt_bundles.name "
@@ -81,7 +81,7 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
 
         $strsql = "SELECT id, name "
             . "FROM ciniki_fatt_instructors "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 10 "
             . "ORDER BY name "
             . "";
@@ -99,12 +99,12 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
     }
 
     //
-    // Load the fatt locations for the business
+    // Load the fatt locations for the tenant
     //
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x04) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x04) > 0 ) {
         $strsql = "SELECT id, name, flags, colour "
             . "FROM ciniki_fatt_locations "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 10 "
             . "ORDER BY name "
             . "";
@@ -122,12 +122,12 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
     }
 
     //
-    // Load the certs for the business
+    // Load the certs for the tenant
     //
-    if( ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x10) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x10) > 0 ) {
         $strsql = "SELECT id, name "
             . "FROM ciniki_fatt_certs "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 10 "
             . "ORDER BY name "
             . "";
@@ -200,7 +200,7 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $business_id, $args) {
         $rsp['menu_items'][] = $menu_item;
     } 
 
-    if( isset($ciniki['business']['modules']['ciniki.fatt']) 
+    if( isset($ciniki['tenant']['modules']['ciniki.fatt']) 
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01

@@ -16,7 +16,7 @@ function ciniki_fatt_offeringList(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'year'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Year'), 
         'month'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Month'), 
         'years'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Years'), 
@@ -29,20 +29,20 @@ function ciniki_fatt_offeringList(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.offeringList'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.offeringList'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -69,7 +69,7 @@ function ciniki_fatt_offeringList(&$ciniki) {
     if( isset($args['years']) && $args['years'] == 'yes' ) {
         $strsql = "SELECT DISTINCT 'list' AS id, DATE_FORMAT(start_date, '%Y') AS years "
             . "FROM ciniki_fatt_offerings "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND start_date <> '0000-00-00 00:00:00' "
             . "ORDER BY years DESC ";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -87,7 +87,7 @@ function ciniki_fatt_offeringList(&$ciniki) {
         //
         $strsql = "SELECT COUNT(id) AS num "
             . "FROM ciniki_fatt_offerings "
-            . "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_fatt_offerings.date_string = '' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'nodate');
@@ -105,7 +105,7 @@ function ciniki_fatt_offeringList(&$ciniki) {
 
     if( isset($args['year']) && $args['year'] != '' && $args['year'] != '????' ) {
         //
-        // Set the start and end date for the business timezone, then convert to UTC
+        // Set the start and end date for the tenant timezone, then convert to UTC
         //
         $tz = new DateTimeZone($intl_timezone);
         if( isset($args['month']) && $args['month'] != '' && $args['month'] > 0 ) {
@@ -143,30 +143,30 @@ function ciniki_fatt_offeringList(&$ciniki) {
         . "FROM ciniki_fatt_offerings "
         . "LEFT JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
 //      . "LEFT JOIN ciniki_fatt_offering_instructors ON ("
 //          . "ciniki_fatt_offerings.id = ciniki_fatt_offering_instructors.offering_id "
-//          . "AND ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//          . "AND ciniki_fatt_offering_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //          . ") "
 //      . "LEFT JOIN ciniki_fatt_instructors ON ("
 //          . "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
-//          . "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//          . "AND ciniki_fatt_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //          . ") "
 //      . "LEFT JOIN ciniki_fatt_offering_dates ON ("
 //          . "ciniki_fatt_offerings.id = ciniki_fatt_offering_dates.offering_id "
 //          . "AND ciniki_fatt_offering_dates.day_number = 1 "
-//          . "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//          . "AND ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //          . ") "
 //      . "LEFT JOIN ciniki_fatt_locations ON ("
 //          . "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
-//          . "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//          . "AND ciniki_fatt_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //          . ") "
         . "LEFT JOIN ciniki_fatt_offering_registrations ON ("
             . "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
-            . "AND ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     if( isset($args['year']) && $args['year'] != '' ) {
         if( $args['year'] == '????' ) {

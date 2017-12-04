@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the offering is attached to.
+// tnid:         The ID of the tenant the offering is attached to.
 // registration_id:     The ID of the offering registration to get the details for.
 // 
 // Returns
@@ -20,7 +20,7 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -32,16 +32,16 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.offeringRegistrationGet'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.offeringRegistrationGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringRegistrationLoad');
-    $rc = ciniki_fatt_offeringRegistrationLoad($ciniki, $args['business_id'], $args['registration_id']);
+    $rc = ciniki_fatt_offeringRegistrationLoad($ciniki, $args['tnid'], $args['registration_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -59,15 +59,15 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
         . "LEFT JOIN ciniki_fatt_offering_dates AS d2 ON ("
             . "d1.start_date = d2.start_date "
             . "AND d1.location_id = d2.location_id "
-            . "AND d2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND d2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_offerings ON ("
             . "d2.offering_id = ciniki_fatt_offerings.id "
-            . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_fatt_offerings.id <> '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
             . ") "
         . "WHERE d1.offering_id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
-        . "AND d1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND d1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
@@ -91,14 +91,14 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
         . "FROM ciniki_fatt_offerings "
         . "LEFT JOIN ciniki_fatt_offering_dates ON ("
             . "ciniki_fatt_offerings.id = ciniki_fatt_offering_dates.offering_id "
-            . "AND ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_locations ON ("
             . "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
-            . "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_fatt_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE ciniki_fatt_offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $registration['course_id']) . "' "
-        . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_fatt_offerings.id <> '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
         . "AND ("
             . "ciniki_fatt_offerings.start_date > '" . ciniki_core_dbQuote($ciniki, $registration['start_date']) . "' "

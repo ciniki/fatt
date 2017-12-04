@@ -11,7 +11,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_forms_list($ciniki, $business_id, $args) {
+function ciniki_fatt_forms_list($ciniki, $tnid, $args) {
     
     $cover_letters = array(
         'CA-ON-LSS-WHIMS'=>array('id'=>'CA-ON-LSS-WHIMS', 'name'=>'Ontario LSS - WHIMS', 

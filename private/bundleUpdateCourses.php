@@ -8,9 +8,9 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the course is attached to.
+// tnid:     The ID of the tenant the course is attached to.
 // 
-function ciniki_fatt_bundleUpdateCourses($ciniki, $business_id, $bundle_id, $ncoursess) {
+function ciniki_fatt_bundleUpdateCourses($ciniki, $tnid, $bundle_id, $ncoursess) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
@@ -21,7 +21,7 @@ function ciniki_fatt_bundleUpdateCourses($ciniki, $business_id, $bundle_id, $nco
     //
     $strsql = "SELECT course_id, id "
         . "FROM ciniki_fatt_course_bundles "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND bundle_id = '" . ciniki_core_dbQuote($ciniki, $bundle_id) . "' "
         . "";
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.fatt', 'bundles');
@@ -36,7 +36,7 @@ function ciniki_fatt_bundleUpdateCourses($ciniki, $business_id, $bundle_id, $nco
     foreach($ncoursess as $cid) {
         if( !isset($ocourses[$cid]) ) {
             // Add bundle link
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.fatt.course_bundle', 
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.fatt.course_bundle', 
                 array('course_id'=>$cid, 'bundle_id'=>$bundle_id), 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -49,7 +49,7 @@ function ciniki_fatt_bundleUpdateCourses($ciniki, $business_id, $bundle_id, $nco
     //
     foreach($ocourses as $cid => $object_id) {
         if( !in_array($cid, $ncoursess) ) {
-            $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.fatt.course_bundle', $object_id, null, 0x04);
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.fatt.course_bundle', $object_id, null, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }

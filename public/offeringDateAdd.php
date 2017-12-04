@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will add a new offering date for the business.
+// This method will add a new offering date for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to add the offering date to.
+// tnid:     The ID of the tenant to add the offering date to.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_fatt_offeringDateAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
         'start_date'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'datetimetoutc', 'name'=>'Date'), 
         'num_hours'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Hours'), 
@@ -40,10 +40,10 @@ function ciniki_fatt_offeringDateAdd(&$ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.offeringDateAdd');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.offeringDateAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -64,7 +64,7 @@ function ciniki_fatt_offeringDateAdd(&$ciniki) {
     // Add the offering date to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.offeringdate', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.fatt.offeringdate', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return $rc;
@@ -75,7 +75,7 @@ function ciniki_fatt_offeringDateAdd(&$ciniki) {
     // Update the offering the seats incase something has changed in location size
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
-    $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $args['business_id'], $args['offering_id'], 'yes');
+    $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $args['tnid'], $args['offering_id'], 'yes');
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return $rc;
@@ -90,11 +90,11 @@ function ciniki_fatt_offeringDateAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     $rsp = array('stat'=>'ok', 'id'=>$offeringdate_id);
 
@@ -102,7 +102,7 @@ function ciniki_fatt_offeringDateAdd(&$ciniki) {
     // Load the offering and return
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringLoad');
-    $rc = ciniki_fatt_offeringLoad($ciniki, $args['business_id'], $args['offering_id']);
+    $rc = ciniki_fatt_offeringLoad($ciniki, $args['tnid'], $args['offering_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

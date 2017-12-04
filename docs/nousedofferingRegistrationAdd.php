@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the offering is attached to.
+// tnid:     The ID of the tenant the offering is attached to.
 // 
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_fatt_offeringRegistrationAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
         'student_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Student'),
         'customer_notes'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Customer Notes'), 
@@ -34,10 +34,10 @@ function ciniki_fatt_offeringRegistrationAdd(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.offeringRegistrationAdd'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.offeringRegistrationAdd'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -74,7 +74,7 @@ function ciniki_fatt_offeringRegistrationAdd(&$ciniki) {
     //
     if( isset($args['student_id']) && $args['student_id'] != $args['customer_id'] ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.fatt.offeringregistration', $registration_id, array('student_id'=>$args['student_id']), 0x04);
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringregistration', $registration_id, array('student_id'=>$args['student_id']), 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.5', 'msg'=>'Unable to update student', 'err'=>$rc['err']));
         }
@@ -84,6 +84,6 @@ function ciniki_fatt_offeringRegistrationAdd(&$ciniki) {
     // Get the registration
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'registrationLoad');
-    return ciniki_fatt_registrationLoad($ciniki, $args['business_id'], $registration_id);   
+    return ciniki_fatt_registrationLoad($ciniki, $args['tnid'], $registration_id);   
 }
 ?>

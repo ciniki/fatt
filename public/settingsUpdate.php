@@ -17,7 +17,7 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -26,10 +26,10 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.settingsUpdate'); 
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.settingsUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -37,8 +37,8 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
     //
     // Load timezone
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -47,10 +47,10 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     //
-    // Grab the settings for the business from the database
+    // Grab the settings for the tenant from the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQuery');
-    $rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_fatt_settings', 'business_id', $args['business_id'], 'ciniki.fatt', 'settings', '');
+    $rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_fatt_settings', 'tnid', $args['tnid'], 'ciniki.fatt', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -85,7 +85,7 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
     $changelog_fields = array(
         'default-header-image',
         'default-header-contact-position',
-        'default-header-business-name',
+        'default-header-tenant-name',
         'default-header-address',
         'default-header-phone',
         'default-header-cell',
@@ -102,8 +102,8 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
     foreach($changelog_fields as $field) {
         if( isset($ciniki['request']['args'][$field]) 
             && (!isset($settings[$field]) || $ciniki['request']['args'][$field] != $settings[$field]) ) {
-            $strsql = "INSERT INTO ciniki_fatt_settings (business_id, detail_key, detail_value, date_added, last_updated) "
-                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args']['business_id']) . "'"
+            $strsql = "INSERT INTO ciniki_fatt_settings (tnid, detail_key, detail_value, date_added, last_updated) "
+                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args']['tnid']) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, $field) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args'][$field]) . "'"
                 . ", UTC_TIMESTAMP(), UTC_TIMESTAMP()) "
@@ -115,7 +115,7 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
                 return $rc;
             }
-            ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['business_id'], 
+            ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['tnid'], 
                 2, 'ciniki_fatt_settings', $field, 'detail_value', $ciniki['request']['args'][$field]);
             $ciniki['syncqueue'][] = array('push'=>'ciniki.fatt.setting', 
                 'args'=>array('id'=>$field));
@@ -131,11 +131,11 @@ function ciniki_fatt_settingsUpdate(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     return array('stat'=>'ok');
 }

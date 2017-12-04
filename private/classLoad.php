@@ -7,18 +7,18 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business the offering is attached to.
+// tnid:     The ID of the tenant the offering is attached to.
 // offering_id:     The ID of the offering to get the details for.
 // 
 // Returns
 // -------
 //
-function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
+function ciniki_fatt_classLoad($ciniki, $tnid, $args) {
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -95,17 +95,17 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_offering_dates "
         . "LEFT JOIN ciniki_fatt_offerings ON ("
             . "ciniki_fatt_offering_dates.offering_id = ciniki_fatt_offerings.id "
-            . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_courses ON ("
             . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
-            . "AND ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_locations ON ("
             . "ciniki_fatt_offering_dates.location_id = ciniki_fatt_locations.id "
-            . "AND ciniki_fatt_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_fatt_offering_dates.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND UNIX_TIMESTAMP(ciniki_fatt_offering_dates.start_date) = '" . ciniki_core_dbQuote($ciniki, $args['start_ts']) . "' "
         . "AND ciniki_fatt_offering_dates.location_id = '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
         . "GROUP BY ciniki_fatt_offerings.id "
@@ -157,10 +157,10 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
         . "ciniki_fatt_instructors.email, "
         . "ciniki_fatt_instructors.phone "
         . "FROM ciniki_fatt_offering_instructors, ciniki_fatt_instructors "
-        . "WHERE ciniki_fatt_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_offering_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_fatt_offering_instructors.offering_id IN (" . ciniki_core_dbQuoteIDs($ciniki, explode(',', $class['offering_ids'])) . ") "
         . "AND ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
-        . "AND ciniki_fatt_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_fatt_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
         array('container'=>'instructors', 'fname'=>'instructor_id', 'name'=>'instructor',
@@ -193,17 +193,17 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
         . "FROM ciniki_fatt_offering_registrations "
         . "LEFT JOIN ciniki_customers AS c1 ON ("
             . "ciniki_fatt_offering_registrations.customer_id = c1.id "
-            . "AND c1.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND c1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS c2 ON ("
             . "ciniki_fatt_offering_registrations.student_id = c2.id "
-            . "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_fatt_offerings ON ("
             . "ciniki_fatt_offering_registrations.offering_id = ciniki_fatt_offerings.id "
-            . "AND ciniki_fatt_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_fatt_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_fatt_offering_registrations.offering_id IN (" . ciniki_core_dbQuoteIDs($ciniki, explode(',', $class['offering_ids'])) . ") "
         . "ORDER BY student_display_name, customer_display_name "
         . "";
@@ -233,7 +233,7 @@ function ciniki_fatt_classLoad($ciniki, $business_id, $args) {
         sort($course_codes);
         $class['course_codes'] = implode('/', $course_codes);
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceStatus');
-        $rc = ciniki_sapos_hooks_invoiceStatus($ciniki, $business_id, array('invoice_ids'=>array_keys($invoice_ids)));
+        $rc = ciniki_sapos_hooks_invoiceStatus($ciniki, $tnid, array('invoice_ids'=>array_keys($invoice_ids)));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }

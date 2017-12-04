@@ -115,7 +115,7 @@ function ciniki_fatt_aeds() {
     this.menu.open = function(cb, tab) {
         if( tab != null ) { this.sections.tabs.selected = tab; }
         if( this.sections.tabs.selected == 'aeds' ) {
-            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -127,7 +127,7 @@ function ciniki_fatt_aeds() {
                 p.show(cb);
             });
         } else if( this.sections.tabs.selected == 'owners' ) {
-            M.api.getJSONCb('ciniki.fatt.aedOwnerList', {'business_id':M.curBusinessID}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedOwnerList', {'tnid':M.curTenantID}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -139,7 +139,7 @@ function ciniki_fatt_aeds() {
                 p.show(cb);
             });
         } else {
-            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -213,7 +213,7 @@ function ciniki_fatt_aeds() {
     this.owner.noData = function(s) { return this.sections[s].noData; };
     this.owner.open = function(cb, cid) {
         if( cid != null ) { this.customer_id = cid; }
-        M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID, 'customer_id':this.customer_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -325,10 +325,10 @@ function ciniki_fatt_aeds() {
         return this.data[i];
     };
     this.edit.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.aedHistory', 'args':{'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'field':i}};
+        return {'method':'ciniki.fatt.aedHistory', 'args':{'tnid':M.curTenantID, 'aed_id':this.aed_id, 'field':i}};
     };
     this.edit.liveSearchCb = function(s, i, value) {
-        M.api.getJSONBgCb('ciniki.fatt.aedFieldSearch', {'business_id':M.curBusinessID, 'field':i, 'start_needle':value},
+        M.api.getJSONBgCb('ciniki.fatt.aedFieldSearch', {'tnid':M.curTenantID, 'field':i, 'start_needle':value},
             function(rsp) {
                 M.ciniki_fatt_aeds.edit.liveSearchShow(s, i, M.gE(M.ciniki_fatt_aeds.edit.panelUID + '_' + i), rsp.results);
             });
@@ -371,7 +371,7 @@ function ciniki_fatt_aeds() {
         if( this.aed_id == 0 ) {
             var c = this.serializeForm('yes');
             c += '&customer_id=' + this.data.customer_id;
-            M.api.postJSONCb('ciniki.fatt.aedAdd', {'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'image_id':iid}, c,
+            M.api.postJSONCb('ciniki.fatt.aedAdd', {'tnid':M.curTenantID, 'aed_id':this.aed_id, 'image_id':iid}, c,
                 function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -381,7 +381,7 @@ function ciniki_fatt_aeds() {
                     M.ciniki_fatt_aeds.edit.refreshImages();
                 });
         } else {
-            M.api.getJSONCb('ciniki.fatt.aedImageAdd', {'business_id':M.curBusinessID, 'image_id':iid, 'name':'', 'aed_id':this.aed_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedImageAdd', {'tnid':M.curTenantID, 'image_id':iid, 'name':'', 'aed_id':this.aed_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -415,7 +415,7 @@ function ciniki_fatt_aeds() {
     };
     this.edit.updateCustomer = function(cid) {
         this.customer_id = cid;
-        M.api.getJSONCb('ciniki.fatt.aedGet', {'business_id':M.curBusinessID, 'aed_id':0, 'customer_id':this.customer_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.aedGet', {'tnid':M.curTenantID, 'aed_id':0, 'customer_id':this.customer_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -430,7 +430,7 @@ function ciniki_fatt_aeds() {
         if( aid != null ) { this.aed_id = aid; }
         if( cid != null ) { this.customer_id = cid; }
         this.sections._buttons.buttons.delete.visible = (this.aed_id>0?'yes':'no');
-        M.api.getJSONCb('ciniki.fatt.aedGet', {'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'customer_id':this.customer_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.aedGet', {'tnid':M.curTenantID, 'aed_id':this.aed_id, 'customer_id':this.customer_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -457,7 +457,7 @@ function ciniki_fatt_aeds() {
                 c += '&customer_id=' + this.customer_id;
             }
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.aedUpdate', {'business_id':M.curBusinessID, 'aed_id':this.aed_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.fatt.aedUpdate', {'tnid':M.curTenantID, 'aed_id':this.aed_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -470,7 +470,7 @@ function ciniki_fatt_aeds() {
         } else {
             var c = this.serializeForm('yes');
             c += '&customer_id=' + this.data.customer_id;
-            M.api.postJSONCb('ciniki.fatt.aedAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.fatt.aedAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -481,7 +481,7 @@ function ciniki_fatt_aeds() {
     };
     this.edit.remove = function(aid) {
         if( confirm('Are you sure you want to remove this aed? All records will be lost, there is no recovering once deleted.') ) {
-            M.api.getJSONCb('ciniki.fatt.aedDelete', {'business_id':M.curBusinessID, 'aed_id':aid}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedDelete', {'tnid':M.curTenantID, 'aed_id':aid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -492,7 +492,7 @@ function ciniki_fatt_aeds() {
     };
     this.edit.refreshImages = function() {
         if( M.ciniki_fatt_aeds.edit.aed_id > 0 ) {
-            M.api.getJSONCb('ciniki.fatt.aedGet', {'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'images':'yes'}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedGet', {'tnid':M.curTenantID, 'aed_id':this.aed_id, 'images':'yes'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -505,7 +505,7 @@ function ciniki_fatt_aeds() {
         }
     }
     this.edit.updateNotes = function() {
-        M.api.getJSONCb('ciniki.fatt.aedGet', {'business_id':M.curBusinessID, 'aed_id':this.aed_id, 'notes':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.aedGet', {'tnid':M.curTenantID, 'aed_id':this.aed_id, 'notes':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -546,7 +546,7 @@ function ciniki_fatt_aeds() {
         return ''; 
     };
     this.aedimage.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.aedImageHistory', 'args':{'business_id':M.curBusinessID, 'aedimage_id':this.aedimage_id, 'field':i}};
+        return {'method':'ciniki.fatt.aedImageHistory', 'args':{'tnid':M.curTenantID, 'aedimage_id':this.aedimage_id, 'field':i}};
     };
     this.aedimage.addDropImage = function(iid) {
         M.ciniki_fatt_aeds.aedimage.setFieldValue('image_id', iid, null, null);
@@ -556,7 +556,7 @@ function ciniki_fatt_aeds() {
         if( iid != null ) { this.aedimage_id = iid; }
         if( aid != null ) { this.aed_id = aid; }
         this.reset();
-        M.api.getJSONCb('ciniki.fatt.aedImageGet', {'business_id':M.curBusinessID, 'aedimage_id':this.aedimage_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.aedImageGet', {'tnid':M.curTenantID, 'aedimage_id':this.aedimage_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -571,7 +571,7 @@ function ciniki_fatt_aeds() {
         if( this.aedimage_id > 0 ) {
             var c = this.serializeFormData('no');
             if( c != '' ) {
-                M.api.postJSONFormData('ciniki.fatt.aedImageUpdate', {'business_id':M.curBusinessID, 
+                M.api.postJSONFormData('ciniki.fatt.aedImageUpdate', {'tnid':M.curTenantID, 
                     'aedimage_id':this.aedimage_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -585,7 +585,7 @@ function ciniki_fatt_aeds() {
             }
         } else {
             var c = this.serializeFormData('yes');
-            M.api.postJSONFormData('ciniki.fatt.aedImageAdd', {'business_id':M.curBusinessID, 'aed_id':this.aed_id}, c, function(rsp) {
+            M.api.postJSONFormData('ciniki.fatt.aedImageAdd', {'tnid':M.curTenantID, 'aed_id':this.aed_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -597,7 +597,7 @@ function ciniki_fatt_aeds() {
     };
     this.aedimage.remove = function() {
         if( confirm('Are you sure you want to delete this image?') ) {
-            M.api.getJSONCb('ciniki.fatt.aedImageDelete', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.fatt.aedImageDelete', {'tnid':M.curTenantID, 
                 'aedimage_id':this.aedimage_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -631,13 +631,13 @@ function ciniki_fatt_aeds() {
         };  
     this.aednote.fieldValue = function(s, i, d) { return this.data[i]; }
     this.aednote.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.fatt.aedNoteHistory', 'args':{'business_id':M.curBusinessID, 'note_id':this.note_id, 'field':i}};
+        return {'method':'ciniki.fatt.aedNoteHistory', 'args':{'tnid':M.curTenantID, 'note_id':this.note_id, 'field':i}};
     }
     this.aednote.open = function(cb, id, aid) {
         this.reset();
         if( id != null ) { this.note_id = id; }
         if( aid != null ) { this.aed_id = aid; }
-        M.api.getJSONCb('ciniki.fatt.aedNoteGet', {'business_id':M.curBusinessID, 'note_id':this.note_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.fatt.aedNoteGet', {'tnid':M.curTenantID, 'note_id':this.note_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -652,7 +652,7 @@ function ciniki_fatt_aeds() {
         if( this.note_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.fatt.aedNoteUpdate', {'business_id':M.curBusinessID, 'note_id':this.note_id}, c,
+                M.api.postJSONCb('ciniki.fatt.aedNoteUpdate', {'tnid':M.curTenantID, 'note_id':this.note_id}, c,
                     function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -665,7 +665,7 @@ function ciniki_fatt_aeds() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.fatt.aedNoteAdd', {'business_id':M.curBusinessID, 'note_id':this.note_id, 'aed_id':this.aed_id}, c,
+            M.api.postJSONCb('ciniki.fatt.aedNoteAdd', {'tnid':M.curTenantID, 'note_id':this.note_id, 'aed_id':this.aed_id}, c,
                 function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -678,7 +678,7 @@ function ciniki_fatt_aeds() {
     };
     this.aednote.remove = function() {
         if( confirm('Are you sure you want to remove this note?') ) {
-            M.api.getJSONCb('ciniki.fatt.aedNoteDelete', {'business_id':M.curBusinessID, 'note_id':this.note_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedNoteDelete', {'tnid':M.curTenantID, 'note_id':this.note_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -705,10 +705,10 @@ function ciniki_fatt_aeds() {
         this.show(cb);
     }
     this.tools.downloadExcel = function() {
-        M.api.openFile('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID, 'output':'excel'});
+        M.api.openFile('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID, 'output':'excel'});
     }
     this.tools.downloadPDF = function() {
-        M.api.openFile('ciniki.fatt.aedDeviceList', {'business_id':M.curBusinessID, 'output':'pdf'});
+        M.api.openFile('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID, 'output':'pdf'});
     }
     this.tools.addClose('Back');
 

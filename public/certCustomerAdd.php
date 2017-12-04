@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will add a new cert for the business.
+// This method will add a new cert for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to add the cert to.
+// tnid:     The ID of the tenant to add the cert to.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'cert_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Certification'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Customer'), 
         'offering_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Offering'), 
@@ -34,10 +34,10 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.certCustomerAdd');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.certCustomerAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -58,7 +58,7 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
     // Add the cert to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'certCustomerAdd');
-    $rc = ciniki_fatt__certCustomerAdd($ciniki, $args['business_id'], $args);
+    $rc = ciniki_fatt__certCustomerAdd($ciniki, $args['tnid'], $args);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return $rc;
@@ -74,11 +74,11 @@ function ciniki_fatt_certCustomerAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     return array('stat'=>'ok', 'id'=>$certcustomer_id);
 }

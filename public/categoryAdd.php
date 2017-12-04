@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will add a new category for the business.
+// This method will add a new category for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to add the category to.
+// tnid:     The ID of the tenant to add the category to.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_fatt_categoryAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
         'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'), 
         'sequence'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Sequence'), 
@@ -35,10 +35,10 @@ function ciniki_fatt_categoryAdd(&$ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.categoryAdd');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.categoryAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -56,7 +56,7 @@ function ciniki_fatt_categoryAdd(&$ciniki) {
     //
     $strsql = "SELECT id "
         . "FROM ciniki_fatt_categories "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' " 
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' " 
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'category');
@@ -83,7 +83,7 @@ function ciniki_fatt_categoryAdd(&$ciniki) {
     // Add the category to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.fatt.category', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.fatt.category', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
         return $rc;
@@ -95,7 +95,7 @@ function ciniki_fatt_categoryAdd(&$ciniki) {
     //
     if( isset($args['courses']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'categoryUpdateCourses');
-        $rc = ciniki_fatt_categoryUpdateCourses($ciniki, $args['business_id'], $category_id, $args['courses']);
+        $rc = ciniki_fatt_categoryUpdateCourses($ciniki, $args['tnid'], $category_id, $args['courses']);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
             return $rc;
@@ -111,11 +111,11 @@ function ciniki_fatt_categoryAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'fatt');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'fatt');
 
     return array('stat'=>'ok', 'id'=>$category_id);
 }

@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will return the list of courses for a business.  
+// This method will return the list of courses for a tenant.  
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get courses for.
+// tnid:     The ID of the tenant to get courses for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_fatt_courseList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'), 
         'bundles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bundles'), 
         ));
@@ -29,19 +29,19 @@ function ciniki_fatt_courseList($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['business_id'], 'ciniki.fatt.courseList');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.courseList');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the time information for business and user
+    // Get the time information for tenant and user
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -75,9 +75,9 @@ function ciniki_fatt_courseList($ciniki) {
         . "FROM ciniki_fatt_courses "
         . "LEFT JOIN ciniki_tax_types ON ("
             . "ciniki_fatt_courses.taxtype_id = ciniki_tax_types.id "
-            . "AND ciniki_tax_types.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_tax_types.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_fatt_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY ciniki_fatt_courses.sequence, ciniki_fatt_courses.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -102,14 +102,14 @@ function ciniki_fatt_courseList($ciniki) {
     // Check if we should return the categories as well
     //
     if( isset($args['categories']) && $args['categories'] == 'yes' 
-        && isset($ciniki['business']['modules']['ciniki.fatt']['flags'])
-        && ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) > 0 
+        && isset($ciniki['tenant']['modules']['ciniki.fatt']['flags'])
+        && ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) > 0 
         ) {
         $strsql = "SELECT ciniki_fatt_categories.id, "
             . "ciniki_fatt_categories.name, "
             . "ciniki_fatt_categories.permalink "
             . "FROM ciniki_fatt_categories "
-            . "WHERE ciniki_fatt_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -129,13 +129,13 @@ function ciniki_fatt_courseList($ciniki) {
     // Check if we should return the bundles as well
     //
     if( isset($args['bundles']) && $args['bundles'] == 'yes' 
-        && isset($ciniki['business']['modules']['ciniki.fatt']['flags'])
-        && ($ciniki['business']['modules']['ciniki.fatt']['flags']&0x02) > 0 
+        && isset($ciniki['tenant']['modules']['ciniki.fatt']['flags'])
+        && ($ciniki['tenant']['modules']['ciniki.fatt']['flags']&0x02) > 0 
         ) {
         $strsql = "SELECT ciniki_fatt_bundles.id, "
             . "ciniki_fatt_bundles.name "
             . "FROM ciniki_fatt_bundles "
-            . "WHERE ciniki_fatt_bundles.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_fatt_bundles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
