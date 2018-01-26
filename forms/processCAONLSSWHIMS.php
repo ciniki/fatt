@@ -56,7 +56,7 @@ function ciniki_fatt_forms_processCAONLSSWHIMS($ciniki, $tnid, &$pdf, $form) {
             $pdf->SetX(20);
             $pdf->SetY(30);
             if( $count == 0 ) {
-                $pdf->Multicell(180, 12, 'Can you please send WSIB certificates following tenants and their employees.', 0, 'L');
+                $pdf->Multicell(180, 12, 'Can you please send WSIB certificates following business and their employees.', 0, 'L');
                 $pdf->Ln();
             }
             $pdf->SetFillColor(224);
