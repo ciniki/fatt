@@ -39,6 +39,7 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
         'cover_letter'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cover Letter'), 
         'cert_form1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'1st Certification Form'), 
         'cert_form2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Certification Form'), 
+        'welcome_msg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Welcome Message Details'), 
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Categories'), 
         'bundles'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Bundles'), 
         'certs'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Certifications'), 

@@ -75,6 +75,7 @@ function ciniki_fatt_courseGet($ciniki) {
             'cover_letter'=>'',
             'cert_form1'=>'',
             'cert_form2'=>'',
+            'welcome_msg'=>'',
             ));
     } else {
         //
@@ -97,7 +98,8 @@ function ciniki_fatt_courseGet($ciniki) {
             . "ciniki_fatt_courses.flags, "
             . "ciniki_fatt_courses.cover_letter, "
             . "ciniki_fatt_courses.cert_form1, "
-            . "ciniki_fatt_courses.cert_form2 "
+            . "ciniki_fatt_courses.cert_form2, "
+            . "ciniki_fatt_courses.welcome_msg "
             . "FROM ciniki_fatt_courses "
             . "WHERE ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_fatt_courses.id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
@@ -105,7 +107,8 @@ function ciniki_fatt_courseGet($ciniki) {
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
             array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
                 'fields'=>array('id', 'name', 'code', 'permalink', 'sequence', 'status', 'primary_image_id', 'synopsis', 'description', 
-                    'price', 'taxtype_id', 'num_days', 'num_hours', 'num_seats_per_instructor', 'flags', 'cover_letter', 'cert_form1', 'cert_form2')),
+                    'price', 'taxtype_id', 'num_days', 'num_hours', 'num_seats_per_instructor', 'flags', 
+                    'cover_letter', 'cert_form1', 'cert_form2', 'welcome_msg')),
         ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

@@ -18,6 +18,7 @@ function ciniki_fatt_settings() {
             }},
         '_classes':{'label':'', 'list':{
             'documents':{'label':'Document Headers', 'visible':'yes', 'fn':'M.ciniki_fatt_settings.documents.open(\'M.ciniki_fatt_settings.menu.open();\');'},
+            'welcomemsg':{'label':'Welcome Message', 'visible':'yes', 'fn':'M.ciniki_fatt_settings.welcomemsg.open(\'M.ciniki_fatt_settings.menu.open();\',\'welcomemsg\');'},
             }},
         '_aeds':{'label':'', 'list':{
             'aeds':{'label':'AEDs', 'visible':'no', 'fn':'M.ciniki_fatt_settings.aeds.open(\'M.ciniki_fatt_settings.menu.open();\');'},
@@ -132,6 +133,9 @@ function ciniki_fatt_settings() {
             'addTxt':'New Reminder',
             'addFn':'M.ciniki_fatt_settings.course.save(\'M.ciniki_fatt_settings.message.open("M.ciniki_fatt_settings.course.messagesUpdate();","ciniki.fatt.course",M.ciniki_fatt_settings.course.course_id,0);\');',
             },
+        '_welcome_msg':{'label':'Welcome Message Course Details', 'fields':{
+            'welcome_msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_fatt_settings.course.save();'},
             'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_settings.course.remove(M.ciniki_fatt_settings.course.course_id);'},
@@ -1126,6 +1130,91 @@ function ciniki_fatt_settings() {
     };
     this.aeds.addButton('save', 'Save', 'M.ciniki_fatt_settings.aeds.save();');
     this.aeds.addClose('Cancel');
+
+    //
+    // Message panel
+    //
+    this.welcomemsg = new M.panel('Message', 'ciniki_fatt_settings', 'welcomemsg', 'mc', 'medium', 'sectioned', 'ciniki.fatt.settings.welcomemsg');
+    this.welcomemsg.message_id = 0;
+    this.welcomemsg.object = 'ciniki.fatt.welcomemsg';
+    this.welcomemsg.object_id = 0;
+    this.welcomemsg.data = {};
+    this.welcomemsg.sections = {
+        'details':{'label':'', 'aside':'yes', 'fields':{
+            'status':{'label':'Status', 'type':'select', 'options':{'0':'Inactive', '10':'Require Approval', '20':'Auto Send'}},
+//            'days':{'label':'Days', 'type':'text', 'size':'small'},
+            }},
+        '_subject':{'label':'', 'aside':'yes', 'fields':{
+            'subject':{'label':'Subject', 'type':'text'},
+            }},
+        '_message':{'label':'', 'aside':'yes', 'fields':{
+            'message':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
+//        '_parent_subject':{'label':'', 'fields':{
+//            'parent_subject':{'label':'Subject', 'type':'text'},
+//            }},
+//        '_parent_message':{'label':'', 'fields':{
+//            'parent_message':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+//            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_fatt_settings.welcomemsg.save();'},
+            }},
+    }
+    this.welcomemsg.fieldValue = function(s, i, d) {
+        if( this.data[i] == null ) { return ''; }
+        return this.data[i];
+    };
+    this.welcomemsg.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.fatt.messageHistory', 'args':{'tnid':M.curTenantID, 'message_id':this.message_id, 'field':i}};
+    }
+    this.welcomemsg.open = function(cb, mid) {
+        if( mid != null ) { this.message_id = mid; }
+        M.api.getJSONCb('ciniki.fatt.messageGet', {'tnid':M.curTenantID, 'message_id':'welcomemsg'}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_settings.welcomemsg;
+            p.data = rsp.message;
+            p.message_id = rsp.message.id;
+            p.refresh();
+            p.show(cb);
+        });
+    };
+    this.welcomemsg.save = function() {
+        if( this.message_id > 0 ) {
+            var c = this.serializeForm('no');
+            if( this.data.object != this.object ) {
+                c += '&object=' + this.object;
+            }
+            if( this.data.object_id != this.object_id ) {
+                c += '&object_id=' + this.object_id;
+            }
+            if( c != '' ) {
+                M.api.postJSONCb('ciniki.fatt.messageUpdate', {'tnid':M.curTenantID, 'message_id':this.message_id}, c, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_fatt_settings.welcomemsg.close();
+                });
+            } else {
+                this.close();
+            }
+        } else {
+            var c = this.serializeForm('yes');
+            c += '&object=' + this.object + '&object_id=' + this.object_id;
+            M.api.postJSONCb('ciniki.fatt.messageAdd', {'tnid':M.curTenantID}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_fatt_settings.welcomemsg.close();
+            });
+        }
+    };
+    this.welcomemsg.addButton('save', 'Save', 'M.ciniki_fatt_settings.welcomemsg.save();');
+    this.welcomemsg.addClose('Cancel');
 
     //
     // Arguments:

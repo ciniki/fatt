@@ -116,6 +116,21 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
     if( isset($rc['alternate_dates']) ) {
         $registration['alternate_dates'] = $rc['alternate_dates'];
     }
+
+    //
+    // Check if there are any messages for this registration
+    //
+    if( isset($ciniki['tenant']['modules']['ciniki.mail']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
+        $rc = ciniki_mail_hooks_objectMessages($ciniki, $args['tnid'], 
+            array('object'=>'ciniki.fatt.registration', 'object_id'=>$registration['id'], 'xml'=>'no'));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['messages']) ) {
+            $registration['messages'] = $rc['messages'];
+        }
+    } 
     
     return array('stat'=>'ok', 'registration'=>$registration);
 }

@@ -1,0 +1,5 @@
+#
+# Add welcome message details
+#
+ALTER TABLE ciniki_fatt_courses ADD COLUMN welcome_msg text not null AFTER cert_form2;
+ALTER TABLE ciniki_fatt_courses COMMENT='v1.03';

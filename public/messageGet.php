@@ -39,8 +39,39 @@ function ciniki_fatt_messageGet($ciniki) {
     }   
     $modules = $rc['modules'];
 
+    if( $args['message_id'] == 'welcomemsg' ) {
+        //
+        // Lookup the welcome message
+        //
+        $strsql = "SELECT ciniki_fatt_messages.id, "
+            . "ciniki_fatt_messages.object, "
+            . "ciniki_fatt_messages.object_id, "
+            . "ciniki_fatt_messages.status, "
+            . "ciniki_fatt_messages.days, "
+            . "ciniki_fatt_messages.subject, "
+            . "ciniki_fatt_messages.message, "
+            . "ciniki_fatt_messages.parent_subject, "
+            . "ciniki_fatt_messages.parent_message "
+            . "FROM ciniki_fatt_messages "
+            . "WHERE ciniki_fatt_messages.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ciniki_fatt_messages.object = 'ciniki.fatt.welcomemsg' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.messages', array(
+            array('container'=>'messages', 'fname'=>'id', 'name'=>'message',
+                'fields'=>array('id', 'object', 'object_id', 'status', 'days', 'subject', 'message', 'parent_subject', 'parent_message')),
+        ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['messages'][0]['message']) ) {
+            return array('stat'=>'ok', 'message'=>$rc['messages'][0]['message']);
+        }
+    }
+
     if( $args['message_id'] == 0 ) {
         return array('stat'=>'ok', 'message'=>array(
+            'id'=>0,
             'object'=>'',
             'object_id'=>0,
             'status'=>0,

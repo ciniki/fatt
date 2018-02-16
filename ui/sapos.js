@@ -73,8 +73,14 @@ function ciniki_fatt_sapos() {
             'switchcourse':{'label':'Switch Course', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateCourses();'},
             'switchdate':{'label':'Switch Date', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateDates();'},
             }},
+        'messages':{'label':'Messages', 'visible':'yes', 'type':'simplegrid', 'num_cols':2,
+            'cellClasses':['multiline', 'multiline'],
+//            'addTxt':'Email Customer',
+//            'addFn':'M.ciniki_fatt_sapos.emailCustomer(\'M.ciniki_fatt_sapos.registration.open();\',M.ciniki_sapos_invoice.invoice.data);',
+            },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_fatt_sapos.registrationSave();'},
+            'emailwelcome':{'label':'Email Welcome Message', 'fn':'M.ciniki_fatt_sapos.registration.emailWelcomeMsg();'},
             'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_sapos.registrationDelete();'},
             }},
     };
@@ -98,7 +104,7 @@ function ciniki_fatt_sapos() {
     };
     this.registration.listFn = function(s, i, d) {
         if( s == 'course' && this._source != 'offering' ) {
-            return 'M.startApp(\'ciniki.fatt.offerings\',null,\'M.ciniki_fatt_sapos.registrationEdit();\',\'mc\',{\'offering_id\':\'' + this.data.offering_id + '\'});'; 
+            return 'M.startApp(\'ciniki.fatt.offerings\',null,\'M.ciniki_fatt_sapos.registration.open();\',\'mc\',{\'offering_id\':\'' + this.data.offering_id + '\'});'; 
         }
         return '';
     };
@@ -125,6 +131,12 @@ function ciniki_fatt_sapos() {
             if( d.seats_remaining < 0 ) { sr = Math.abs(d.seats_remaining) + ' over sold'; }
             return '<span class="maintext">' + d.date_string + ' <span class="subdue">' + sr + '</span></span><span class="subtext">' + d.location + '</span>';
         }
+        else if( s == 'messages' ) {
+            switch(j) {
+                case 0: return '<span class="maintext">' + d.status_text + '</span><span class="subtext">' + d.date_sent + '</span>';
+                case 1: return '<span class="maintext">' + d.customer_email + '</span><span class="subtext">' + d.subject + '</span>';
+            }
+        }
     };
     this.registration.rowStyle = function(s, i, d) {
         if( s == 'alternate_dates' ) {
@@ -134,7 +146,7 @@ function ciniki_fatt_sapos() {
     };
     this.registration.rowFn = function(s, i, d) {
         if( s == 'invoice_details' && this._source != 'invoice' ) { 
-            return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_fatt_sapos.registrationEdit();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
+            return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_fatt_sapos.registration.open();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
         }
         if( s == 'student_details' ) {
             return '';
@@ -194,6 +206,43 @@ function ciniki_fatt_sapos() {
             this.sections.student_details.addTxt = 'Edit';
             this.sections.student_details.changeTxt = 'Change';
         }
+    };
+    this.registration.emailWelcomeMsg = function() {
+        M.api.getJSONCb('ciniki.fatt.offeringRegistrationWelcomeEmailSend', {'tnid':M.curTenantID, 'registration_id':this.registration_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_fatt_sapos.registration.open();
+        });
+    }
+    this.registration.open = function(cb, rid, source) {
+        this.reset();
+        if( rid != null ) { this.registration_id = rid; }
+        if( source != null ) { this._source = source; }
+        M.api.getJSONCb('ciniki.fatt.offeringRegistrationGet', {'tnid':M.curTenantID, 
+            'registration_id':this.registration_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_fatt_sapos.registration;
+                p.data = rsp.registration;
+                if( rsp.registration.item_id != null ) {
+                    p.item_id = rsp.registration.item_id;
+                }
+                p.sections._switch.buttons.switchcourse.visible = (rsp.registration.alternate_courses != null ? 'yes' : 'no');
+                p.sections._switch.buttons.switchdate.visible = (rsp.registration.alternate_dates != null ? 'yes' : 'no');
+                if( rsp.registration.invoice_status < 50 || (M.curTenant.sapos.settings['rules-invoice-paid-change-items'] != null && M.curTenant.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
+                    p.sections._buttons.buttons.delete.visible = 'yes';
+                } else { 
+                    p.sections._buttons.buttons.delete.visible = 'no';
+                }
+                p.student_id = rsp.registration.student_id;
+                p.updateCustomers();
+                p.refresh();
+                p.show(cb);
+        });
     };
     this.registration.addButton('save', 'Save', 'M.ciniki_fatt_sapos.registrationSave();');
     this.registration.addClose('Cancel');
@@ -279,9 +328,9 @@ function ciniki_fatt_sapos() {
         if( args.offering_id != null ) {
             this.registrationAdd(cb, args.offering_id, args.saveseats);
         } else if( args.item_object != null && args.item_object == 'ciniki.fatt.offeringregistration' ) {
-            this.registrationEdit(cb, args.item_object_id, args.source);
+            this.registration.open(cb, args.item_object_id, args.source);
         } else if( args.registration_id != null ) {
-            this.registrationEdit(cb, args.registration_id, args.source);
+            this.registration.open(cb, args.registration_id, args.source);
         } else {
             console.log('UI Error: unrecognized object');
         }
@@ -360,34 +409,6 @@ function ciniki_fatt_sapos() {
         M.startApp('ciniki.sapos.invoice',null,this.regadd.cb,'mc',args);
     };
 
-    this.registrationEdit = function(cb, rid, source) {
-        this.registration.reset();
-        if( rid != null ) { this.registration.registration_id = rid; }
-        if( source != null ) { this.registration._source = source; }
-        M.api.getJSONCb('ciniki.fatt.offeringRegistrationGet', {'tnid':M.curTenantID, 
-            'registration_id':this.registration.registration_id}, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                }
-                var p = M.ciniki_fatt_sapos.registration;
-                p.data = rsp.registration;
-                if( rsp.registration.item_id != null ) {
-                    p.item_id = rsp.registration.item_id;
-                }
-                p.sections._switch.buttons.switchcourse.visible = (rsp.registration.alternate_courses != null ? 'yes' : 'no');
-                p.sections._switch.buttons.switchdate.visible = (rsp.registration.alternate_dates != null ? 'yes' : 'no');
-                if( rsp.registration.invoice_status < 50 || (M.curTenant.sapos.settings['rules-invoice-paid-change-items'] != null && M.curTenant.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
-                    p.sections._buttons.buttons.delete.visible = 'yes';
-                } else { 
-                    p.sections._buttons.buttons.delete.visible = 'no';
-                }
-                p.student_id = rsp.registration.student_id;
-                p.updateCustomers();
-                p.refresh();
-                p.show(cb);
-        });
-    };
 
     this.registrationSave = function() {
         c = this.registration.serializeForm('no');

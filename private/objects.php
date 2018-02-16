@@ -36,6 +36,7 @@ function ciniki_fatt_objects($ciniki) {
             'cover_letter'=>array('name'=>'Cover Letter', 'default'=>''),
             'cert_form1'=>array('name'=>'1st Certification Form', 'default'=>''),
             'cert_form2'=>array('name'=>'2nd Certification Form', 'default'=>''),
+            'welcome_msg'=>array('name'=>'Welcome Message Details', 'default'=>''),
             ),
         'history_table'=>'ciniki_fatt_history',
         );
@@ -193,7 +194,7 @@ function ciniki_fatt_objects($ciniki) {
             'object'=>array(),
             'object_id'=>array(),
             'status'=>array(),
-            'days'=>array(),
+            'days'=>array('name'=>'Days', 'default'=>'0'),
             'subject'=>array(),
             'message'=>array(),
             'parent_subject'=>array('default'=>''),

@@ -24,7 +24,7 @@ function ciniki_fatt_messageAdd(&$ciniki) {
         'object'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Object'), 
         'object_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Object ID'), 
         'status'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('0', '10', '20'), 'name'=>'Status'), 
-        'days'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Days'), 
+        'days'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Days'), 
         'subject'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Subject'), 
         'message'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Message'), 
         'parent_subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent Subject'), 
