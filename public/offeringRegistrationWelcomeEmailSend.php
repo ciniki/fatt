@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_offeringRegistrationWelcomeEmailSend($ciniki) {
+function ciniki_fatt_offeringRegistrationWelcomeEmailSend(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  

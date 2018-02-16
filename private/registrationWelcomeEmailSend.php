@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_registrationWelcomeEmailSend($ciniki, $tnid, $registration_id) {
+function ciniki_fatt_registrationWelcomeEmailSend(&$ciniki, $tnid, $registration_id) {
 
     //
     // Load the tenant settings
@@ -176,6 +176,8 @@ function ciniki_fatt_registrationWelcomeEmailSend($ciniki, $tnid, $registration_
     $msg = array(
         'customer_email'=>$customer['emails'][0]['email']['address'],
         'customer_name'=>$customer['display_name'],
+        'object'=>'ciniki.fatt.registration',
+        'object_id'=>$registration['id'],
         'subject'=>$subject,
         'html_content'=>$content,
         'text_content'=>$content,
@@ -185,6 +187,7 @@ function ciniki_fatt_registrationWelcomeEmailSend($ciniki, $tnid, $registration_
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     } 
+    $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
 
     return array('stat'=>'ok');
 }
