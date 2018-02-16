@@ -74,6 +74,7 @@ function ciniki_fatt_sapos() {
             'switchdate':{'label':'Switch Date', 'visible':'no', 'fn':'M.ciniki_fatt_sapos.registration.showAlternateDates();'},
             }},
         'messages':{'label':'Messages', 'visible':'yes', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return (M.ciniki_fatt_sapos.registration.data.messages != null && M.ciniki_fatt_sapos.registration.data.messages.length > 0 ? 'yes' : 'no'); },
             'cellClasses':['multiline', 'multiline'],
 //            'addTxt':'Email Customer',
 //            'addFn':'M.ciniki_fatt_sapos.emailCustomer(\'M.ciniki_fatt_sapos.registration.open();\',M.ciniki_sapos_invoice.invoice.data);',
