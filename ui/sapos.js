@@ -257,13 +257,13 @@ function ciniki_fatt_sapos() {
         'buttons':{'label':'', 'buttons':{
             'add1':{'label':'New Customer', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
 //            'add2':{'label':'New Employee', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
-            'add3':{'label':'New Tenant', 'fn':'M.ciniki_fatt_sapos.reserve.addtenant();'},
+            'add3':{'label':'New Business', 'fn':'M.ciniki_fatt_sapos.reserve.addbusiness();'},
             }},
     }
     this.reserve.addcustomer = function() {
         M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':1});
     }
-    this.reserve.addtenant = function() {
+    this.reserve.addbusiness = function() {
         M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':2});
     }
     this.reserve.liveSearchCb = function(s, i, value) {
