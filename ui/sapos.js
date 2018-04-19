@@ -276,15 +276,15 @@ function ciniki_fatt_sapos() {
         }
     };
     this.reserve.liveSearchResultValue = function(s, f, i, j, d) {
-        if( d.customer.parent_name != null && d.customer.parent_name != '' ) {
-            return d.customer.display_name + ' <span class="subdue">(' + d.customer.parent_name + ')</span>';
+        if( d.parent_name != null && d.parent_name != '' ) {
+            return d.display_name + ' <span class="subdue">(' + d.parent_name + ')</span>';
         } else {
-            return d.customer.display_name;
+            return d.display_name;
         }
         return '';
     }
     this.reserve.liveSearchResultRowFn = function(s, f, i, j, d) { 
-        return 'M.ciniki_fatt_sapos.saveSeats(\'' + d.customer.id + '\');'; 
+        return 'M.ciniki_fatt_sapos.saveSeats(\'' + d.id + '\');'; 
     };
     this.reserve.open = function(cb, next) {
         this.nextFn = next;
