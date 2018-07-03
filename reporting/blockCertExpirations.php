@@ -65,6 +65,8 @@ function ciniki_fatt_reporting_blockCertExpirations(&$ciniki, $tnid, $args) {
         . "cc.cert_id, "
         . "cc.customer_id, "
         . "customers.display_name, "
+        . "customers.parent_id, "
+        . "IFNULL(parents.display_name, '') AS parent_name, "
         . "certs.name, "
         . "certs.years_valid, "
         . "DATE_FORMAT(cc.date_received, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS date_received, "
@@ -80,6 +82,10 @@ function ciniki_fatt_reporting_blockCertExpirations(&$ciniki, $tnid, $args) {
             . "cc.customer_id = customers.id "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "LEFT JOIN ciniki_customers AS parents ON ("
+            . "customers.parent_id = parents.id "
+            . "AND parents.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE cc.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND cc.date_expiry >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
         . "AND cc.date_expiry <= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
@@ -88,7 +94,7 @@ function ciniki_fatt_reporting_blockCertExpirations(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'certs', 'fname'=>'id',
-            'fields'=>array('id', 'customer_id', 'display_name', 'name', 
+            'fields'=>array('id', 'customer_id', 'display_name', 'name', 'parent_id', 'parent_name', 
                 'date_received', 'date_expiry', 'days_till_expiry', 'years_valid')),
         ));
     $certs = array();
@@ -240,6 +246,7 @@ function ciniki_fatt_reporting_blockCertExpirations(&$ciniki, $tnid, $args) {
 //
 // FIXME: Not currently using merge with customers info, needs to be fixed so will include email, address, employer
 //
+//        $prev_parent = 0;
         foreach($certs as $cid => $cert) {
 
             //
@@ -247,7 +254,6 @@ function ciniki_fatt_reporting_blockCertExpirations(&$ciniki, $tnid, $args) {
             //
             $cert['valid_certs'] = '';
             if( isset($valid_certs[$cert['customer_id']]['certs']) ) {
-                error_log('testing');
                 foreach($valid_certs[$cert['customer_id']]['certs'] as $valid_cert) {
                     if( $cert['valid_certs'] != '' ) {
                         $cert['valid_certs'] .= "\n";
@@ -262,7 +268,6 @@ function ciniki_fatt_reporting_blockCertExpirations(&$ciniki, $tnid, $args) {
             //
             $cert['registrations'] = '';
             if( isset($registrations[$cert['customer_id']]['registrations']) ) {
-                
                 foreach($registrations[$cert['customer_id']]['registrations'] as $reg) {
                     if( $cert['registrations'] != '' ) {
                         $cert['registrations'] .= "\n";
@@ -325,7 +330,20 @@ function ciniki_fatt_reporting_blockCertExpirations(&$ciniki, $tnid, $args) {
                 }
             }
             $chunk['textlist'] .= "\n";
+            
+/*            if( $prev_parent != $cert['parent_id'] ) {
+                if( $cert['parent_id'] == 0 ) {
+                    $chunk['data'][] = array('display_name'=>'Individuals');
+                } else {
+                    $chunk['data'][] = array('display_name'=>$cert['parent_name']);
+                }
+            }  */
+            if( $cert['parent_name'] != '' ) {
+                $cert['display_name'] .= ' (' . $cert['parent_name'] . ')';
+            }
+            
             $chunk['data'][] = $cert;
+            $prev_parent = $cert['parent_id'];
         }
         $chunks[] = $chunk;
     } 
