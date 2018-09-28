@@ -11,7 +11,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_fatt_templates_tenantExpirations(&$ciniki, $tnid, $args) {
+function ciniki_fatt_templates_businessExpirations(&$ciniki, $tnid, $args) {
 
     //
     // Load TCPDF library

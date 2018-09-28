@@ -13,7 +13,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_certTenantExpirations($ciniki) {
+function ciniki_fatt_certBusinessExpirations($ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -32,7 +32,7 @@ function ciniki_fatt_certTenantExpirations($ciniki) {
     // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.certTenantExpirations');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.certBusinessExpirations');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -74,7 +74,7 @@ function ciniki_fatt_certTenantExpirations($ciniki) {
     $rsp = array('stat'=>'ok', 'certs'=>array());
 
     //
-    // Get the tenant details
+    // Get the business details
     //
     if( $args['customer_id'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
@@ -217,8 +217,8 @@ function ciniki_fatt_certTenantExpirations($ciniki) {
         //
         // Generate the pdf
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'templates', 'tenantExpirations');
-        $rc = ciniki_fatt_templates_tenantExpirations($ciniki, $args['tnid'], $rsp);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'templates', 'businessExpirations');
+        $rc = ciniki_fatt_templates_businessExpirations($ciniki, $args['tnid'], $rsp);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }

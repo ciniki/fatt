@@ -175,7 +175,7 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
     $pdf->SetCellPadding(2);
     $pdf->Cell($w[0], 6, 'Course', 1, 0, 'L', 1);
     $pdf->Cell($w[1], 6, 'Student', 1, 0, 'L', 1);
-    $pdf->Cell($w[2], 6, 'Tenant', 1, 0, 'L', 1);
+    $pdf->Cell($w[2], 6, 'Parent/Employer', 1, 0, 'L', 1);
     $pdf->Cell($w[3], 6, 'Initials', 1, 0, 'L', 1);
     $pdf->Cell($w[4], 6, 'Status', 1, 0, 'L', 1);
     $pdf->Cell($w[5], 6, 'P/F', 1, 0, 'L', 1);

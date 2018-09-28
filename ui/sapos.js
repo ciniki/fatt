@@ -40,9 +40,9 @@ function ciniki_fatt_sapos() {
         'student_details':{'label':'Student', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
             'cellClasses':['label',''],
             'addTxt':'Edit',
-            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':M.ciniki_fatt_sapos.registration.student_id});',
+            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'action\':\'edit\',\'customer_id\':M.ciniki_fatt_sapos.registration.student_id});',
             'changeTxt':'Edit',
-            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'customer_id\':0,\'parent_id\':M.ciniki_fatt_sapos.registration.data.customer_id,\'parent_name\':escape(M.ciniki_fatt_sapos.registration.data.customer_name)});',
+            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_fatt_sapos.registration.updateStudent(null);\',\'mc\',{\'next\':\'M.ciniki_fatt_sapos.registration.updateStudent\',\'action\':\'change\',\'current_id\':M.ciniki_fatt_sapos.registration.student_id,\'customer_id\':0,\'parent_id\':M.ciniki_fatt_sapos.registration.data.customer_id,\'parent_name\':escape(M.ciniki_fatt_sapos.registration.data.customer_name)});',
             },
         'invoice_details':{'label':'Invoice', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return (M.ciniki_fatt_sapos.registration.data.invoice_id > 0 ? 'yes' : 'no'); },
@@ -117,9 +117,16 @@ function ciniki_fatt_sapos() {
     };
     this.registration.cellValue = function(s, i, j, d) {
         if( s == 'customer_details' || s == 'student_details' || s == 'invoice_details' ) {
-            switch(j) {
-                case 0: return d.detail.label;
-                case 1: return d.detail.value.replace(/\n/, '<br/>');
+            if( d.detail != null ) {
+                switch(j) {
+                    case 0: return d.detail.label;
+                    case 1: return d.detail.value.replace(/\n/, '<br/>');
+                }
+            } else {
+                switch(j) {
+                    case 0: return d.label;
+                    case 1: return d.value.replace(/\n/, '<br/>');
+                }
             }
         } 
         else if( s == 'alternate_courses' ) {
@@ -178,7 +185,12 @@ function ciniki_fatt_sapos() {
                     return false;
                 }
                 var p = M.ciniki_fatt_sapos.registration;
-                p.data.student_details = rsp.details;
+                if( p.student_id == p.data.customer_id ) {
+                    p.data.customer_details = rsp.customer_details;
+                } else {
+                    console.log('student');
+                    p.data.student_details = rsp.customer_details;
+                }
                 p.updateCustomers();
                 p.refreshSection('student_details');
                 p.refreshSection('customer_details');
@@ -221,28 +233,27 @@ function ciniki_fatt_sapos() {
         this.reset();
         if( rid != null ) { this.registration_id = rid; }
         if( source != null ) { this._source = source; }
-        M.api.getJSONCb('ciniki.fatt.offeringRegistrationGet', {'tnid':M.curTenantID, 
-            'registration_id':this.registration_id}, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                }
-                var p = M.ciniki_fatt_sapos.registration;
-                p.data = rsp.registration;
-                if( rsp.registration.item_id != null ) {
-                    p.item_id = rsp.registration.item_id;
-                }
-                p.sections._switch.buttons.switchcourse.visible = (rsp.registration.alternate_courses != null ? 'yes' : 'no');
-                p.sections._switch.buttons.switchdate.visible = (rsp.registration.alternate_dates != null ? 'yes' : 'no');
-                if( rsp.registration.invoice_status < 50 || (M.curTenant.sapos.settings['rules-invoice-paid-change-items'] != null && M.curTenant.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
-                    p.sections._buttons.buttons.delete.visible = 'yes';
-                } else { 
-                    p.sections._buttons.buttons.delete.visible = 'no';
-                }
-                p.student_id = rsp.registration.student_id;
-                p.updateCustomers();
-                p.refresh();
-                p.show(cb);
+        M.api.getJSONCb('ciniki.fatt.offeringRegistrationGet', {'tnid':M.curTenantID, 'registration_id':this.registration_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_sapos.registration;
+            p.data = rsp.registration;
+            if( rsp.registration.item_id != null ) {
+                p.item_id = rsp.registration.item_id;
+            }
+            p.sections._switch.buttons.switchcourse.visible = (rsp.registration.alternate_courses != null ? 'yes' : 'no');
+            p.sections._switch.buttons.switchdate.visible = (rsp.registration.alternate_dates != null ? 'yes' : 'no');
+            if( rsp.registration.invoice_status < 50 || (M.curTenant.sapos.settings['rules-invoice-paid-change-items'] != null && M.curTenant.sapos.settings['rules-invoice-paid-change-items'] == 'yes')) {
+                p.sections._buttons.buttons.delete.visible = 'yes';
+            } else { 
+                p.sections._buttons.buttons.delete.visible = 'no';
+            }
+            p.student_id = rsp.registration.student_id;
+            p.updateCustomers();
+            p.refresh();
+            p.show(cb);
         });
     };
     this.registration.addButton('save', 'Save', 'M.ciniki_fatt_sapos.registrationSave();');
@@ -255,20 +266,20 @@ function ciniki_fatt_sapos() {
     this.reserve.sections = {
         'search':{'label':'Search Customers', 'type':'livesearchgrid', 'livesearchcols':1},
         'buttons':{'label':'', 'buttons':{
-            'add1':{'label':'New Customer', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
+//            'add1':{'label':'New Customer', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
 //            'add2':{'label':'New Employee', 'fn':'M.ciniki_fatt_sapos.reserve.addcustomer();'},
             'add3':{'label':'New Business', 'fn':'M.ciniki_fatt_sapos.reserve.addbusiness();'},
             }},
     }
     this.reserve.addcustomer = function() {
-        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':1});
+        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':10});
     }
     this.reserve.addbusiness = function() {
-        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':2});
+        M.startApp('ciniki.customers.edit',null,this.cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0, 'type':30});
     }
     this.reserve.liveSearchCb = function(s, i, value) {
         if( s == 'search' && value != '' ) {
-            M.api.getJSONBgCb('ciniki.customers.searchQuick', {'tnid':M.curTenantID, 'start_needle':encodeURIComponent(value), 'limit':'25'}, 
+            M.api.getJSONBgCb('ciniki.customers.searchQuick', {'tnid':M.curTenantID, 'start_needle':encodeURIComponent(value), 'limit':'25', 'types':'10,20,30'}, 
                 function(rsp) { 
                     M.ciniki_fatt_sapos.reserve.liveSearchShow('search', null, M.gE(M.ciniki_fatt_sapos.reserve.panelUID + '_' + s), rsp.customers); 
                 });
@@ -277,7 +288,7 @@ function ciniki_fatt_sapos() {
     };
     this.reserve.liveSearchResultValue = function(s, f, i, j, d) {
         if( d.parent_name != null && d.parent_name != '' ) {
-            return d.display_name + ' <span class="subdue">(' + d.parent_name + ')</span>';
+            return d.parent_name;
         } else {
             return d.display_name;
         }
@@ -347,7 +358,7 @@ function ciniki_fatt_sapos() {
             this.reserve.open(cb, 'M.ciniki_fatt_sapos.saveSeats');
 //            M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.saveSeats', 'customer_id':0});
         } else {
-            M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.invoiceCheck', 'customer_id':0});
+            M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_fatt_sapos.invoiceCheck', 'action':'choose', 'customer_id':0});
         }
     };
 

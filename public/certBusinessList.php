@@ -13,7 +13,7 @@
 // Returns
 // -------
 //
-function ciniki_fatt_certTenantList($ciniki) {
+function ciniki_fatt_certBusinessList($ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -30,7 +30,7 @@ function ciniki_fatt_certTenantList($ciniki) {
     // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'checkAccess');
-    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.certTenantList');
+    $rc = ciniki_fatt_checkAccess($ciniki, $args['tnid'], 'ciniki.fatt.certBusinessList');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -49,7 +49,11 @@ function ciniki_fatt_certTenantList($ciniki) {
     // Get the list of tenants
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerList');
-    $rc = ciniki_customers_hooks_customerList($ciniki, $args['tnid'], array('type'=>2));
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
+        $rc = ciniki_customers_hooks_customerList($ciniki, $args['tnid'], array('type'=>30));
+    } else {
+        $rc = ciniki_customers_hooks_customerList($ciniki, $args['tnid'], array('type'=>2));
+    }
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
