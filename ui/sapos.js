@@ -279,10 +279,18 @@ function ciniki_fatt_sapos() {
     }
     this.reserve.liveSearchCb = function(s, i, value) {
         if( s == 'search' && value != '' ) {
-            M.api.getJSONBgCb('ciniki.customers.searchQuick', {'tnid':M.curTenantID, 'start_needle':encodeURIComponent(value), 'limit':'25', 'types':'10,20,30'}, 
-                function(rsp) { 
-                    M.ciniki_fatt_sapos.reserve.liveSearchShow('search', null, M.gE(M.ciniki_fatt_sapos.reserve.panelUID + '_' + s), rsp.customers); 
-                });
+            // FIXME: Remove after change to IFB Accounts in customers
+            if( M.modFlagOn('ciniki.customers', 0x0800) ) {
+                M.api.getJSONBgCb('ciniki.customers.searchQuick', {'tnid':M.curTenantID, 'start_needle':encodeURIComponent(value), 'limit':'25', 'types':'10,20,30'}, 
+                    function(rsp) { 
+                        M.ciniki_fatt_sapos.reserve.liveSearchShow('search', null, M.gE(M.ciniki_fatt_sapos.reserve.panelUID + '_' + s), rsp.customers); 
+                    });
+            } else {
+                M.api.getJSONBgCb('ciniki.customers.searchQuick', {'tnid':M.curTenantID, 'start_needle':encodeURIComponent(value), 'limit':'25'}, 
+                    function(rsp) { 
+                        M.ciniki_fatt_sapos.reserve.liveSearchShow('search', null, M.gE(M.ciniki_fatt_sapos.reserve.panelUID + '_' + s), rsp.customers); 
+                    });
+            }
             return true;
         }
     };
