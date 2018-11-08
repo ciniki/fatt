@@ -65,6 +65,7 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $tnid, $permalink) {
     // Load the upcoming classes
     //
     $strsql = "SELECT ciniki_fatt_offerings.id, "
+        . "ciniki_fatt_offerings.uuid, "
         . "ciniki_fatt_offerings.permalink, "
         . "ciniki_fatt_offerings.price AS unit_amount, "
         . "ciniki_fatt_offerings.flags, "
@@ -90,7 +91,7 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $tnid, $permalink) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');  
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'offerings', 'fname'=>'id', 
-            'fields'=>array('id', 'permalink', 'unit_amount', 'flags', 'start_date', 'date_string', 'location', 'city', 'seats_remaining')),
+            'fields'=>array('id', 'uuid', 'permalink', 'unit_amount', 'flags', 'start_date', 'date_string', 'location', 'city', 'seats_remaining')),
         array('container'=>'dates', 'fname'=>'date_id',
             'fields'=>array('start_time', 'end_time'),
             'utctotz'=>array(

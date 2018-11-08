@@ -100,18 +100,76 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         $course_permalink = array_shift($args['uri_split']);
         $base_url .= '/' . $course_permalink;
         $ciniki['response']['head']['og']['url'] .= '/' . $course_permalink;
+        if( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'register'
+            && isset($args['uri_split'][1]) && $args['uri_split'][1] != '' 
+            ) {
+            $display = 'register';
+            $offering_uuid = $args['uri_split'][1];
+        }
     }
 
-    if( isset($args['uri_split'][0]) && $args['uri_split'][0] != '' ) {
+/*    if( isset($args['uri_split'][0]) && $args['uri_split'][0] != '' ) {
         $display = 'offering';
         $offering_permalink = array_shift($args['uri_split']);
         $base_url .= '/' . $offering_permalink;
         $ciniki['response']['head']['og']['url'] .= '/' . $offering_permalink;
-    }
+    } */
 
     //
     // Setup the page blocks
     //
+    if( $display == 'register' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courseDetails');
+        $rc = ciniki_fatt_web_courseDetails($ciniki, $settings, $tnid, $course_permalink);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.142', 'msg'=>"I'm sorry, but we can't seem to find the course you requested.", 'err'=>$rc['err']));
+        }
+        if( !isset($rc['course']) ) {
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.fatt.143', 'msg'=>"I'm sorry, but we can't seem to find the course you requested."));
+        }
+        $course = $rc['course'];
+        $page['breadcrumbs'][] = array('name'=>$course['name'], 'url'=>$base_url);
+        $page['breadcrumbs'][] = array('name'=>'Register', 'url'=>$base_url . '/register/' . $offering_uuid);
+
+        //
+        // Make sure they are logged into an account
+        //
+        if( !isset($ciniki['session']['account']['id']) || $ciniki['session']['account']['id'] == 0 ) {
+            $redirect = $args['ssl_domain_base_url'];
+            $join = '?';
+            if( isset($_GET['r']) && $_GET['r'] != '' ) {
+                $redirect .= $join . 'r=' . $_GET['r'];
+                $join = '&';
+            }
+            if( isset($_GET['cl']) && $_GET['cl'] != '' ) {
+                $redirect .= $join . 'cl=' . $_GET['cl'];
+                $join = '&';
+            }
+            $page['blocks'][] = array(
+                'type' => 'login', 
+                'section' => 'login',
+                'register' => 'yes',
+                'redirect' => $redirect,        // Redirect back to registrations page
+                );
+            return array('stat'=>'ok', 'page'=>$page);
+        } else {
+
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'offeringRegister');
+            $rc = ciniki_fatt_web_offeringRegister($ciniki, $settings, $tnid, $offering_uuid);
+            if( $rc['stat'] != 'ok' && $rc['stat'] != 'errors' ) {
+                $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add your registration. Please try again or contact us for help.');
+            } else {
+                foreach($rc['blocks'] as $block) {
+                    $page['blocks'][] = $block;
+                }
+            }
+            if( $rc['stat'] == 'ok' ) {
+                return array('stat'=>'ok', 'page'=>$page);
+            }
+        }
+
+        $display = 'course';
+    }
     if( $display == 'courses' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'courses');
         $rc = ciniki_fatt_web_courses($ciniki, $settings, $tnid, array());
@@ -192,10 +250,14 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         }
 
         if( isset($course['offerings']) && count($course['offerings']) > 0 ) {
+            foreach($course['offerings'] as $oid => $offering) {    
+                $course['offerings'][$oid]['edit_button'] = "<a href='{$base_url}/register/{$offering['uuid']}'>Register</a>";
+            }
             $page['blocks'][] = array('type'=>'pricetable', 'title'=>'Upcoming Courses', 
-                'headers'=>array('Date(s)', 'Time(s)', 'Location', 'Price'),
-                'fields'=>array('date_string', 'times', 'city', 'price'),
-                'prices'=>$course['offerings']);
+                'headers'=>array('Date(s)', 'Time(s)', 'Location', 'Price', ''),
+                'fields'=>array('date_string', 'times', 'city', 'price', 'edit_button'),
+                'prices'=>$course['offerings'],
+                );
         } else {
             $page['blocks'][] = array('type'=>'content', 'title'=>'Upcoming Courses', 'content'=>'Currently no courses are scheduled.');
         }
