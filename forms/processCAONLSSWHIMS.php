@@ -12,31 +12,31 @@
 // -------
 //
 function ciniki_fatt_forms_processCAONLSSWHIMS($ciniki, $tnid, &$pdf, $form) {
-    if( !isset($form['tenants']) || count($form['tenants']) == 0 ) {
+    if( !isset($form['businesses']) || count($form['businesses']) == 0 ) {
         return array('stat'=>'ok');
     }
 
     $pdf->setFont('', '', 12);
 
     $count = 0;
-    foreach($form['tenants'] as $tenant) {
+    foreach($form['businesses'] as $business) {
         //
-        // The tenant text is the name of the tenant to provide the WHIMS certificate for
+        // The business text is the name of the business to provide the WHIMS certificate for
         //
-        $tenant_text = $tenant['display_name'] . "\n";
-        if( $tenant['address1'] != '' ) { $tenant_text .= $tenant['address1'] . "\n"; }
-        if( $tenant['address2'] != '' ) { $tenant_text .= $tenant['address2'] . "\n"; }
+        $business_text = $business['display_name'] . "\n";
+        if( $business['address1'] != '' ) { $business_text .= $business['address1'] . "\n"; }
+        if( $business['address2'] != '' ) { $business_text .= $business['address2'] . "\n"; }
         $city = '';
-        if( $tenant['city'] != '' ) { $city .= $tenant['city']; }
-        if( $tenant['province'] != '' ) { $city .= ($city != '' ? ', ':'') . $tenant['province']; }
-        if( $tenant['postal'] != '' ) { $city .= ($city != '' ? '  ':'') . $tenant['postal']; }
-        if( $city != '' ) { $tenant_text .= $city . "\n"; }
+        if( $business['city'] != '' ) { $city .= $business['city']; }
+        if( $business['province'] != '' ) { $city .= ($city != '' ? ', ':'') . $business['province']; }
+        if( $business['postal'] != '' ) { $city .= ($city != '' ? '  ':'') . $business['postal']; }
+        if( $city != '' ) { $business_text .= $city . "\n"; }
         
         //
         // Build the list of emloyees
         //
         $employee_text = '';
-        foreach($tenant['registrations'] as $reg) {
+        foreach($business['registrations'] as $reg) {
             $employee_text .= $reg['display_name'] . "\n";
         }
 
@@ -45,9 +45,9 @@ function ciniki_fatt_forms_processCAONLSSWHIMS($ciniki, $tnid, &$pdf, $form) {
         //
         $w = array(90, 90);
         $h = $pdf->getPageHeight() - 30 - 30;
-        $tenant_height = $pdf->getStringHeight($w[0], $tenant_text);
+        $business_height = $pdf->getStringHeight($w[0], $business_text);
         $employee_height = $pdf->getStringHeight($w[1], $employee_text);
-        $required_height = ($tenant_height > $employee_height ? $tenant_height : $employee_height) + 4;
+        $required_height = ($business_height > $employee_height ? $business_height : $employee_height) + 4;
 
         if( $count == 0 || $required_height > ($h - $pdf->getY()) ) {
             $pdf->AddPage();
@@ -67,7 +67,7 @@ function ciniki_fatt_forms_processCAONLSSWHIMS($ciniki, $tnid, &$pdf, $form) {
             $pdf->SetFillColor(255);
             $pdf->SetFont('', '');
         }
-        $pdf->MultiCell($w[0], $required_height, $tenant_text, 1, 'L', 0, 0);
+        $pdf->MultiCell($w[0], $required_height, $business_text, 1, 'L', 0, 0);
         $pdf->MultiCell($w[1], $required_height, $employee_text, 1, 'L', 0, 0);
         $pdf->Ln();
 

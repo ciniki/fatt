@@ -230,7 +230,7 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
             }
 
             //
-            // Get the student details
+            // Get the customer details
             //
             $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
@@ -300,19 +300,19 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
             }
 
             //
-            // Get the tenant details
+            // Get the customer if different from student details
             //
             if( $reg['student_id'] != $reg['customer_id'] ) {
                 $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes'));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
-                if( isset($rc['customer']) && $rc['customer']['type'] == 2 ) {
-                    if( !isset($reg_forms[$form_name]['tenants']) ) {
-                        $reg_forms[$form_name]['tenants'] = array();
+                if( isset($rc['customer']) && $rc['customer']['type'] == 30 ) {
+                    if( !isset($reg_forms[$form_name]['businesses']) ) {
+                        $reg_forms[$form_name]['businesses'] = array();
                     }
-                    if( !isset($reg_forms[$form_name]['tenants'][$reg['customer_id']]) ) {
-                        $reg_forms[$form_name]['tenants'][$reg['customer_id']] = array(
+                    if( !isset($reg_forms[$form_name]['businesses'][$reg['customer_id']]) ) {
+                        $reg_forms[$form_name]['businesses'][$reg['customer_id']] = array(
                             'id'=>$reg['customer_id'],
                             'display_name'=>$rc['customer']['display_name'],
                             'address1'=>'',
@@ -326,18 +326,18 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
                             foreach($rc['customer']['addresses'] as $address) {
                                 $address = $address['address'];
                                 if( ($address['flags']&0x04) > 0 ) {
-                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['address1'] = $address['address1'];
-                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['address2'] = $address['address2'];
-                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['city'] = $address['city'];
-                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['province'] = $address['province'];
-                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['postal'] = $address['postal'];
-                                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['country'] = $address['country'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['address1'] = $address['address1'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['address2'] = $address['address2'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['city'] = $address['city'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['province'] = $address['province'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['postal'] = $address['postal'];
+                                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['country'] = $address['country'];
                                     break;
                                 }
                             }
                         }
                     }
-                    $reg_forms[$form_name]['tenants'][$reg['customer_id']]['registrations'][] = $registrations[$reg_id];
+                    $reg_forms[$form_name]['businesses'][$reg['customer_id']]['registrations'][] = $registrations[$reg_id];
                 }
             }
 

@@ -188,7 +188,6 @@ function ciniki_fatt_sapos() {
                 if( p.student_id == p.data.customer_id ) {
                     p.data.customer_details = rsp.customer_details;
                 } else {
-                    console.log('student');
                     p.data.student_details = rsp.customer_details;
                 }
                 p.updateCustomers();
