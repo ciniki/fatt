@@ -90,8 +90,9 @@ function ciniki_fatt_hooks_uiCustomersData($ciniki, $tnid, $args) {
                 ),
             'data' => array(),
             );
-        $strsql = "SELECT regs.id, regs.customer_id, "
+        $strsql = "SELECT regs.id, regs.customer_id, regs.student_id, "
             . "regs.status AS status_text, "
+            . "IFNULL(customers.type, 0) AS customer_type, "
             . "IFNULL(customers.first, '') AS first, "
             . "IFNULL(customers.last, '') AS last, "
             . "offerings.date_string, "
@@ -122,10 +123,11 @@ function ciniki_fatt_hooks_uiCustomersData($ciniki, $tnid, $args) {
         }
         $strsql .= "ORDER BY customers.display_name, offerings.start_date DESC, courses.name "
             . "";
+            error_log($strsql);
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'customer_id', 'first', 'last', 'date_string', 'status_text', 'code', 'name', 'days_till_start'),
+                'fields'=>array('id', 'customer_id', 'student_id', 'customer_type', 'first', 'last', 'date_string', 'status_text', 'code', 'name', 'days_till_start'),
                 'maps'=>array('status_text'=>$maps['offeringregistration']['status']),
                 ),
             ));
@@ -134,6 +136,10 @@ function ciniki_fatt_hooks_uiCustomersData($ciniki, $tnid, $args) {
         }
         if( isset($rc['registrations']) && count($rc['registrations']) > 0 ) {
             foreach($rc['registrations'] as $reg) {
+                if( $reg['customer_type'] == 30 && $reg['customer_id'] == $reg['student_id'] ) {
+                    $reg['first'] = 'Saved Seat';
+                    $reg['last'] = '';
+                }
                 if( $reg['days_till_start'] > 0 ) {
                     $sections['ciniki.fatt.registrations.past']['data'][] = $reg;
                 } else {
