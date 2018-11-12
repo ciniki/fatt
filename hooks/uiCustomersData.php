@@ -123,7 +123,6 @@ function ciniki_fatt_hooks_uiCustomersData($ciniki, $tnid, $args) {
         }
         $strsql .= "ORDER BY customers.display_name, offerings.start_date DESC, courses.name "
             . "";
-            error_log($strsql);
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'registrations', 'fname'=>'id', 

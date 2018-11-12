@@ -28,7 +28,7 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
             && isset($ciniki['request']['uri_split'][1]) && $ciniki['request']['uri_split'][1] != ''   
             ) {
             //
-            // You must be logged in to view this page
+            // FIXME: You must be logged in to view this page
             //
             error_log('testing');
         } else {
