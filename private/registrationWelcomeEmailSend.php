@@ -119,7 +119,21 @@ function ciniki_fatt_registrationWelcomeEmailSend(&$ciniki, $tnid, $registration
         }
         $customer = $rc['customer'];
         if( !isset($customer['emails'][0]['email']['address']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.158', 'msg'=>'No email for customer'));
+            //
+            // Check for parent email
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$registration['customer_id'], 'emails'=>'yes'));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( !isset($rc['customer']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.170', 'msg'=>'No email for student', 'err'=>$rc['err']));
+            }
+            $customer = $rc['customer'];
+            if( !isset($customer['emails'][0]['email']['address']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.171', 'msg'=>'No email for customer'));
+            } 
         }
     } else {
         // No student yet, nothing to send
