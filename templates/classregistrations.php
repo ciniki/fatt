@@ -272,12 +272,15 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
                 if( isset($customer['birthdate']) ) {
                     $student_information .= "Birthday: " . $customer['birthdate'] . "\n";
                 }
+                if( isset($reg['notes']) && trim($reg['notes']) != '' ) {
+                    $student_information .= '**' . trim($reg['notes']) . '**';
+                }
             }
         }
 
-        // If a tenant, then convert "Payment Required" to "Invoice"
+        // If a business, then convert "Payment Required" to "Invoice"
         $tenant_information = '';
-        if( $reg['customer_type'] == 2 || $reg['student_id'] != $reg['customer_id'] ) {
+        if( $reg['customer_type'] == 20 || $reg['customer_type'] == 30 || $reg['student_id'] != $reg['customer_id'] ) {
             if( $reg['invoice_status'] == 'Payment Required' ) {
                 $reg['invoice_status'] = 'Invoice';
             }
@@ -286,7 +289,7 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
-            $tenant_information = $reg['customer_display_name'] . "\n";
+            $business_information = $reg['customer_display_name'] . "\n";
 //          print "<pre>" . print_r($rc, true) . "</pre>";
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
@@ -324,10 +327,10 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
                                 $joined_address .= ', ' . $city . "\n";
                             }
                         }
-                        $tenant_information .= $joined_address;
+                        $business_information .= $joined_address;
                     }
                 } else {
-                    $tenant_information .= "Address: \n";
+                    $business_information .= "Address: \n";
                 }
                 if( isset($customer['phones']) ) {
                     $phones = "";
@@ -344,9 +347,9 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
                         }
                     }
                     if( count($customer['phones']) > 0 ) {
-                        $tenant_information .= $phones . "\n";
+                        $business_information .= $phones . "\n";
                     } else {
-                        $tenant_information .= "Phone: \n";
+                        $business_information .= "Phone: \n";
                     }
                 }
                 if( isset($customer['emails']) ) {
@@ -355,14 +358,14 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
                     foreach($customer['emails'] as $e => $email) {
                         $emails .= ($emails!=''?', ':'') . $email['email']['address'];
                     }
-                    $tenant_information .= $emails . "\n";
+                    $business_information .= $emails . "\n";
                 }
             }
         }
 
         // Calculate the line height required
-        $lh = $pdf->getStringHeight($w[1], $tenant_information);
         $lh1 = $pdf->getStringHeight($w[1], $student_information);
+        $lh = $pdf->getStringHeight($w[2], $business_information);
         $lh2 = $pdf->getStringHeight($w[3], $reg['invoice_status']);
         if( $lh1 > $lh ) { $lh = $lh1; }
         if( $lh2 > $lh ) { $lh = $lh2; }
@@ -374,7 +377,7 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
             $pdf->SetFont('', 'B');
             $pdf->Cell($w[0], 6, 'Course', 1, 0, 'L', 1);
             $pdf->Cell($w[1], 6, 'Student', 1, 0, 'L', 1);
-            $pdf->Cell($w[2], 6, 'Tenant', 1, 0, 'L', 1);
+            $pdf->Cell($w[2], 6, 'Parent/Employer', 1, 0, 'L', 1);
             $pdf->Cell($w[3], 6, 'Initials', 1, 0, 'L', 1);
             $pdf->Cell($w[4], 6, 'Status', 1, 0, 'L', 1);
             $pdf->Cell($w[5], 6, 'P/F', 1, 0, 'L', 1);
@@ -386,7 +389,7 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
 
         $pdf->MultiCell($w[0], $lh, $reg['course_code'], 1, 'L', $fill, 0);
         $pdf->MultiCell($w[1], $lh, $student_information, 1, 'L', $fill, 0);
-        $pdf->MultiCell($w[2], $lh, $tenant_information, 1, 'L', $fill, 0);
+        $pdf->MultiCell($w[2], $lh, $business_information, 1, 'L', $fill, 0);
         $pdf->MultiCell($w[3], $lh, ' ', 1, 'L', $fill, 0);
         $pdf->MultiCell($w[4], $lh, $reg['invoice_status'], 1, 'L', $fill, 0);
         $pdf->MultiCell($w[5], $lh, ' ', 1, 'L', $fill, 0);
