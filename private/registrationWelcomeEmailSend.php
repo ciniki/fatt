@@ -131,7 +131,7 @@ function ciniki_fatt_registrationWelcomeEmailSend(&$ciniki, $tnid, $registration
                 if( !isset($rc['customer']) ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.170', 'msg'=>'No email for student', 'err'=>$rc['err']));
                 }
-                $customer = $rc['customer'];
+                $customer['emails'] = $rc['customer']['emails'];
             }
             if( !isset($customer['emails'][0]['email']['address']) ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.171', 'msg'=>'No email for customer'));
