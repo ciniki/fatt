@@ -65,6 +65,19 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
         }
         $reg_id = $rc['id'];
 
+        $rsp = array('stat'=>'ok', 'object'=>'ciniki.fatt.offeringregistration', 'object_id'=>$reg_id);
+
+        //
+        // Get the student name if the student is different from customer
+        //
+        if( $reg_args['student_id'] != $reg_args['customer_id'] ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array('customer_id'=>$reg_args['student_id']));
+            if( $rc['stat'] == 'ok' && isset($rc['customer']['display_name']) ) {
+                $rsp['notes'] = $rc['customer']['display_name'];
+            }
+        }
+
         //
         // Update the offering
         //
@@ -74,7 +87,7 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.123', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
         }
 
-        return array('stat'=>'ok', 'object'=>'ciniki.fatt.offeringregistration', 'object_id'=>$reg_id);
+        return $rsp;
     }
 
 /*

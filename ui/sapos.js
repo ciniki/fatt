@@ -80,8 +80,8 @@ function ciniki_fatt_sapos() {
 //            'addFn':'M.ciniki_fatt_sapos.emailCustomer(\'M.ciniki_fatt_sapos.registration.open();\',M.ciniki_sapos_invoice.invoice.data);',
             },
         '_buttons':{'label':'', 'buttons':{
-            'save':{'label':'Save', 'fn':'M.ciniki_fatt_sapos.registrationSave();'},
-            'emailwelcome':{'label':'Email Welcome Message', 'fn':'M.ciniki_fatt_sapos.registration.emailWelcomeMsg();'},
+            'save':{'label':'Save', 'fn':'M.ciniki_fatt_sapos.registration.save();'},
+            'emailwelcome':{'label':'Email Welcome Message', 'fn':'M.ciniki_fatt_sapos.registration.save(\'M.ciniki_fatt_sapos.registration.emailWelcomeMsg();\');'},
             'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_sapos.registrationDelete();'},
             }},
     };
@@ -254,8 +254,27 @@ function ciniki_fatt_sapos() {
             p.refresh();
             p.show(cb);
         });
-    };
-    this.registration.addButton('save', 'Save', 'M.ciniki_fatt_sapos.registrationSave();');
+    }
+    this.registration.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_fatt_sapos.registration.close();'; }
+        c = this.serializeForm('no');
+        if( this.student_id != this.data.student_id ) {
+            c += '&student_id=' + this.student_id;
+        }
+        if( c != '' ) {
+            M.api.postJSONCb('ciniki.fatt.offeringRegistrationUpdate', {'tnid':M.curTenantID,
+                'registration_id':this.registration_id, 'item_id':this.item_id}, c, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    eval(cb);
+                });
+        } else {
+            eval(cb);
+        }
+    }
+    this.registration.addButton('save', 'Save', 'M.ciniki_fatt_sapos.registration.save();');
     this.registration.addClose('Cancel');
 
     //
@@ -425,28 +444,15 @@ function ciniki_fatt_sapos() {
         if( start_date != null && start_date != '' ) {
             args['invoice_date'] = start_date;
         }
+        if( ns == null || ns == 1 ) {
+            args['regOpenFn'] = 'M.ciniki_fatt_sapos.regAdded';
+        }
         M.startApp('ciniki.sapos.invoice',null,this.regadd.cb,'mc',args);
-    };
+    }
 
-
-    this.registrationSave = function() {
-        c = this.registration.serializeForm('no');
-        if( this.registration.student_id != this.registration.data.student_id ) {
-            c += '&student_id=' + this.registration.student_id;
-        }
-        if( c != '' ) {
-            M.api.postJSONCb('ciniki.fatt.offeringRegistrationUpdate', {'tnid':M.curTenantID,
-                'registration_id':this.registration.registration_id, 'item_id':this.registration.item_id}, c, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    M.ciniki_fatt_sapos.registration.close();
-                });
-        } else {
-            this.registration.close();
-        }
-    };
+    this.regAdded = function(invoice_id, object, object_id) {
+        this.registration.open(this.regadd.cb, object_id, 'offering');
+    }
 
     this.registrationSwitchCourse = function(oid) {
         M.api.getJSONCb('ciniki.fatt.offeringRegistrationSwitchOffering', {'tnid':M.curTenantID, 
