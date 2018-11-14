@@ -133,9 +133,9 @@ function ciniki_fatt_settings() {
             'addTxt':'New Reminder',
             'addFn':'M.ciniki_fatt_settings.course.save(\'M.ciniki_fatt_settings.message.open("M.ciniki_fatt_settings.course.messagesUpdate();","ciniki.fatt.course",M.ciniki_fatt_settings.course.course_id,0);\');',
             },
-        '_welcome_msg':{'label':'Welcome Message Course Details', 'fields':{
-            'welcome_msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
-            }},
+//        '_welcome_msg':{'label':'Welcome Message Course Details', 'fields':{
+//            'welcome_msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+//            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_fatt_settings.course.save();'},
             'delete':{'label':'Delete', 'fn':'M.ciniki_fatt_settings.course.remove(M.ciniki_fatt_settings.course.course_id);'},
