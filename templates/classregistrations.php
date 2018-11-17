@@ -279,7 +279,7 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
         }
 
         // If a business, then convert "Payment Required" to "Invoice"
-        $tenant_information = '';
+        $business_information = '';
         if( $reg['customer_type'] == 20 || $reg['customer_type'] == 30 || $reg['student_id'] != $reg['customer_id'] ) {
             if( $reg['invoice_status'] == 'Payment Required' ) {
                 $reg['invoice_status'] = 'Invoice';
