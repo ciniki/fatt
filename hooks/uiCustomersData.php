@@ -290,6 +290,68 @@ function ciniki_fatt_hooks_uiCustomersData($ciniki, $tnid, $args) {
             );
     }
 
+    //
+    // Check for AED's assigned to the customer
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.fatt', 0x0100) && (isset($args['customer_id']) || isset($args['customer_ids'])) ) {
+        //
+        // Get the aeds for the customer
+        //
+        $strsql = "SELECT ciniki_fatt_aeds.id, "
+            . "ciniki_fatt_aeds.make, "
+            . "ciniki_fatt_aeds.model "
+            . "FROM ciniki_fatt_aeds "
+            . "LEFT JOIN ciniki_customers ON ("
+                . "ciniki_fatt_aeds.customer_id = ciniki_customers.id "
+                . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE ciniki_fatt_aeds.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        if( isset($args['customer_id']) ) {
+            $strsql .= "AND ciniki_fatt_aeds.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
+        } elseif( isset($args['customer_ids']) && count($args['customer_ids']) > 0 ) {
+            $strsql .= "AND ciniki_fatt_aeds.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['customer_ids']) . ") ";
+        } else {
+            return array('stat'=>'ok');
+        }
+        $strsql .= "ORDER BY ciniki_fatt_aeds.device_expiration DESC "
+            . "";
+        if( isset($args['limit']) && $args['limit'] > 0 ) {
+            $strsql .= "LIMIT " . $args['limit'] . " ";
+        }
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'aed');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $sections = array();
+        $sections['ciniki.fatt.aeds'] = array(
+            'label' => 'AEDs',
+            'type' => 'simplegrid', 
+            'num_cols' => 2,
+            'headerValues' => array('Make', 'Model'),
+            'cellClasses' => array('', ''),
+            'noData' => 'No current aeds',
+//            'addTxt' => 'Add AED',
+//            'addApp' => array('app'=>'ciniki.fatt.reports', 'args'=>array('certcustomer_id'=>'0', 'customer_id'=>0)),
+            'editApp' => array('app'=>'ciniki.fatt.aeds', 'args'=>array('aed_id'=>'d.id;', 'customer_id'=>'d.customer_id;')),
+            'cellValues' => array(
+                '0' => "d.make",
+                '1' => "d.model",
+                ),
+            'data' => $rc['rows'],
+            );
+
+        //
+        // Add a tab the customer UI data screen with the certificate list
+        //
+        $rsp['tabs'][] = array(
+            'id' => 'ciniki.fatt.aeds',
+            'label' => 'AEDs',
+            'sections' => $sections,
+            );
+    }
+
     return $rsp;
 }
 ?>

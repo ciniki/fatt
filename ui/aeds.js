@@ -731,6 +731,8 @@ function ciniki_fatt_aeds() {
         //
         if( args.appointment_id != null ) {
             this.owner.open(cb, args.appointment_id.replace(/aedcustomer-/,''));
+        } else if( args.aed_id != null ) {
+            M.ciniki_fatt_aeds.edit.open(cb, args.aed_id);
         } else {
             this.menu.open(cb, 'aeds');
         }
