@@ -94,7 +94,9 @@ function ciniki_fatt_web_accountProcessRequestCertifications(&$ciniki, $settings
     }
     $curcerts = array_reverse($curcerts);
 
-    if( $ciniki['session']['account']['type'] == 10 ) {
+    if( count($curcerts) == 0 && count($pastcerts) == 0 ) {
+        $page['blocks'][] = array('type'=>'content', 'content'=>'No certifications');
+    } elseif( $ciniki['session']['account']['type'] == 10 ) {
         $page['blocks'][] = array('type'=>'table', 
             'title' => 'Valid Certifications',
             'headers' => 'yes',

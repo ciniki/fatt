@@ -33,6 +33,12 @@ function ciniki_fatt_web_offeringDetails(&$ciniki, $settings, $tnid, $uuid) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
     //
+    // Load the date format strings for the user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timeFormat');
+    $time_format = ciniki_users_timeFormat($ciniki, 'php');
+
+    //
     // Load the upcoming classes
     //
     $strsql = "SELECT ciniki_fatt_offerings.id, "
@@ -65,15 +71,23 @@ function ciniki_fatt_web_offeringDetails(&$ciniki, $settings, $tnid, $uuid) {
         . "AND ciniki_fatt_offerings.start_date >= UTC_TIMESTAMP() "
         . "ORDER BY ciniki_fatt_offerings.start_date "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');  
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');  
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
+        array('container'=>'offerings', 'fname'=>'id',
+            'fields'=>array('id', 'uuid', 'permalink', 'code', 'name', 'unit_amount', 'flags',
+                'start_date', 'date_string', 'city', 'seats_remaining', 'date_id', 'start_time', 'end_time'),
+            'utctotz'=>array('start_time'=>array('timezone'=>$intl_timezone, 'format'=>$time_format),
+                'end_time'=>array('timezone'=>$intl_timezone, 'format'=>$time_format),
+                ),
+            ),
+        ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.167', 'msg'=>'Unable to load offering', 'err'=>$rc['err']));
     }
-    if( !isset($rc['offering']) ) {
+    if( !isset($rc['offerings'][0]) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.168', 'msg'=>'Unable to find requested offering'));
     }
-    $offering = $rc['offering'];
+    $offering = $rc['offerings'][0];
     
     return array('stat'=>'ok', 'offering'=>$offering);
 }

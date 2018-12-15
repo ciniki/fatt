@@ -75,6 +75,13 @@ function ciniki_fatt_sapos_itemLookup($ciniki, $tnid, $args) {
         // Flags: No Quantity, Registration Item
         $item['flags'] = 0x28;
 
+        if( isset($args['registration_status']) && $args['registration_status'] != '' ) {
+            $item['registration_status'] = $args['registration_status'];
+        }
+        if( isset($args['student_id']) && $args['student_id'] != '' ) {
+            $item['student_id'] = $args['student_id'];
+        }
+
         return array('stat'=>'ok', 'item'=>$item);
     }
 

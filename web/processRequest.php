@@ -135,7 +135,8 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         // Make sure they are logged into an account
         //
         if( !isset($ciniki['session']['account']['id']) || $ciniki['session']['account']['id'] == 0 ) {
-            $redirect = $args['ssl_domain_base_url'];
+//            $redirect = $args['ssl_domain_base_url'];
+            $redirect = $base_url . '/register/' . $offering_uuid;
             $join = '?';
             if( isset($_GET['r']) && $_GET['r'] != '' ) {
                 $redirect .= $join . 'r=' . $_GET['r'];
@@ -153,15 +154,18 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 );
             return array('stat'=>'ok', 'page'=>$page);
         } else {
-
             ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'web', 'offeringRegister');
-            $rc = ciniki_fatt_web_offeringRegister($ciniki, $settings, $tnid, $offering_uuid);
-            if( $rc['stat'] != 'ok' && $rc['stat'] != 'errors' ) {
+            $rc = ciniki_fatt_web_offeringRegister($ciniki, $settings, $tnid, $offering_uuid, $base_url . '/register/' . $offering_uuid);
+            if( $rc['stat'] != 'ok' && $rc['stat'] != 'errors' && $rc['stat'] != 'added' ) {
                 $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add your registration. Please try again or contact us for help.');
             } else {
                 foreach($rc['blocks'] as $block) {
                     $page['blocks'][] = $block;
                 }
+            }
+            if( $rc['stat'] == 'added' ) {
+                header("Location: " . $ciniki['request']['base_url'] . "/account/registrations");
+                exit;
             }
             if( $rc['stat'] == 'ok' ) {
                 return array('stat'=>'ok', 'page'=>$page);
@@ -253,7 +257,9 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             
             foreach($course['offerings'] as $oid => $offering) {    
                 $course['offerings'][$oid]['edit_button'] = "";
-//                $course['offerings'][$oid]['edit_button'] = "<a href='{$base_url}/register/{$offering['uuid']}'>Register</a>";
+                if( ($offering['flags']&0x10) == 0x10 ) {
+                    $course['offerings'][$oid]['edit_button'] = "<a href='{$base_url}/register/{$offering['uuid']}'>Register</a>";
+                }
             }
             $page['blocks'][] = array('type'=>'pricetable', 'title'=>'Upcoming Courses', 
                 'headers'=>array('Date(s)', 'Time(s)', 'Location', 'Price', ''),

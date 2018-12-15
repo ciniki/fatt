@@ -12,6 +12,10 @@
 // This function should be called after any change in the number of instructors, dates, locations or registrations.
 // This ensures all the seat counts and numbers stay up to date.
 //
+// WARNING: If testing on a non-UTC system, the database must be set to UTC. 
+//          Edit my.cnf for mysqld and add default_time_zone='UTC'
+//          Load timezone data: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
+//
 // Arguments
 // ---------
 // api_key:
@@ -199,7 +203,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
             //
             // Calculate the UTC start/end datetime for each date of the current offering.
             //
-            $dts = new DateTime($date['start_date']);
+            $dts = new DateTime($date['start_date'], new DateTimezone('UTC'));
             $dtsu = $dts->format('U');
             $dte = clone $dts;
 //          if( preg_match('/^([0-9]+)\.([0-9]+)$/, $date['num_hours'], $matches) ) {

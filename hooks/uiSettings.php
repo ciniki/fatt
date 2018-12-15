@@ -157,11 +157,37 @@ function ciniki_fatt_hooks_uiSettings($ciniki, $tnid, $args) {
             )
         ) {
         $menu_item = array(
-            'priority'=>5503,
+            'priority'=>5505,
             'label'=>'Reports', 
             'edit'=>array('app'=>'ciniki.fatt.reports'),
             );
         $rsp['menu_items'][] = $menu_item;
+    } 
+
+    //
+    // Check for pending registrations
+    //
+    if( isset($args['permissions']['owners'])
+        || isset($args['permissions']['employees'])
+        || isset($args['permissions']['resellers'])
+        || ($ciniki['session']['user']['perms']&0x01) == 0x01
+        ) {
+        $strsql = "SELECT COUNT(id) "
+            . "FROM ciniki_fatt_offering_registrations "
+            . "WHERE status = 5 "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+        $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.fatt', 'num_reg');
+        if( $rc['stat'] == 'ok' && $rc['num_reg'] > 0 ) {
+            $menu_item = array(
+                'priority'=>5503,
+                'label'=>'Pending Registrations', 
+                'count'=>$rc['num_reg'],
+                'edit'=>array('app'=>'ciniki.fatt.offerings', 'args'=>array('pending_reg'=>"\"'yes'\"")),
+                );
+            $rsp['menu_items'][] = $menu_item;
+        }
     } 
 
     //

@@ -901,6 +901,61 @@ function ciniki_fatt_offerings() {
     this.add.addButton('save', 'Save', 'M.ciniki_fatt_offerings.add.save();');
     this.add.addClose('Cancel');
 
+    //
+    // Display the list of pending registrations for approval
+    //
+    this.pendingreg = new M.panel('Pending Registrations', 'ciniki_fatt_offerings', 'pendingreg', 'mc', 'large', 'sectioned', 'ciniki.fatt.offerings.pendingreg');
+    this.pendingreg.data = {};
+    this.pendingreg.sections = { 
+        'registrations':{'label':'Pending Registrations', 'type':'simplegrid', 'num_cols':4,
+            'sortable':'yes',
+            'headerValues':['Parent/Business', 'Name', 'Course', ''],
+            'sortTypes':['text', 'text', 'date', 'text', 'text'],
+            'cellClasses':['multiline', 'multiline', 'multiline', 'multiline', 'multiline'],
+            'noData':'No pending registrations',
+            },
+    };
+    this.pendingreg.cellValue = function(s, i, j, d) {
+        switch(j) {
+            case 0:     
+                if( d.parent_name != '' ) {
+                    return '<span class="maintext">' + d.parent_name + '</span><span class="subtext">' + d.student_name + '</span>';
+                }
+                return d.student_name;
+            case 1: return d.code;
+            case 2: return '<span class="maintext">' + d.date_string + '</span><span class="subtext">' + d.location + '</span>';
+            case 3: return '<button onclick="M.ciniki_fatt_offerings.pendingreg.approve(event,\'' + d.id + '\');">Approve</button>'
+                + ' <button onclick="M.ciniki_fatt_offerings.pendingreg.approve(event,\'' + d.id + '\',\'yes\');">Approve & Send Welcome</button>';
+        }
+    };
+    this.pendingreg.rowFn = function(s, i, d) { 
+        return 'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.pendingreg.open();\',\'mc\',{\'registration_id\':\'' + d.id + '\',\'source\':\'pendingreg\'});';
+    };
+    this.pendingreg.approve = function(e,id,w) {
+        e.stopPropagation();
+        this.open(null,id,w);
+    }
+    this.pendingreg.open = function(cb, id, w) {
+        var args = {'tnid':M.curTenantID};
+        if( id != null ) {
+            args['approve_id'] = id;
+        }
+        if( w != null ) {
+            args['welcome'] = w;
+        }
+        M.api.getJSONCb('ciniki.fatt.pendingRegistrations', args, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_fatt_offerings.pendingreg;
+            p.data = rsp;
+            p.refresh();
+            p.show(cb);
+        });
+    };
+    this.pendingreg.addClose('Back');
+
     this.start = function(cb, appPrefix, aG) {
         args = {};
         if( aG != null ) { args = eval(aG); }
@@ -989,6 +1044,8 @@ function ciniki_fatt_offerings() {
         //
         if( args.add != null && args.add == 'courses' ) {
             this.add.open(cb, args.date, args.time, args.allday);
+        } else if( args.pending_reg != null && args.pending_reg == 'yes' ) {
+            this.pendingreg.open(cb);
         } else if( args.appointment_id != null ) {
             this.class.open(cb, args.appointment_id);
         } else if( args.offering_id != null ) {

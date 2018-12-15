@@ -11,7 +11,6 @@
 // =======
 //
 function ciniki_fatt_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
-
     //
     // An offering was added to an invoice item, get the details and see if we need to 
     // create a registration for this offering
@@ -59,6 +58,9 @@ function ciniki_fatt_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
             'student_id'=>(isset($item['student_id']) ? $item['student_id'] : $invoice['customer_id']),
             'invoice_id'=>$invoice['id'],
             );
+        if( isset($item['registration_status']) && $item['registration_status'] != '' ) {
+            $reg_args['status'] = $item['registration_status'];
+        }
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.fatt.offeringregistration', $reg_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
