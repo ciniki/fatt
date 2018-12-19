@@ -257,7 +257,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             
             foreach($course['offerings'] as $oid => $offering) {    
                 $course['offerings'][$oid]['edit_button'] = "";
-                if( ($offering['flags']&0x10) == 0x10 ) {
+                if( ($offering['flags']&0x10) == 0x10 && $offering['seats_remaining'] > 0 ) {
                     $course['offerings'][$oid]['edit_button'] = "<a href='{$base_url}/register/{$offering['uuid']}'>Register</a>";
                 }
             }

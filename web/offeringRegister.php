@@ -138,34 +138,8 @@ function ciniki_fatt_web_offeringRegister(&$ciniki, $settings, $tnid, $offering_
                 return array('stat'=>'errors', 'blocks'=>$blocks);
             }
         }
-        
-        //
-        // Setup the offering registration
-        //
-/*        $reg_args = array(
-            'offering_id' => $offering['id'],
-            'customer_id' => $customer_id,
-            'student_id' => $student_id,
-            'invoice_id' => $invoice_id,
-            'status' => 5,      // Registration, needs to be approved
-            );
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.fatt.offeringregistration', $reg_args, 0x04);
-        if( $rc['stat'] != 'ok' ) {
-            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-            $blocks[] = array('type' => 'formmessage', 'level'=>'error', 'message'=>'Unable to add the registration, please try again or contact us for help.');
-            return array('stat'=>'errors', 'blocks'=>$blocks);
-        }  */
-        $blocks[] = array('type' => 'formmessage', 'level'=>'success', 'message'=>'Registration saved');
 
-/*        //
-        // Update the seat count
-        //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
-        $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering['id']);
-        if( $rc['stat'] != 'ok' ) {
-            error_log('ERR: Unable to update offeringUpdateDatesSeats');
-        } */
+        $blocks[] = array('type' => 'formmessage', 'level'=>'success', 'message'=>'Registration saved');
 
         //
         // Commit the transaction
@@ -174,9 +148,82 @@ function ciniki_fatt_web_offeringRegister(&$ciniki, $settings, $tnid, $offering_
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
+
+        //
+        // Setup the registration email to instructor
+        //
+        $subject = "New Registration";
+
+        if( $ciniki['session']['account']['type'] == 20 || $ciniki['session']['account']['type'] == 30 ) {
+            $blocks[] = array('type'=>'content', 'html'=>'<pre>' . print_r($ciniki['session'], true) . '</pre>');
+            if( isset($_GET['id']) && is_numeric($_GET['id']) && $_GET['id'] > 0 ) {
+                $student_id = $_GET['id'];
+            } elseif( !isset($student_id) && isset($registration['student_id']) ) {
+                $student_id = $registration['student_id'];
+            }
+            // Find student and parent name
+            $parent_name = $ciniki['session']['account']['display_name'];
+            $student_name = 'Saved Seat';
+
+            foreach($ciniki['session']['account']['parents'] as $parent) {
+                if( $parent['id'] == $student_id ) {
+                    $student_name = $parent['display_name'];
+                }
+            }
+            foreach($ciniki['session']['account']['children'] as $child) {
+                if( $child['id'] == $student_id ) {
+                    $student_name = $child['display_name'];
+                }
+            }
+            if( $student_name == 'Saved Seat' ) {
+                $textmsg = $parent_name . ' has saved a seat in ' . $offering['name'] . ' on ' . $offering['date_string'];
+            } else {
+                $textmsg = $parent_name . ' has registered ' . $student_name . ' in ' . $offering['name'] . ' on ' . $offering['date_string'];
+            }
+        } else {
+            $textmsg = $ciniki['session']['account']['display_name'] . ' has registered in ' . $offering['name'] . ' on ' . $offering['date_string'];
+        }
+        $blocks[] = array('type'=>'content', 'html'=>'<pre>' . print_r($ciniki['session'], true) . '</pre>');
+
+        //
+        // Get the instructions information and email registration details
+        //
+        $strsql = "SELECT instructors.name, instructors.email "
+            . "FROM ciniki_fatt_offering_instructors AS offering "
+            . "LEFT JOIN ciniki_fatt_instructors AS instructors ON ("
+                . "offering.instructor_id = instructors.id "
+                . "AND instructors.email <> '' "
+                . "AND instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE offering.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+            . "AND offering.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.fatt', 'emails', 'email');
+        if( $rc['stat'] != 'ok' ) {
+            error_log("ERR: Unable to get list of instructors for email registration");
+        } elseif( isset($rc['emails']) ) {
+            $emails = $rc['emails'];
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+            foreach($emails as $name => $email) {
+                $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                    'customer_id'=>0,
+                    'customer_name'=>$name,
+                    'customer_email'=>$email,
+                    'subject'=>$subject,
+                    'html_content'=>$textmsg,
+                    'text_content'=>$textmsg,
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    error_log("ERR: Unable to email instructor: " . $email);
+                }
+            }
+        }
+
         return array('stat'=>'added', 'blocks'=>$blocks);
     }
 
+//        $blocks[] = array('type'=>'content', 'html'=>'<pre>' . print_r($ciniki['session'], true) . '</pre>');
     $form = "<form class='wide' action='' method='POST'>";
     $form .= "<input type='hidden' name='action' value='add'>";
     //

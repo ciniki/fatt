@@ -511,7 +511,7 @@ function ciniki_fatt_offerings() {
     //
     // Show the consolidated appointment/courses at same time/location
     //
-    this.class = new M.panel('Class', 'ciniki_fatt_offerings', 'class', 'mc', 'large narrowaside', 'sectioned', 'ciniki.fatt.offerings.class');
+    this.class = new M.panel('Class', 'ciniki_fatt_offerings', 'class', 'mc', 'xlarge narrowaside', 'sectioned', 'ciniki.fatt.offerings.class');
     this.class.class_id = '';
     this.class.data = {};
     this.class.sections = {
