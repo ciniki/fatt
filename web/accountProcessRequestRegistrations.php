@@ -30,7 +30,6 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
             //
             // FIXME: You must be logged in to view this page
             //
-            error_log('testing');
         } else {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.164', 'msg'=>'Not logged in'));
         }
