@@ -104,10 +104,7 @@ function ciniki_fatt_offeringRegistrationUpdateCerts($ciniki, $tnid, $registrati
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( !isset($rc['certs']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.24', 'msg'=>'Registration not found'));
-    }
-    $course_certs = $rc['certs'];
+    $course_certs = isset($rc['course_certs']) ? $rc['course_certs'] : array();
 
     //
     // Load any current certs for this customer for the registration
