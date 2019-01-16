@@ -59,6 +59,32 @@ function ciniki_fatt_hooks_appointments($ciniki, $tnid, $args) {
     //
     // Get the list of offerings
     //
+    $strsql = "SELECT CONCAT_WS('-', UNIX_TIMESTAMP(ciniki_fatt_offering_dates.start_date), ciniki_fatt_offering_dates.location_id) AS appointment_id "
+        . "FROM ciniki_fatt_offering_dates "
+        . "INNER JOIN ciniki_fatt_offerings ON ("
+            . "ciniki_fatt_offering_dates.offering_id = ciniki_fatt_offerings.id "
+            . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_fatt_offering_registrations ON ("
+            . "ciniki_fatt_offerings.id = ciniki_fatt_offering_registrations.offering_id "
+            . "AND ciniki_fatt_offering_registrations.status < 10 "
+            . "AND ciniki_fatt_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE ciniki_fatt_offering_dates.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_fatt_offering_dates.start_date >= '" . $start_date->format('Y-m-d H:i:s') . "' "
+        . "AND ciniki_fatt_offering_dates.start_date < '" . $end_date->format('Y-m-d H:i:s') . "' "
+        . "ORDER BY ciniki_fatt_offering_dates.start_date "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+    $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.fatt', 'open', 'appointment_id');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.24', 'msg'=>'Unable to get the list of open courses', 'err'=>$rc['err']));
+    }
+    $open = isset($rc['open']) ? $rc['open'] : array();
+
+    //
+    // Get the list of offerings
+    //
     $strsql = "SELECT ciniki_fatt_offerings.id, "
         . "CONCAT_WS('-', UNIX_TIMESTAMP(ciniki_fatt_offering_dates.start_date), ciniki_fatt_locations.id) AS appointment_id, "
         . "ciniki_fatt_offerings.course_id, "
@@ -169,6 +195,10 @@ function ciniki_fatt_hooks_appointments($ciniki, $tnid, $args) {
         $appointments[$aid]['appointment']['repeat_interval'] = '1';
         if( $appointments[$aid]['appointment']['colour'] == '' ) {
             $appointments[$aid]['appointment']['colour'] = '#ffcccc';
+        }
+        if( in_array($appointment['appointment']['id'], $open) ) {
+            error_log('open');
+            $appointments[$aid]['appointment']['colour'] = '#ffd48e';
         }
         $appointments[$aid]['appointment']['calendar'] = 'Courses';
 //      $appointments[$aid]['appointment']['module'] = 'ciniki.fatt';
