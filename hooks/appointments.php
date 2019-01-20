@@ -197,7 +197,6 @@ function ciniki_fatt_hooks_appointments($ciniki, $tnid, $args) {
             $appointments[$aid]['appointment']['colour'] = '#ffcccc';
         }
         if( in_array($appointment['appointment']['id'], $open) ) {
-            error_log('open');
             $appointments[$aid]['appointment']['colour'] = '#ffd48e';
         }
         $appointments[$aid]['appointment']['calendar'] = 'Courses';
