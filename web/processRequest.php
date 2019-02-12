@@ -263,6 +263,7 @@ function ciniki_fatt_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             }
             $page['blocks'][] = array('type'=>'pricetable', 'title'=>'Upcoming Courses', 
                 'headers'=>array('Date(s)', 'Time(s)', 'Location', 'Price', ''),
+                'price_info'=>' +HST',
                 'fields'=>array('date_string', 'times', 'city', 'price', 'edit_button'),
                 'prices'=>$course['offerings'],
                 );
