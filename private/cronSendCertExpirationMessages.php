@@ -40,7 +40,7 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $tnid, $tmsupdate=0
     //     not start at 90 days, then immediately send 60, etc.
     //
     $strsql = "SELECT id, object, object_id AS cert_id, "
-        . "days, "
+        . "days, status, "
         . "subject, message, parent_subject, parent_message "
         . "FROM ciniki_fatt_messages "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -50,8 +50,9 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $tnid, $tmsupdate=0
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
-        array('container'=>'certs', 'fname'=>'cert_id', 'fields'=>array('object', 'cert_id')), array('container'=>'messages', 'fname'=>'id',
-            'fields'=>array('id', 'days', 'subject', 'message', 'parent_subject', 'parent_message')),
+        array('container'=>'certs', 'fname'=>'cert_id', 'fields'=>array('object', 'cert_id')), 
+        array('container'=>'messages', 'fname'=>'id',
+            'fields'=>array('id', 'days', 'subject', 'status', 'message', 'parent_subject', 'parent_message')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.18', 'msg'=>'Unable to get messages', 'err'=>$rc['err']));
@@ -243,6 +244,11 @@ function ciniki_fatt_cronSendCertExpirationMessages($ciniki, $tnid, $tmsupdate=0
                 //
                 // Add the message to the customer
                 //
+                if( isset($cur_message_to_send['status']) && $cur_message_to_send['status'] == 20 ) {
+                    $message_status = 10;
+                } else {
+                    $message_status = 7;
+                }
                 $rc = ciniki_fatt_sendCertExpirationMessage($ciniki, $tnid, 
                     array('certcustomer'=>$cc, 'message'=>$cur_message_to_send, 'message_status'=>$message_status), $tmsupdate);
                 if( isset($rc['err']['code']) && $rc['err']['code'] == 'ciniki.fatt.33' ) {
