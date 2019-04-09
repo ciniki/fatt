@@ -111,6 +111,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
         . "ciniki_fatt_offering_dates.start_date, "
         . "ciniki_fatt_offering_dates.num_hours, "
         . "ciniki_fatt_offering_dates.location_id, "
+        . "ciniki_fatt_offering_dates.city AS date_city, "
+        . "ciniki_fatt_offering_dates.province AS date_province, "
         . "IFNULL(ciniki_fatt_locations.name, '') AS location_name, "
         . "IFNULL(ciniki_fatt_locations.city, '') AS location_city, "
         . "IFNULL(ciniki_fatt_locations.province, '') AS location_province, "
@@ -126,7 +128,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'dates', 'fname'=>'id',
-            'fields'=>array('id', 'start_date', 'num_hours', 'location_id', 'location_name', 'location_city', 'location_province', 'num_seats'),
+            'fields'=>array('id', 'start_date', 'num_hours', 'date_city', 'date_province', 
+                'location_id', 'location_name', 'location_city', 'location_province', 'num_seats'),
             'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>'Y-m-d H:i'))),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -189,7 +192,9 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
             if( !preg_match('/' . $date['location_name'] . '/', $location) ) {
                 $location .= ($location != ''?', ':'') . $date['location_name'];
             }
-            if( !preg_match('/' . $date['location_city'] . '/', $city) ) {
+            if( $date['location_city'] == '' && $date['date_city'] != '' ) {
+                $city = $date['date_city'] . ($date['date_province'] != '' ? ', ' . $date['date_province'] : '');
+            } elseif( !preg_match('/' . $date['location_city'] . '/', $city) ) {
                 $city .= ($city != ''?'/':'') . $date['location_city'] . ', ' . $date['location_province'];
             }
             //
