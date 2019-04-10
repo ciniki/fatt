@@ -46,7 +46,7 @@ function ciniki_fatt_offeringDateHistory($ciniki) {
         return $rc;
     }
 
-    if( field == 'start_date' ) {
+    if( $args['field'] == 'start_date' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
         return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.fatt', 'ciniki_fatt_history', $args['tnid'], 'ciniki_fatt_offering_dates', $args['date_id'], $args['field'], 'utcdatetime');
     }
