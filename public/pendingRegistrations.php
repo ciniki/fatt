@@ -98,7 +98,6 @@ function ciniki_fatt_pendingRegistrations($ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.177', 'msg'=>'Unable to approve registration', 'err'=>$rc['err']));
                 }
                 unset($registrations[$rid]);
-                error_log($args['welcome']);
                 if( isset($args['welcome']) && $args['welcome'] == 'yes' ) {
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'registrationWelcomeEmailSend');
                     $rc = ciniki_fatt_registrationWelcomeEmailSend($ciniki, $args['tnid'], $reg['id']);
