@@ -72,6 +72,8 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
         . "regs.customer_id, "
         . "regs.student_id, "
         . "regs.status, "
+        . "regs.offering_id, "
+        . "regs.invoice_id, "
         . "regs.status AS status_text, "
         . "IFNULL(students.first, '') AS first, "
         . "IFNULL(students.last, '') AS last, "
@@ -114,7 +116,7 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'uuid', 'customer_id', 'student_id', 'first', 'last', 'display_name', 
-                'city', 'date_string', 'start_time', 'end_time', 'status', 'status_text', 
+                'city', 'date_string', 'start_time', 'end_time', 'status', 'status_text', 'offering_id', 'invoice_id',
                 'code', 'name', 'days_till_start'),
             'maps'=>array('status_text'=>$maps['offeringregistration']['status']),
             'utctotz'=>array('start_time'=>array('timezone'=>$intl_timezone, 'format'=>$time_format),
@@ -147,7 +149,7 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
                     //
                     // FIXME: Change status to cancelled
                     //
-                    if( $registration['status'] == 5 ) {
+                    if( $registration['status'] == 5 || $registration['status'] == 0 ) {
                         //
                         // Remove the item from the invoice
                         //
@@ -175,7 +177,7 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
                             // Update the seat count
                             //
                             ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'offeringUpdateDatesSeats');
-                            $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering['id']);
+                            $rc = ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $registration['offering_id']);
                             if( $rc['stat'] != 'ok' ) {
                                 error_log('ERR: Unable to update offeringUpdateDatesSeats');
                             }
