@@ -195,7 +195,8 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
             if( $date['location_city'] == '' && $date['date_city'] != '' ) {
                 $city = $date['date_city'] . ($date['date_province'] != '' ? ', ' . $date['date_province'] : '');
             } elseif( !preg_match('/' . $date['location_city'] . '/', $city) ) {
-                $city .= ($city != ''?'/':'') . $date['location_city'] . ', ' . $date['location_province'];
+                $city .= ($city != ''?'/':'') . $date['location_city']
+                    . ($date['location_province'] != '' ? ', ' : '') . $date['location_province'];
             }
             //
             // Determine the lowest number of seats available at any location 
