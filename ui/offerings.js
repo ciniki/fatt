@@ -84,6 +84,7 @@ function ciniki_fatt_offerings() {
         }
     };
     this.offerings.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_offerings.offering.open(\'M.ciniki_fatt_offerings.offerings.open();\',\'' + d.offering.id + '\');';
     };
     this.offerings.sectionData = function(s) { return this.data[s]; };
@@ -184,6 +185,7 @@ function ciniki_fatt_offerings() {
         }
     };
     this.offering.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'registrations' ) {
             return 'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.offering.open();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'offering\'});';
         }
@@ -260,6 +262,7 @@ function ciniki_fatt_offerings() {
         return '<span class="maintext">' + d.date.start_date + '</span><span class="subtext">' + d.date.location_name + '</span>';
     };
     this.edit.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_offerings.odate.open(\'M.ciniki_fatt_offerings.edit.open();\',\'' + d.date.id + '\');';
     };
     this.edit.courseChange = function(s, i) {
@@ -598,6 +601,7 @@ function ciniki_fatt_offerings() {
         return d.value;
     };
     this.class.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'registrations' ) {
             return 'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.class.open();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'class\'});';
         } else if( s == 'offerings' ) {
@@ -929,6 +933,7 @@ function ciniki_fatt_offerings() {
         }
     };
     this.pendingreg.rowFn = function(s, i, d) { 
+        if( d == null ) { return ''; }
         return 'M.startApp(\'ciniki.fatt.sapos\',null,\'M.ciniki_fatt_offerings.pendingreg.open();\',\'mc\',{\'registration_id\':\'' + d.id + '\',\'source\':\'pendingreg\'});';
     };
     this.pendingreg.approve = function(e,id,w) {

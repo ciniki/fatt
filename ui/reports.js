@@ -90,6 +90,7 @@ function ciniki_fatt_reports() {
         }
     };
     this.expirations.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'stats' ) {
             return '';
         } else if( s == 'certs' ) {
@@ -261,6 +262,7 @@ function ciniki_fatt_reports() {
         }
     }
     this.businesses.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_reports.businesscerts.open(\'M.ciniki_fatt_reports.businesses.open();\',\'' + d.customer.id + '\');';
     }
     this.businesses.open = function(cb) {
@@ -328,6 +330,7 @@ function ciniki_fatt_reports() {
         }
     };
     this.businesscerts.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'certs' ) {
             return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_fatt_reports.businesscerts.open();\',\'mc\',{\'customer_id\':\'' + d.cert.customer_id + '\'});';
         }

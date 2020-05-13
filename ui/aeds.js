@@ -103,6 +103,7 @@ function ciniki_fatt_aeds() {
         return 'status' + d.alert_level;
     };
     this.menu.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'aeds' || s == 'expirations' ) { 
             return 'M.ciniki_fatt_aeds.edit.open(\'M.ciniki_fatt_aeds.menu.open();\',\'' + d.id + '\');';
         } 
@@ -207,6 +208,7 @@ function ciniki_fatt_aeds() {
         return 'status' + d.alert_level;
     };
     this.owner.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_aeds.edit.open(\'M.ciniki_fatt_aeds.owner.open();\',\'' + d.id + '\');';
     };
     this.owner.sectionData = function(s) { return this.data[s]; };
@@ -362,6 +364,7 @@ function ciniki_fatt_aeds() {
         }
     };
     this.edit.rowFn = function(s, i, d) { 
+        if( d == null ) { return ''; }
         if( s == 'notes' ) {
             return 'M.ciniki_fatt_aeds.aednote.open(\'M.ciniki_fatt_aeds.edit.updateNotes();\',\'' + d.id + '\',M.ciniki_fatt_aeds.edit.aed_id);';
         }

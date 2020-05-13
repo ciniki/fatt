@@ -66,6 +66,7 @@ function ciniki_fatt_settings() {
     };
     this.courses.sectionData = function(s) { return this.data[s]; }
     this.courses.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'categories' ) {
             return 'M.ciniki_fatt_settings.category.open(\'M.ciniki_fatt_settings.courses.open();\',\'' + d.category.id + '\');';
         } else if( s == 'bundles' ) {
@@ -175,6 +176,7 @@ function ciniki_fatt_settings() {
         }
     }
     this.course.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_settings.course.save(\'M.ciniki_fatt_settings.message.open("M.ciniki_fatt_settings.course.messagesUpdate();","ciniki.fatt.course",M.ciniki_fatt_settings.course.course_id,"' + d.message.id + '");\');';
     }
     this.course.addDropImage = function(iid) {
@@ -464,6 +466,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.instructors.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_settings.instructor.open(\'M.ciniki_fatt_settings.instructors.open();\',\'' + d.instructor.id + '\');';
     };
     this.instructors.open = function(cb) {
@@ -602,6 +605,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.locations.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_settings.location.open(\'M.ciniki_fatt_settings.locations.open();\',\'' + d.location.id + '\');';
     };
     this.locations.open = function(cb) {
@@ -768,6 +772,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.certs.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_settings.cert.open(\'M.ciniki_fatt_settings.certs.open();\',\'' + d.cert.id + '\');';
     };
     this.certs.open = function(cb) {
@@ -847,6 +852,7 @@ function ciniki_fatt_settings() {
         }
     }
     this.cert.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         return 'M.ciniki_fatt_settings.cert.save(\'M.ciniki_fatt_settings.message.open("M.ciniki_fatt_settings.cert.messagesUpdate();","ciniki.fatt.cert",M.ciniki_fatt_settings.cert.cert_id,"' + d.message.id + '");\');';
     }
     this.cert.open = function(cb, cid) {

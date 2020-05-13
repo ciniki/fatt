@@ -153,6 +153,7 @@ function ciniki_fatt_sapos() {
         return '';
     };
     this.registration.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'invoice_details' && this._source != 'invoice' ) { 
             return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_fatt_sapos.registration.open();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
         }
