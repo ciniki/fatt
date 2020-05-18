@@ -665,15 +665,15 @@ function ciniki_fatt_offerings() {
         }
     };
     this.class.cancelClass = function() {
-        if( confirm('Are you sure you want to remove this class?') ) {
-            M.api.getJSONCb('ciniki.fatt.classDelete', {'tnid':M.curTenantID, 'class_id':this.class_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove this class?',null,function() {
+            M.api.getJSONCb('ciniki.fatt.classDelete', {'tnid':M.curTenantID, 'class_id':M.ciniki_fatt_offerings.class.class_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_fatt_offerings.class.close();
             });
-        }
+        });
     }
     this.class.printList = function(cid) {
         M.api.openFile('ciniki.fatt.classRegistrations', {'tnid':M.curTenantID, 'output':'pdf', 'class_id':cid});
