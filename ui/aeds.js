@@ -483,7 +483,7 @@ function ciniki_fatt_aeds() {
         }
     };
     this.edit.remove = function(aid) {
-        if( confirm('Are you sure you want to remove this aed? All records will be lost, there is no recovering once deleted.') ) {
+        M.confirm('Are you sure you want to remove this aed? All records will be lost, there is no recovering once deleted.',null,function() {
             M.api.getJSONCb('ciniki.fatt.aedDelete', {'tnid':M.curTenantID, 'aed_id':aid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -491,7 +491,7 @@ function ciniki_fatt_aeds() {
                 }
                 M.ciniki_fatt_aeds.aed.close();
             });
-        }
+        });
     };
     this.edit.refreshImages = function() {
         if( M.ciniki_fatt_aeds.edit.aed_id > 0 ) {
@@ -599,16 +599,16 @@ function ciniki_fatt_aeds() {
         }
     };
     this.aedimage.remove = function() {
-        if( confirm('Are you sure you want to delete this image?') ) {
+        M.confirm('Are you sure you want to delete this image?',null,function() {
             M.api.getJSONCb('ciniki.fatt.aedImageDelete', {'tnid':M.curTenantID, 
-                'aedimage_id':this.aedimage_id}, function(rsp) {
+                'aedimage_id':M.ciniki_fatt_aeds.aedimage.aedimage_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_fatt_aeds.aedimage.close();
                 });
-        }
+        });
     };
     this.aedimage.addButton('save', 'Save', 'M.ciniki_fatt_aeds.aedimage.save();');
     this.aedimage.addClose('Cancel');
@@ -680,15 +680,15 @@ function ciniki_fatt_aeds() {
         }
     };
     this.aednote.remove = function() {
-        if( confirm('Are you sure you want to remove this note?') ) {
-            M.api.getJSONCb('ciniki.fatt.aedNoteDelete', {'tnid':M.curTenantID, 'note_id':this.note_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove this note?',null,function() {
+            M.api.getJSONCb('ciniki.fatt.aedNoteDelete', {'tnid':M.curTenantID, 'note_id':M.ciniki_fatt_aeds.aednote.note_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 } 
                 M.ciniki_fatt_aeds.aednote.close();
             });
-        }
+        });
     };
     this.aednote.addButton('save', 'Save', 'M.ciniki_fatt_aeds.aednote.save();');
     this.aednote.addClose('Cancel');
@@ -725,7 +725,7 @@ function ciniki_fatt_aeds() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_fatt_aeds', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

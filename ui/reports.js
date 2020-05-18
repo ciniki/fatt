@@ -230,7 +230,7 @@ function ciniki_fatt_reports() {
         }
     };
     this.certcustomer.remove = function(cid) {
-        if( confirm('Are you sure you want to remove this customer certification?') ) {
+        M.confirm('Are you sure you want to remove this customer certification?',null,function() {
             M.api.getJSONCb('ciniki.fatt.certCustomerDelete', {'tnid':M.curTenantID, 'certcustomer_id':cid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -238,7 +238,7 @@ function ciniki_fatt_reports() {
                 }
                 M.ciniki_fatt_reports.certcustomer.close();
             });
-        }
+        });
     };
     this.certcustomer.addButton('save', 'Save', 'M.ciniki_fatt_reports.certcustomer.save();');
     this.certcustomer.addClose('Cancel');
@@ -524,7 +524,7 @@ function ciniki_fatt_reports() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_fatt_reports', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

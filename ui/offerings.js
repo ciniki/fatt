@@ -333,7 +333,7 @@ function ciniki_fatt_offerings() {
         }
     };
     this.edit.remove = function(oid) {
-        if( confirm('Are you sure you want to remove this offering?') ) {
+        M.confirm('Are you sure you want to remove this offering?',null,function() {
             M.api.getJSONCb('ciniki.fatt.offeringDelete', {'tnid':M.curTenantID, 'offering_id':oid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -341,7 +341,7 @@ function ciniki_fatt_offerings() {
                 }
                 M.ciniki_fatt_offerings.offering.close();
             });
-        }
+        });
     };
     this.edit.datesUpdate = function(dates) {
         this.refreshSection('dates');
@@ -436,7 +436,7 @@ function ciniki_fatt_offerings() {
                 M.ciniki_fatt_offerings.odate.setFieldValue('longitude', results[0].geometry.location.lng());
                 M.stopLoad();
             } else {
-                alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
+                M.alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
                 M.stopLoad();
             }
         }); 
@@ -497,8 +497,8 @@ function ciniki_fatt_offerings() {
         }
     };
     this.odate.remove = function() {
-        if( confirm('Are you sure you want to remove this date?') ) {
-            M.api.getJSONCb('ciniki.fatt.offeringDateDelete', {'tnid':M.curTenantID, 'date_id':this.date_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove this date?',null,function() {
+            M.api.getJSONCb('ciniki.fatt.offeringDateDelete', {'tnid':M.curTenantID, 'date_id':M.ciniki_fatt_offerings.odate.date_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -506,7 +506,7 @@ function ciniki_fatt_offerings() {
                 M.ciniki_fatt_offerings.edit.data.dates = (rsp.offering.dates!=null?rsp.offering.dates:{});
                 M.ciniki_fatt_offerings.odate.close();
             });
-        }
+        });
     };
     this.odate.addButton('save', 'Save', 'M.ciniki_fatt_offerings.odate.save();');
     this.odate.addClose('Cancel');
@@ -823,7 +823,7 @@ function ciniki_fatt_offerings() {
                 M.ciniki_fatt_offerings.add.setFieldValue('longitude', results[0].geometry.location.lng());
                 M.stopLoad();
             } else {
-                alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
+                M.alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
                 M.stopLoad();
             }
         }); 
@@ -848,12 +848,12 @@ function ciniki_fatt_offerings() {
     this.add.save = function() {
         var nv = this.formFieldValue(this.sections.details.fields.course_id, 'course_id');
         if( nv == 0 ) {
-            alert('You must specify a course');
+            M.alert('You must specify a course');
             return false;
         }
         var nv = this.formFieldValue(this.sections.details.fields.location_id, 'location_id');
         if( nv == 0 ) {
-            alert('You must specify a location');
+            M.alert('You must specify a location');
             return false;
         }
         var c = this.serializeForm('yes');
@@ -971,7 +971,7 @@ function ciniki_fatt_offerings() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_fatt_offerings', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

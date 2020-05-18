@@ -236,7 +236,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.course.remove = function(lid) {
-        if( confirm('Are you sure you want to remove this course?') ) {
+        M.confirm('Are you sure you want to remove this course?',null,function() {
             M.api.getJSONCb('ciniki.fatt.courseDelete', {'tnid':M.curTenantID, 'course_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -244,7 +244,7 @@ function ciniki_fatt_settings() {
                 }
                 M.ciniki_fatt_settings.course.close();
             });
-        }
+        });
     };
     this.course.addButton('save', 'Save', 'M.ciniki_fatt_settings.course.save();');
     this.course.addClose('Cancel');
@@ -336,7 +336,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.category.remove = function(lid) {
-        if( confirm('Are you sure you want to remove this category?') ) {
+        M.confirm('Are you sure you want to remove this category?',null,function() {
             M.api.getJSONCb('ciniki.fatt.categoryDelete', {'tnid':M.curTenantID, 'category_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -344,7 +344,7 @@ function ciniki_fatt_settings() {
                 }
                 M.ciniki_fatt_settings.category.close();
             });
-        }
+        });
     };
     this.category.addButton('save', 'Save', 'M.ciniki_fatt_settings.category.save();');
     this.category.addClose('Cancel');
@@ -433,7 +433,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.bundle.remove = function(lid) {
-        if( confirm('Are you sure you want to remove this bundle?') ) {
+        M.confirm('Are you sure you want to remove this bundle?',null,function() {
             M.api.getJSONCb('ciniki.fatt.bundleDelete', {'tnid':M.curTenantID, 'bundle_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -441,7 +441,7 @@ function ciniki_fatt_settings() {
                 }
                 M.ciniki_fatt_settings.bundle.close();
             });
-        }
+        });
     };
     this.bundle.addButton('save', 'Save', 'M.ciniki_fatt_settings.bundle.save();');
     this.bundle.addClose('Cancel');
@@ -572,7 +572,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.instructor.remove = function(lid) {
-        if( confirm('Are you sure you want to remove this instructor?') ) {
+        M.confirm('Are you sure you want to remove this instructor?',null,function() {
             M.api.getJSONCb('ciniki.fatt.instructorDelete', {'tnid':M.curTenantID, 'instructor_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -580,7 +580,7 @@ function ciniki_fatt_settings() {
                 }
                 M.ciniki_fatt_settings.instructor.close();
             });
-        }
+        });
     };
     this.instructor.addButton('save', 'Save', 'M.ciniki_fatt_settings.instructor.save();');
     this.instructor.addClose('Cancel');
@@ -690,7 +690,7 @@ function ciniki_fatt_settings() {
                 M.ciniki_fatt_settings.location.setFieldValue('longitude', results[0].geometry.location.lng());
                 M.stopLoad();
             } else {
-                alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
+                M.alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
                 M.stopLoad();
             }
         }); 
@@ -738,7 +738,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.location.remove = function(lid) {
-        if( confirm('Are you sure you want to remove this location?') ) {
+        M.confirm('Are you sure you want to remove this location?',null,function() {
             M.api.getJSONCb('ciniki.fatt.locationDelete', {'tnid':M.curTenantID, 'location_id':lid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -746,7 +746,7 @@ function ciniki_fatt_settings() {
                 }
                 M.ciniki_fatt_settings.location.close();
             });
-        }
+        });
     };
     this.location.addButton('save', 'Save', 'M.ciniki_fatt_settings.location.save();');
     this.location.addClose('Cancel');
@@ -898,7 +898,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.cert.remove = function(cid) {
-        if( confirm('Are you sure you want to remove this certification?') ) {
+        M.confirm('Are you sure you want to remove this certification?',null,function() {
             M.api.getJSONCb('ciniki.fatt.certDelete', {'tnid':M.curTenantID, 'cert_id':cid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -906,7 +906,7 @@ function ciniki_fatt_settings() {
                 }
                 M.ciniki_fatt_settings.cert.close();
             });
-        }
+        });
     };
     this.cert.addButton('save', 'Save', 'M.ciniki_fatt_settings.cert.save();');
     this.cert.addClose('Cancel');
@@ -999,7 +999,7 @@ function ciniki_fatt_settings() {
         }
     };
     this.message.remove = function(cid) {
-        if( confirm('Are you sure you want to remove this message?') ) {
+        M.confirm('Are you sure you want to remove this message?',null,function() {
             M.api.getJSONCb('ciniki.fatt.messageDelete', {'tnid':M.curTenantID, 'message_id':cid}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -1007,7 +1007,7 @@ function ciniki_fatt_settings() {
                 }
                 M.ciniki_fatt_settings.message.close();
             });
-        }
+        });
     };
     this.message.addButton('save', 'Save', 'M.ciniki_fatt_settings.message.save();');
     this.message.addClose('Cancel');
@@ -1236,7 +1236,7 @@ function ciniki_fatt_settings() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_fatt_settings', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 
