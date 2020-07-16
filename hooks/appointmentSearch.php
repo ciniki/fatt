@@ -114,8 +114,8 @@ function ciniki_fatt_hooks_appointmentSearch($ciniki, $tnid, $args) {
     $strsql .= "GROUP BY ciniki_fatt_offerings.id "
         . "ORDER BY ciniki_fatt_offering_dates.start_date "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-    $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'appointments', 'fname'=>'id', 'name'=>'appointment', 
             'fields'=>array('id', 'subject'=>'course_name', 'start_date', 'start_ts', 'date', 'time', '12hour', 'duration', 
                 'secondary_text'=>'location_name', 'max_seats', 'seats_remaining', 'instructors'),
@@ -139,24 +139,24 @@ function ciniki_fatt_hooks_appointmentSearch($ciniki, $tnid, $args) {
     // Go through and cleanup the appointment
     //
     foreach($appointments as $aid => $appointment) {
-        $appointments[$aid]['appointment']['allday'] = 'no';
-        $appointments[$aid]['appointment']['repeat_type'] = '0';
-        $appointments[$aid]['appointment']['repeat_interval'] = '1';
-        $appointments[$aid]['appointment']['colour'] = '#ffcccc';
-        $appointments[$aid]['appointment']['calendar'] = 'Courses';
-        $appointments[$aid]['appointment']['module'] = 'ciniki.fatt';
-//      if( $appointment['appointment']['location_name'] != '' ) {
-//          $appointments[$aid]['appointment']['secondary_text'] = $appointment['appointment']['location_name'];
+        $appointments[$aid]['allday'] = 'no';
+        $appointments[$aid]['repeat_type'] = '0';
+        $appointments[$aid]['repeat_interval'] = '1';
+        $appointments[$aid]['colour'] = '#ffcccc';
+        $appointments[$aid]['calendar'] = 'Courses';
+        $appointments[$aid]['module'] = 'ciniki.fatt';
+//      if( $appointment['location_name'] != '' ) {
+//          $appointments[$aid]['secondary_text'] = $appointment['location_name'];
 //      }
-        if( $appointment['appointment']['seats_remaining'] < 0 ) {
-            $appointments[$aid]['appointment']['secondary_text'] .= ($appointments[$aid]['appointment']['secondary_text']!=''?' - ':'') . abs($appointment['appointment']['seats_remaining']) . ' oversold';
-        } elseif( $appointment['appointment']['seats_remaining'] == 0 ) {
-            $appointments[$aid]['appointment']['secondary_text'] .= ($appointments[$aid]['appointment']['secondary_text']!=''?' - ':'') . 'Sold Out';
-        } elseif( $appointment['appointment']['seats_remaining'] > 0 ) {
-            $appointments[$aid]['appointment']['secondary_text'] .= ($appointments[$aid]['appointment']['secondary_text']!=''?' - ':'') . $appointment['appointment']['seats_remaining'] . ' left';
+        if( $appointment['seats_remaining'] < 0 ) {
+            $appointments[$aid]['secondary_text'] .= ($appointments[$aid]['secondary_text']!=''?' - ':'') . abs($appointment['seats_remaining']) . ' oversold';
+        } elseif( $appointment['seats_remaining'] == 0 ) {
+            $appointments[$aid]['secondary_text'] .= ($appointments[$aid]['secondary_text']!=''?' - ':'') . 'Sold Out';
+        } elseif( $appointment['seats_remaining'] > 0 ) {
+            $appointments[$aid]['secondary_text'] .= ($appointments[$aid]['secondary_text']!=''?' - ':'') . $appointment['seats_remaining'] . ' left';
         }
-        if( $appointment['appointment']['instructors'] != '' ) {
-            $appointments[$aid]['appointment']['secondary_text'] .= ($appointments[$aid]['appointment']['secondary_text']!=''?' [':'') . $appointment['appointment']['instructors'] . ']';
+        if( $appointment['instructors'] != '' ) {
+            $appointments[$aid]['secondary_text'] .= ($appointments[$aid]['secondary_text']!=''?' [':'') . $appointment['instructors'] . ']';
         }
     }
 
