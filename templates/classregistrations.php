@@ -207,9 +207,9 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
                         if( count($customer['addresses']) > 1 ) {
                             $flags = $address['address']['flags'];
                             $comma = '';
-                            if( ($flags&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
-                            if( ($flags&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
-                            if( ($flags&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
+//                            if( ($flags&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
+//                            if( ($flags&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
+//                            if( ($flags&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
                         }
                         $joined_address = $address['address']['address1'];
                         if( isset($address['address']['address2']) && $address['address']['address2'] != '' ) {
@@ -298,9 +298,9 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
                         if( count($customer['addresses']) > 1 ) {
                             $flags = $address['address']['flags'];
                             $comma = '';
-                            if( ($flags&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
-                            if( ($flags&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
-                            if( ($flags&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
+//                            if( ($flags&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
+//                            if( ($flags&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
+//                            if( ($flags&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
                         }
                         $joined_address = $address['address']['address1'];
                         if( isset($address['address']['address2']) && $address['address']['address2'] != '' ) {
