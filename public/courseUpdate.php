@@ -171,6 +171,54 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
     }
 
     //
+    // Update the length of the course offerings
+    //
+    if( isset($args['num_hours']) ) {
+        $strsql = "SELECT dates.id, dates.num_hours, dates.day_number "
+            . "FROM ciniki_fatt_offerings AS offerings, ciniki_fatt_offering_dates AS dates "
+            . "WHERE offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
+            . "AND offerings.start_date > UTC_TIMESTAMP() "
+            . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND offerings.id = dates.offering_id "
+            . "AND dates.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.fatt', 'offering');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+            return $rc;
+        }
+        if( isset($rc['rows']) ) {
+            $dates = $rc['rows'];
+            foreach($dates as $odate) {
+                if( $args['num_hours'] <= 8 ) {
+                    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringdate', $odate['id'], array('num_hours'=>$args['num_hours']), 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                        return $rc;
+                    }
+
+                } elseif( $args['num_hours'] > 8 ) {
+                    $day1_hours = min($args['num_hours'], 7);
+                    $day2_hours = $args['num_hours'] - 7;
+                    if( $odate['day_number'] == 1 && $odate['num_hours'] != $day1_hours ) {
+                        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringdate', $odate['id'], array('num_hours'=>$day1_hours), 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                            return $rc;
+                        }
+                    } elseif( $odate['day_number'] == 2 && $odate['num_hours'] != $day2_hours ) {
+                        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringdate', $odate['id'], array('num_hours'=>$day2_hours), 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
+                            return $rc;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.fatt');

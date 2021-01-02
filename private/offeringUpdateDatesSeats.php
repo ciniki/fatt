@@ -212,12 +212,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
             $dts = new DateTime($date['start_date'], new DateTimezone('UTC'));
             $dtsu = $dts->format('U');
             $dte = clone $dts;
-//          if( preg_match('/^([0-9]+)\.([0-9]+)$/, $date['num_hours'], $matches) ) {
-//              $dte = $dte->add(new DateInterval('PT' . $matches[1] . 'H' .  ($matches[2]*60). 'H'));
-//          } else {
-//              $dte = $dte->add(new DateInterval('PT' . $date['num_hours'] . 'H'));
-                $dte = $dte->add(new DateInterval('PT' . ($date['num_hours']*3600) . 'S'));
-//          }
+            $dte = $dte->add(new DateInterval('PT' . ($date['num_hours']*3600) . 'S'));
             $dteu = $dte->format('U');
 
             //

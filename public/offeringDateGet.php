@@ -75,7 +75,7 @@ function ciniki_fatt_offeringDateGet($ciniki) {
                 $rc = ciniki_core_objectGet($ciniki, $args['tnid'], 'ciniki.fatt.course', $offering['course_id']);
                 if( $rc['stat'] == 'ok' && isset($rc['course']) ) {
                     if( $rc['course']['num_days'] > 1 ) {
-                        $rsp['offeringdate']['num_hours'] = '8';
+                        $rsp['offeringdate']['num_hours'] = '7';
                     }
                 }
             }

@@ -169,7 +169,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
         //
         $date_args = array('offering_id'=>$offering_id,
             'start_date'=>$args['day1'],
-            'num_hours'=>min($course['num_hours'], 8),
+            'num_hours'=>min($course['num_hours'], 7),
             'day_number'=>1,
             'location_id'=>$args['location_id'],
             'address1'=>$args['address1'],
@@ -194,7 +194,7 @@ function ciniki_fatt_classAdd(&$ciniki) {
         if( $course['num_days'] > 1 && isset($args['day2']) ) {
             $date_args['start_date'] = $args['day2'];
             $date_args['day_number'] = 2;
-            $date_args['num_hours'] = $course['num_hours'] - 8;
+            $date_args['num_hours'] = $course['num_hours'] - 7;
 
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
             $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.fatt.offeringdate', $date_args, 0x04);

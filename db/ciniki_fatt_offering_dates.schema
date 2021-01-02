@@ -39,7 +39,7 @@ create table ciniki_fatt_offering_dates (
     offering_id int not null,
     day_number tinyint not null,
     start_date datetime not null,
-    num_hours tinyint not null,
+    num_hours float not null,
     location_id int not null,
     address1 varchar(250) not null,
     address2 varchar(250) not null,
