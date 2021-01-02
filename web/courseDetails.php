@@ -86,7 +86,7 @@ function ciniki_fatt_web_courseDetails(&$ciniki, $settings, $tnid, $permalink) {
         . "AND ciniki_fatt_offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $course['id']) . "' "
         . "AND (ciniki_fatt_offerings.flags&0x01) = 0x01 "
         . "AND ciniki_fatt_offerings.start_date >= UTC_TIMESTAMP() "
-        . "ORDER BY ciniki_fatt_offerings.start_date "
+        . "ORDER BY ciniki_fatt_offerings.start_date, ciniki_fatt_offering_dates.day_number "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');  
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
