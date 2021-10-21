@@ -113,6 +113,7 @@ function ciniki_fatt_web_offeringRegister(&$ciniki, $settings, $tnid, $offering_
                 'customer_id'=>$customer_id,
                 'status'=>10,
                 'payment_status'=>40,
+                'invoice_date'=>$offering['start_date'],
                 'objects'=>array(
                     'object' => array('object' => 'ciniki.fatt.offering', 'id' => $offering['id'], 'registration_status' => 5, 'student_id'=>$student_id),
                     ),
