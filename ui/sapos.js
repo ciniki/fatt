@@ -130,7 +130,10 @@ function ciniki_fatt_sapos() {
             }
         } 
         else if( s == 'alternate_courses' ) {
-            return M.curTenant.modules['ciniki.fatt'].settings.courses[d.course_id].name;
+            if( M.curTenant.modules['ciniki.fatt'].settings.courses[d.course_id] != null ) {
+                return M.curTenant.modules['ciniki.fatt'].settings.courses[d.course_id].name;
+            }
+            return 'Invalid Course';
         }
         else if( s == 'alternate_dates' ) {
             var sr = '';

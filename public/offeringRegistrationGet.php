@@ -66,8 +66,13 @@ function ciniki_fatt_offeringRegistrationGet($ciniki) {
             . "AND ciniki_fatt_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_fatt_offerings.id <> '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
             . ") "
+        . "LEFT JOIn ciniki_fatt_courses ON ("
+            . "ciniki_fatt_offerings.course_id = ciniki_fatt_courses.id "
+            . "AND ciniki_fatt_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "WHERE d1.offering_id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
         . "AND d1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_fatt_courses.status = 10 "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
