@@ -78,7 +78,7 @@ function ciniki_fatt_classUpdate(&$ciniki) {
                 'status'=>$ciniki['request']['args'][$arg_name]), 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
-                return $rc;
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.179', 'msg'=>'Error updating status', 'err'=>$rc['err']));
             }
             
             //
@@ -99,11 +99,12 @@ function ciniki_fatt_classUpdate(&$ciniki) {
                 //
                 // Update the status
                 //
-                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array('invoice_id'=>0), 0x04);
+                // ** This now taken care of with a hook callback from sapos module to fatt/sapos/itemDelete
+/*                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringregistration', $registration['registration']['id'], array('invoice_id'=>0), 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.fatt');
                     return $rc;
-                }
+                } */
             }
 
             //
