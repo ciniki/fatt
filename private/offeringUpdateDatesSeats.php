@@ -109,6 +109,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
     //
     $strsql = "SELECT ciniki_fatt_offering_dates.id, "
         . "ciniki_fatt_offering_dates.start_date, "
+        . "ciniki_fatt_offering_dates.start_date AS start_date_utc, "
         . "ciniki_fatt_offering_dates.num_hours, "
         . "ciniki_fatt_offering_dates.location_id, "
         . "ciniki_fatt_offering_dates.city AS date_city, "
@@ -128,7 +129,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'dates', 'fname'=>'id',
-            'fields'=>array('id', 'start_date', 'num_hours', 'date_city', 'date_province', 
+            'fields'=>array('id', 'start_date', 'start_date_utc', 'num_hours', 'date_city', 'date_province', 
                 'location_id', 'location_name', 'location_city', 'location_province', 'num_seats'),
             'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>'Y-m-d H:i'))),
         ));
@@ -209,11 +210,14 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
             //
             // Calculate the UTC start/end datetime for each date of the current offering.
             //
-            $dts = new DateTime($date['start_date'], new DateTimezone('UTC'));
+            //$dts = new DateTime($date['start_date_utc'], new DateTimezone('UTC'));
+            // Mar 8, 2022 - Switch to be local timezone, works with matching other offerings at same day
+            $dts = new DateTime($date['start_date_utc'], new DateTimezone($intl_timezone));
             $dtsu = $dts->format('U');
             $dte = clone $dts;
             $dte = $dte->add(new DateInterval('PT' . ($date['num_hours']*3600) . 'S'));
             $dteu = $dte->format('U');
+//            $dteu = $dte->format('Y-m-d H:i:s');
 
             //
             // Find the other offerings that start or end during this time at the same location.
@@ -223,13 +227,15 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
                 // Location must match
                 . "ciniki_fatt_offering_dates.location_id = '" . ciniki_core_dbQuote($ciniki, $date['location_id'])  . "' "
                 // Start date of current offering within start/end datetime of other offering
-                . "AND ((unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
+                . "AND ("
+                    . "(unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
                     . "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
                     . ") "
                 // end date of current offering withing start/end datetime of other offering
                 . "OR (unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
                     . "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
-                    . ")) "
+                    . ") "
+                    . ") "
                 . ") ";
         }
         if( $strsql_dates != '' ) {
@@ -352,7 +358,6 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
     // Update the offering
     //
     if( count($offering_update_args) > 0 ) {
-//      error_log(print_r($offering_update_args, true));
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.fatt.offering', $offering_id, $offering_update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.28', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
