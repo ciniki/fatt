@@ -212,7 +212,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
             //
             //$dts = new DateTime($date['start_date_utc'], new DateTimezone('UTC'));
             // Mar 8, 2022 - Switch to be local timezone, works with matching other offerings at same day
-            $dts = new DateTime($date['start_date_utc'], new DateTimezone($intl_timezone));
+            $dts = new DateTime($date['start_date_utc'], new DateTimezone('UTC'));
             $dtsu = $dts->format('U');
             $dte = clone $dts;
             $dte = $dte->add(new DateInterval('PT' . ($date['num_hours']*3600) . 'S'));
