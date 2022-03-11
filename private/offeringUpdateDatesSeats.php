@@ -212,11 +212,14 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
             //
             //$dts = new DateTime($date['start_date_utc'], new DateTimezone('UTC'));
             // Mar 8, 2022 - Switch to be local timezone, works with matching other offerings at same day
+            // Mar 11, 2022 - Switch to be UTC again after issues on servers. Bad things happen using mysql unix_timestamp
             $dts = new DateTime($date['start_date_utc'], new DateTimezone('UTC'));
             $dtsu = $dts->format('U');
+            $dtsu = $dts->format('Y-m-d H:i:s');
             $dte = clone $dts;
             $dte = $dte->add(new DateInterval('PT' . ($date['num_hours']*3600) . 'S'));
             $dteu = $dte->format('U');
+            $dteu = $dte->format('Y-m-d H:i:s');
 //            $dteu = $dte->format('Y-m-d H:i:s');
 
             //
@@ -228,12 +231,16 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
                 . "ciniki_fatt_offering_dates.location_id = '" . ciniki_core_dbQuote($ciniki, $date['location_id'])  . "' "
                 // Start date of current offering within start/end datetime of other offering
                 . "AND ("
-                    . "(unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
-                    . "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
+//                    . "(unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
+//                    . "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
+                    . "(ciniki_fatt_offering_dates.start_date <= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
+                    . "AND DATE_ADD(ciniki_fatt_offering_dates.start_date, INTERVAL num_hours HOUR) >= '" . ciniki_core_dbQuote($ciniki, $dtsu) . "' "
                     . ") "
                 // end date of current offering withing start/end datetime of other offering
-                . "OR (unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
-                    . "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
+//                . "OR (unix_timestamp(ciniki_fatt_offering_dates.start_date) <= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
+//                    . "AND (unix_timestamp(ciniki_fatt_offering_dates.start_date)+(num_hours*3600)) >= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
+                . "OR (ciniki_fatt_offering_dates.start_date <= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
+                    . "AND DATE_ADD(ciniki_fatt_offering_dates.start_date, INTERVAL num_hours HOUR) >= '" . ciniki_core_dbQuote($ciniki, $dteu) . "' "
                     . ") "
                     . ") "
                 . ") ";
@@ -254,8 +261,7 @@ function ciniki_fatt_offeringUpdateDatesSeats($ciniki, $tnid, $offering_id, $rec
         } else {
             $other_offerings = array();
         }
-//      print_r($strsql);
-//      print_r($other_offerings);
+//        error_log(print_r($other_offerings,true));
 
         //
         // Check if the maximum number of seats in the location is less than the seats remaining
