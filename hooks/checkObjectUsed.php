@@ -56,6 +56,24 @@ function ciniki_fatt_hooks_checkObjectUsed($ciniki, $tnid, $args) {
         }
 
         //
+        // Check the course offering registrations
+        //
+        $strsql = "SELECT 'items', COUNT(*) "
+            . "FROM ciniki_fatt_offering_registrations "
+            . "WHERE student_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.fatt', 'num');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
+            $used = 'yes';
+            $count = $rc['num']['items'];
+            $msg .= ($msg!=''?' ':'') . "There " . ($count==1?'is':'are') . " $count student registration" . ($count==1?'':'s') . " for this customer.";
+        }
+
+        //
         // Check the aeds
         //
         $strsql = "SELECT 'items', COUNT(*) "
