@@ -188,8 +188,16 @@ function ciniki_fatt_hooks_appointments($ciniki, $tnid, $args) {
                 $appointments[$aid]['duration'] = $duration;
             }
         }
-        $appointments[$aid]['instructors'] = implode(', ', array_unique(explode(', ', $appointment['instructors'])));
-        $appointments[$aid]['instructor_codes'] = implode(',', array_unique(explode(',', $appointment['instructor_codes'])));
+        if( isset($appointment['instructors']) ) {
+            $appointments[$aid]['instructors'] = implode(', ', array_unique(explode(', ', $appointment['instructors'])));
+        } else {
+            $appointments[$aid]['instructors'] = '';
+        }
+        if( isset($appointment['instructor_codes']) ) {
+            $appointments[$aid]['instructor_codes'] = implode(',', array_unique(explode(',', $appointment['instructor_codes'])));
+        } else {
+            $appointments[$aid]['instructor_codes'] = '';
+        }
         $appointments[$aid]['allday'] = 'no';
         $appointments[$aid]['repeat_type'] = '0';
         $appointments[$aid]['repeat_interval'] = '1';
@@ -217,7 +225,7 @@ function ciniki_fatt_hooks_appointments($ciniki, $tnid, $args) {
             $appointments[$aid]['secondary_text'] .= ($appointments[$aid]['secondary_text']!=''?' - ':'') . $appointments[$aid]['seats_remaining'] . ' left';
             $appointments[$aid]['abbr_secondary_text'] .= ($appointments[$aid]['abbr_secondary_text']!=''?' - ':'') . $appointments[$aid]['seats_remaining'] . ' left';
         }
-        if( $appointment['instructors'] != '' ) {
+        if( isset($appoinment['instructors']) && $appointment['instructors'] != '' ) {
             $appointments[$aid]['secondary_text'] .= ($appointments[$aid]['secondary_text']!=''?' [':'') . $appointments[$aid]['instructors'] . ']';
         }
         //
