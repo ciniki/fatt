@@ -371,7 +371,7 @@ function ciniki_fatt_templates_classregistrations(&$ciniki, $tnid, $class_id, $t
         if( $lh2 > $lh ) { $lh = $lh2; }
 
         // Check if we need a page break
-        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - $pdf->top_margin - $pdf->header_height) ) {
+        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - $pdf->top_margin - $pdf->header_height - 2) ) {
             $pdf->AddPage();
             $pdf->SetFillColor(224);
             $pdf->SetFont('', 'B');
