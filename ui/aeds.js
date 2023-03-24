@@ -116,7 +116,7 @@ function ciniki_fatt_aeds() {
     this.menu.open = function(cb, tab) {
         if( tab != null ) { this.sections.tabs.selected = tab; }
         if( this.sections.tabs.selected == 'aeds' ) {
-            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID, 'statuses':'10,40'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -140,7 +140,7 @@ function ciniki_fatt_aeds() {
                 p.show(cb);
             });
         } else {
-            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID, 'status':10}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID, 'statuses':'10,40'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
