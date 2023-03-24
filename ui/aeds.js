@@ -140,7 +140,7 @@ function ciniki_fatt_aeds() {
                 p.show(cb);
             });
         } else {
-            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID}, function(rsp) {
+            M.api.getJSONCb('ciniki.fatt.aedDeviceList', {'tnid':M.curTenantID, 'status':10}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;

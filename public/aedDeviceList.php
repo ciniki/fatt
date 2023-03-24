@@ -21,6 +21,7 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
+        'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -95,6 +96,9 @@ function ciniki_fatt_aedDeviceList($ciniki) {
             . ") "
         . "WHERE ciniki_fatt_aeds.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
+    if( isset($args['status']) && $args['status'] != '' ) {
+        $strsql .= "AND ciniki_fatt_aeds.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
+    }
     if( isset($args['customer_id']) && $args['customer_id'] != '' ) {
         $strsql .= "AND ciniki_fatt_aeds.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
             . "ORDER BY ciniki_fatt_aeds.customer_id ";
