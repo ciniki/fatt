@@ -103,7 +103,6 @@ function ciniki_fatt_aedDeviceList($ciniki) {
     }
     if( isset($args['statuses']) && is_array($args['statuses']) && count($args['statuses']) > 0 ) {
         $strsql .= "AND ciniki_fatt_aeds.status IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['statuses']) . ") ";
-        error_log(print_r($strsql,true));
     }
     if( isset($args['customer_id']) && $args['customer_id'] != '' ) {
         $strsql .= "AND ciniki_fatt_aeds.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
