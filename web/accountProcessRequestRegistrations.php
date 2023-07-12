@@ -127,10 +127,10 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+    $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 
 
     if( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] != '' ) {
-        $registrations = $rc['registrations'];   
         $registration = null;
         foreach($registrations as $rid => $reg) {
             if( $reg['uuid'] == $ciniki['request']['uri_split'][0] ) {
@@ -316,8 +316,8 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
     //
     $pending_regs = array();
     $upcoming_regs = array();
-    if( isset($rc['registrations']) && count($rc['registrations']) > 0 ) {
-        foreach($rc['registrations'] as $reg) {
+    if( count($registrations) > 0 ) {
+        foreach($registrations as $reg) {
             if( $reg['customer_id'] == $reg['student_id'] && ($ciniki['session']['account']['type'] == 20 || $ciniki['session']['account']['type'] == 30) ) {
                 $reg['display_name'] = 'Saved Seat';
             }
