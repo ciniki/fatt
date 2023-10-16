@@ -144,7 +144,7 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
     //
     // Update the future courses is
     //
-    if( isset($args['price']) ) {
+/*    if( isset($args['price']) ) {
         $strsql = "SELECT id, price "
             . "FROM ciniki_fatt_offerings "
             . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
@@ -168,7 +168,7 @@ function ciniki_fatt_courseUpdate(&$ciniki) {
                 }
             }
         }
-    }
+    } */
 
     //
     // Update the length of the course offerings
