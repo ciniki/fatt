@@ -23,6 +23,7 @@ function ciniki_fatt_offeringLoad($ciniki, $tnid, $offering_id) {
         return $rc;
     }
     $intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
+    numfmt_set_attribute($intl_currency_fmt, NumberFormatter::ROUNDING_MODE, NumberFormatter::ROUND_HALFUP);
     $intl_currency = $rc['settings']['intl-default-currency'];
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     date_default_timezone_set($intl_timezone);

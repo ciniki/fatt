@@ -22,8 +22,6 @@ function ciniki_fatt_classLoad($ciniki, $tnid, $args) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
-    $intl_currency = $rc['settings']['intl-default-currency'];
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     date_default_timezone_set($intl_timezone);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
