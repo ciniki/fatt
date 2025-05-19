@@ -338,7 +338,7 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
         if( count($pending_regs) > 0 ) {
             if( $ciniki['session']['account']['type'] == 10 ) {
                 $page['blocks'][] = array('type'=>'table', 
-                    'title' => 'Pending Registrations',
+                    'title' => 'Submitted Registrations',
                     'intro' => 'To avoid spam, we will review your registration send you a welcome email.',
                     'headers' => 'yes',
                     'columns' => array(
@@ -350,7 +350,7 @@ function ciniki_fatt_web_accountProcessRequestRegistrations(&$ciniki, $settings,
                     );
             } else {
                 $page['blocks'][] = array('type'=>'table', 
-                    'title' => 'Pending Registrations',
+                    'title' => 'Submitted Registrations',
                     'intro' => 'To avoid spam, we will review your registration send you a welcome email.',
                     'headers' => 'yes',
                     'columns' => array(
