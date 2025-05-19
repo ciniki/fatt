@@ -50,19 +50,19 @@ function ciniki_fatt_certList($ciniki) {
     //
     $strsql = "SELECT ciniki_fatt_certs.id, "
         . "ciniki_fatt_certs.name, "
-        . "ciniki_fatt_certs.grouping, "
+        . "ciniki_fatt_certs.grouping AS groupsort, "
         . "ciniki_fatt_certs.status, "
         . "ciniki_fatt_certs.status AS status_text, "
         . "ciniki_fatt_certs.years_valid "
         . "FROM ciniki_fatt_certs "
         . "WHERE ciniki_fatt_certs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER BY grouping, name "
+        . "ORDER BY groupsort, name "
         . "";
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.fatt', array(
         array('container'=>'certs', 'fname'=>'id', 'name'=>'cert',
-            'fields'=>array('id', 'name', 'grouping', 'status', 'status_text', 'years_valid'),
+            'fields'=>array('id', 'name', 'grouping'=>'groupsort', 'status', 'status_text', 'years_valid'),
             'maps'=>array('status_text'=>$maps['cert']['status'])),
         ));
     return $rc;
