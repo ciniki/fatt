@@ -118,5 +118,44 @@ function ciniki_fatt_cron_jobs(&$ciniki) {
         }
     }
 
+    //
+    // Check for registrations to auto approve
+    //
+    $strsql = "SELECT reg.id, reg.tnid "
+        . "FROM ciniki_fatt_offering_registrations AS reg "
+        . "WHERE reg.status = 5 "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.fatt', array(
+        array('container'=>'registrations', 'fname'=>'tnid', 
+            'fields'=>array('id', 'tnid'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.180', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    }
+    $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'private', 'registrationWelcomeEmailSend');
+    foreach($registrations AS $reg) {
+       
+        //
+        // Update the registration
+        //
+        $rc = ciniki_core_objectUpdate($ciniki, $reg['tnid'], 'ciniki.fatt.offeringregistration', $reg['id'], ['status'=>0], 0x07);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.183', 'msg'=>'Unable to approve registration', 'err'=>$rc['err']));
+        }
+       
+        //
+        // Send welcome email
+        //
+        $rc = ciniki_fatt_registrationWelcomeEmailSend($ciniki, $reg['tnid'], $reg['id']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_cron_logMsg($ciniki, $reg['tnid'], array('code'=>'ciniki.fatt.182', 'msg'=>'Unable to send registration welcome message', 
+                'severity'=>50, 'err'=>$rc['err']));
+        }
+    }
+
     return array('stat'=>'ok');
 }

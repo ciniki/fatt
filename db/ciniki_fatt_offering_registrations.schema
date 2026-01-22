@@ -25,7 +25,7 @@
 #
 # status:           The status of the registrant with the course.
 #
-#                   0 - Unknown
+#                    0 - Signed Up/Approved
 #                    5 - Pending (signup online, waiting for course approval)
 #                   10 - pass
 #                   20 - Incomplete (shown 1 day but not 2nd)
