@@ -46,6 +46,7 @@ function ciniki_fatt_instructorGet($ciniki) {
             'name'=>'',
             'status'=>'10',
             'primary_image_id'=>'0',
+            'sig_image_id'=>'0',
             'flags'=>'1',
             ));
     }
@@ -62,6 +63,7 @@ function ciniki_fatt_instructorGet($ciniki) {
         . "ciniki_fatt_instructors.email, "
         . "ciniki_fatt_instructors.phone, "
         . "ciniki_fatt_instructors.primary_image_id, "
+        . "ciniki_fatt_instructors.sig_image_id, "
         . "ciniki_fatt_instructors.flags, "
         . "ciniki_fatt_instructors.synopsis, "
         . "ciniki_fatt_instructors.bio, "
@@ -74,7 +76,7 @@ function ciniki_fatt_instructorGet($ciniki) {
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.instructors', array(
         array('container'=>'instructors', 'fname'=>'id', 'name'=>'instructor',
             'fields'=>array('id', 'name', 'initials', 'permalink', 'status',
-                'id_number', 'email', 'phone', 'primary_image_id', 'flags', 
+                'id_number', 'email', 'phone', 'primary_image_id', 'sig_image_id', 'flags', 
                 'synopsis', 'bio', 'url')),
     ));
     if( $rc['stat'] != 'ok' ) {

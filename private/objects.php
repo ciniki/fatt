@@ -118,6 +118,7 @@ function ciniki_fatt_objects($ciniki) {
             'email'=>array('default'=>''),
             'phone'=>array('default'=>''),
             'primary_image_id'=>array('default'=>'0'),
+            'sig_image_id'=>array('default'=>'0'),
             'flags'=>array('default'=>'1'),
             'synopsis'=>array('default'=>''),
             'bio'=>array('default'=>''),

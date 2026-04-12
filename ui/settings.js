@@ -504,6 +504,9 @@ function ciniki_fatt_settings() {
             'url':{'label':'Website', 'type':'text'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}}},
             }},
+        'sigimage':{'label':'Signature', 'aside':'yes', 'fields':{
+            'sig_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+            }},
         '_synopsis':{'label':'Synopsis', 'fields':{
             'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
             }},

@@ -30,6 +30,7 @@ function ciniki_fatt_instructorUpdate(&$ciniki) {
         'email'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Email'), 
         'phone'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Phone'), 
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'), 
+        'sig_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Signature Image'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'), 
         'bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Biography'), 
