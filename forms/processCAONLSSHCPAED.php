@@ -106,6 +106,9 @@ function ciniki_fatt_forms_processCAONLSSHCPAED($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(25, 256.5, $form['exam_date']->format('Y'));
             $pdf->Text(37.5, 256.5, $form['exam_date']->format('m'));
             $pdf->Text(48, 256.5, $form['exam_date']->format('d'));
+            $pdf->Text(8, 264, $form['host_name']);
+            $pdf->Text(71, 264, $form['host_area_code']);
+            $pdf->Text(83, 264, $form['host_phone']);
             $pdf->setFont('zapfdingbats', '', 12);
             $pdf->Text(($form['options']['recert'] == 'yes' ? 86.5 : 65.5), 256.75, "4");
             $pdf->setFont('helvetica', '', 10);
@@ -132,6 +135,9 @@ function ciniki_fatt_forms_processCAONLSSHCPAED($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(25, 248, $form['exam_date']->format('Y'));
             $pdf->Text(37.5, 248, $form['exam_date']->format('m'));
             $pdf->Text(48.5, 248, $form['exam_date']->format('d'));
+            $pdf->Text(8, 255.5, $form['host_name']);
+            $pdf->Text(9.5, 264, $form['host_area_code']);
+            $pdf->Text(21, 264, $form['host_phone']);
             $pdf->setFont('zapfdingbats', '', 12);
             $pdf->Text(($form['options']['recert'] == 'yes' ? 86.5 : 65.5), 247.75, "4");
             $pdf->setFont('helvetica', '', 10);

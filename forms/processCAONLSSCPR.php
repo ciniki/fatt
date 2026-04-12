@@ -4,6 +4,8 @@
 // -----------
 // This function will return the form information, including questions and how it maps to the form.
 //
+// Note: **no longer used as of Apr 2026**
+//
 // Arguments
 // ---------
 // ciniki:
