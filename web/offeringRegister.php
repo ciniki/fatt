@@ -222,6 +222,11 @@ function ciniki_fatt_web_offeringRegister(&$ciniki, $settings, $tnid, $offering_
         }
 
         return array('stat'=>'added', 'blocks'=>$blocks);
+    } 
+    elseif( isset($_POST['action']) && $_POST['action'] == 'add' && isset($_POST['student_id']) 
+        && is_numeric($_POST['student_id']) && $_POST['student_id'] == 0 
+        ) {
+        $blocks[] = array('type' => 'formmessage', 'level'=>'error', 'message'=>'You must add or select who will be attending this course.');
     }
 
 //        $blocks[] = array('type'=>'content', 'html'=>'<pre>' . print_r($ciniki['session'], true) . '</pre>');
@@ -241,6 +246,8 @@ function ciniki_fatt_web_offeringRegister(&$ciniki, $settings, $tnid, $offering_
         $form .= "<select id='student_id' type='select' class='select' name='student_id' onchange='addChildCheck();'>";
         if( $ciniki['session']['account']['type'] == 30 ) {
             $form .= "<option value='" . $ciniki['session']['account']['id'] . "'>Save Seat</option>";
+        } else {
+            $form .= "<option value='0'>Who is attending this course?</option>";
         }
         foreach($ciniki['session']['account']['parents'] as $parent) {
             $form .= "<option value='" . $parent['id'] . "'"
