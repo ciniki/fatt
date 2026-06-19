@@ -81,7 +81,7 @@ function ciniki_fatt_classDownloadForms($ciniki) {
     }
 
     if( isset($rc['pdf']) ) {
-        $rc['pdf']->Output($args['class_id'] . '.pdf', 'D');
+        $rc['pdf']->Output($args['class_id'] . '.pdf', 'I');
     }
 
     return array('stat'=>'exit');

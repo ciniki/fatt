@@ -259,6 +259,7 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
                 // Setup address
                 //
                 $registrations[$reg_id]['address'] = '';
+                $registrations[$reg_id]['province'] = '';
                 $registrations[$reg_id]['apt'] = '';
                 $registrations[$reg_id]['city'] = '';
                 $registrations[$reg_id]['postal'] = '';
@@ -277,6 +278,7 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
                                     $registrations[$reg_id]['apt'] = $matches[2];
                                 }
                             }
+                            $registrations[$reg_id]['province'] = $address['province'];
                             $registrations[$reg_id]['city'] = $address['city'];
                             $registrations[$reg_id]['postal'] = $address['postal'];
 
