@@ -491,9 +491,22 @@ function ciniki_fatt_settings() {
     this.instructor.instructor_id = 0;
     this.instructor.data = {};
     this.instructor.sections = {
-        'image':{'label':'', 'aside':'yes', 'fields':{
-            'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
-            }},
+//        'image':{'label':'', 'aside':'yes', 'fields':{
+//            'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+//            }},
+        'image':{'label':'Instructor Photo', 'type':'imageform', 'aside':'yes', 'fields':{
+            'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_fatt_settings.instructor.setFieldValue('primary_image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_fatt_settings.instructor.setFieldValue(fid,0);
+                    return true;
+                 },
+             },
+        }}, 
         'details':{'label':'', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'type':'text'},
             'initials':{'label':'Initials', 'type':'text', 'size':'small'},
@@ -504,9 +517,22 @@ function ciniki_fatt_settings() {
             'url':{'label':'Website', 'type':'text'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}}},
             }},
-        'sigimage':{'label':'Signature', 'aside':'yes', 'fields':{
-            'sig_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
-            }},
+//        'sigimage':{'label':'Signature', 'aside':'yes', 'fields':{
+//            'sig_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+//            }},
+        'sigimage':{'label':'Instructor Signature', 'type':'imageform', 'aside':'yes', 'fields':{
+            'sig_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_fatt_settings.instructor.setFieldValue('sig_image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_fatt_settings.instructor.setFieldValue(fid,0);
+                    return true;
+                 },
+             },
+        }}, 
         '_synopsis':{'label':'Synopsis', 'fields':{
             'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
             }},
