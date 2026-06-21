@@ -182,7 +182,8 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
                 $strsql = "SELECT ciniki_fatt_instructors.name, "
                     . "ciniki_fatt_instructors.id_number, "
                     . "ciniki_fatt_instructors.email, "
-                    . "ciniki_fatt_instructors.phone "
+                    . "ciniki_fatt_instructors.phone, "
+                    . "ciniki_fatt_instructors.sig_image_id "
                     . "FROM ciniki_fatt_offering_instructors "
                     . "INNER JOIN ciniki_fatt_instructors ON ("
                         . "ciniki_fatt_offering_instructors.instructor_id = ciniki_fatt_instructors.id "
@@ -201,6 +202,7 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
                 $reg_forms[$form_name]['instructor_email'] = '';
                 $reg_forms[$form_name]['instructor_area_code'] = '';
                 $reg_forms[$form_name]['instructor_phone'] = '';
+                $reg_forms[$form_name]['instructor_sig_image_id'] = 0;
                 $reg_forms[$form_name]['examiner_name'] = '';
                 $reg_forms[$form_name]['examiner_id'] = '';
                 $reg_forms[$form_name]['examiner_email'] = '';
@@ -213,6 +215,9 @@ function ciniki_fatt_forms_generate($ciniki, $tnid, $args) {
                     if( preg_match("/\(?([0-9][0-9][0-9])\)?-([0-9][0-9][0-9]).*([0-9][0-9][0-9][0-9])/", $rc['instructor']['phone'], $matches) ) {
                         $reg_forms[$form_name]['instructor_area_code'] = $matches[1];
                         $reg_forms[$form_name]['instructor_phone'] = $matches[2] . '-' . $matches[3];
+                    }
+                    if( $rc['instructor']['sig_image_id'] > 0 ) {
+                        $reg_forms[$form_name]['instructor_sig_image_id'] = $rc['instructor']['sig_image_id'];
                     }
                 }
                 // 

@@ -13,6 +13,8 @@
 //
 function ciniki_fatt_forms_processCAONLSSIFA($ciniki, $tnid, &$pdf, $form) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+
     $reg_number = 0;
     $page_num = 0;
     $total_pages = ceil(count($form['registrations']) / 4);
@@ -122,6 +124,16 @@ function ciniki_fatt_forms_processCAONLSSIFA($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(112, 221, $form['instructor_area_code']);
             $pdf->Text(122, 221, $form['instructor_phone']);
 
+            //
+            // Add instructor signature
+            //
+            if( isset($form['instructor_sig_image_id']) ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $form['instructor_sig_image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->Image('@'.$rc['image']->getImageBlob(), 160, 217.25, 50, 7.25, 'PNG', '', 'C', 2, '150', '', false, false, 0, 1);
+                }
+            }
+
             $pdf->setFont('zapfdingbats', '', 8);
             $pdf->Text(197, 230, "4");
             $pdf->Text(197, 257, "4");
@@ -156,6 +168,15 @@ function ciniki_fatt_forms_processCAONLSSIFA($ciniki, $tnid, &$pdf, $form) {
 //            $pdf->setFont('zapfdingbats', '', 12);
 //            $pdf->Text(($form['options']['recert'] == 'yes' ? 86.5 : 66), 247.75, "4");
 
+            //
+            // Add instructor signature
+            //
+            if( isset($form['instructor_sig_image_id']) ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $form['instructor_sig_image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->Image('@'.$rc['image']->getImageBlob(), 160, 248, 50, 8, 'PNG', '', 'C', 2, '150', '', false, false, 0, 1);
+                }
+            }
             $pdf->setFont('zapfdingbats', '', 8);
             $pdf->Text(186, 211, "4");
             // Examiner Information

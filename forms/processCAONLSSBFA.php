@@ -13,6 +13,8 @@
 //
 function ciniki_fatt_forms_processCAONLSSBFA($ciniki, $tnid, &$pdf, $form) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+
     $reg_number = 0;
     $page_num = 0;
     $total_pages = ceil(count($form['registrations']) / 4);
@@ -122,6 +124,16 @@ function ciniki_fatt_forms_processCAONLSSBFA($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(111, 221, $form['instructor_area_code']);
             $pdf->Text(122, 221, $form['instructor_phone']);
 
+            //
+            // Add instructor signature
+            //
+            if( isset($form['instructor_sig_image_id']) ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $form['instructor_sig_image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->Image('@'.$rc['image']->getImageBlob(), 160, 217.25, 50, 7.25, 'PNG', '', 'C', 2, '150', '', false, false, 0, 1);
+                }
+            }
+
             $pdf->setFont('zapfdingbats', '', 8);
             $pdf->Text(195.75, 230, "4");
             $pdf->Text(195.75, 257, "4");
@@ -150,6 +162,16 @@ function ciniki_fatt_forms_processCAONLSSBFA($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(21, 252, $form['exam_date']->format('Y'));
             $pdf->Text(32.5, 252, $form['exam_date']->format('m'));
             $pdf->Text(45, 252, $form['exam_date']->format('d'));
+            //
+            // Add instructor signature
+            //
+            if( isset($form['instructor_sig_image_id']) ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $form['instructor_sig_image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->Image('@'.$rc['image']->getImageBlob(), 160, 248, 50, 8, 'PNG', '', 'C', 2, '150', '', false, false, 0, 1);
+                }
+            }
+
 //            $pdf->Text(8, 255.5, $form['host_name']);
 //            $pdf->Text(9.5, 264, $form['host_area_code']);
 //            $pdf->Text(21, 264, $form['host_phone']);

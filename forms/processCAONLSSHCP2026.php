@@ -111,6 +111,15 @@ function ciniki_fatt_forms_processCAONLSSHCP2026($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(110, 217, $form['instructor_email']);
             $pdf->Text(112, 226, $form['instructor_area_code']);
             $pdf->Text(122, 226, $form['instructor_phone']);
+            //
+            // Add instructor signature
+            //
+            if( isset($form['instructor_sig_image_id']) ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $form['instructor_sig_image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->Image('@'.$rc['image']->getImageBlob(), 160, 221.5, 50, 8, 'PNG', '', 'C', 2, '150', '', false, false, 0, 1);
+                }
+            }
 
             $pdf->setFont('zapfdingbats', '', 8);
 //            $pdf->Text(197, 230, "4");
@@ -119,9 +128,17 @@ function ciniki_fatt_forms_processCAONLSSHCP2026($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(110, 244, $form['examiner_name']);
             $pdf->Text(180, 244, $form['examiner_id']);
             $pdf->Text(110, 251.5, $form['examiner_email']);
-            $pdf->Text(112, 259.5, $form['examiner_area_code']);
+            $pdf->Text(112, 258.5, $form['examiner_area_code']);
             $pdf->Text(122, 259.5, $form['examiner_phone']);
-            $pdf->setFont('helvetica', '', 9);
+            //
+            // Add instructor signature
+            //
+            if( isset($form['instructor_sig_image_id']) ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $form['instructor_sig_image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->Image('@'.$rc['image']->getImageBlob(), 160, 256, 50, 7.5, 'PNG', '', 'C', 2, '150', '', false, false, 0, 1);
+                }
+            }
         } else {
             $pdf->setFont('helvetica', '', 11);
             $pdf->Text(45, 195, $page_num+1);
@@ -160,6 +177,15 @@ function ciniki_fatt_forms_processCAONLSSHCP2026($ciniki, $tnid, &$pdf, $form) {
             $pdf->Text(111.5, 255.5, $form['examiner_area_code']);
             $pdf->Text(122, 255.5, $form['examiner_phone']);
             $pdf->setFont('helvetica', '', 9);
+            //
+            // Add instructor signature
+            //
+            if( isset($form['instructor_sig_image_id']) ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $form['instructor_sig_image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->Image('@'.$rc['image']->getImageBlob(), 160, 251.5, 50, 8, 'PNG', '', 'C', 2, '150', '', false, false, 0, 1);
+                }
+            }
         }
         $page_num++;
     }
